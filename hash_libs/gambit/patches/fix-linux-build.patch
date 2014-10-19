@@ -1,0 +1,20 @@
+---
+ gambit.h |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+Index: gambit/gambit.h
+===================================================================
+--- gambit.orig/gambit.h	2014-04-03 17:54:09.000000000 +0200
++++ gambit/gambit.h	2014-10-05 15:17:20.554990256 +0200
+@@ -17,9 +17,10 @@
+ #include <cstddef>
+ 
+ // PHC required intf
++extern "C" {
+ int PHS(void *out, size_t outlen, const void *in, size_t inlen, const
+         void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
+-
++}
+ 
+ namespace gambit
+ {

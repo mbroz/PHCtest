@@ -1,0 +1,32 @@
+---
+ Makefile |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+Index: omegacrypt/Makefile
+===================================================================
+--- omegacrypt.orig/Makefile	2014-04-03 17:54:10.000000000 +0200
++++ omegacrypt/Makefile	2014-10-05 16:00:22.163099507 +0200
+@@ -13,7 +13,14 @@ CFLAGS=-Wall -O2 -pedantic -pedantic-err
+ # For debugging:
+ #CFLAGS=-Wall -O0 -ansi -pedantic -pedantic-errors -g
+ 
+-main: ocrypt_genKAT ocrypt_heatmap
++#main: ocrypt_genKAT ocrypt_heatmap
++
++OBJ=phs.o ocrypt.o chacha-wrapper.o cubehash.o \
++    chacha-core-internal.o chacha-init.o chacha-crypt.o memxor.o
++all: nettle-chacha.o omegacrypt.a
++
++omegacrypt.a: $(OBJ)
++	ar rcs $@ $^
+ 
+ ocrypt_genKAT: ocrypt_genKAT.o ocrypt.o chacha-wrapper.o nettle-chacha.o \
+ 	       cubehash.o
+@@ -56,6 +63,7 @@ clean:
+ 	rm -f ocrypt_heatmap
+ 	rm -f cubehash-test
+ 	rm -f *.o
++	rm -f *.a
+ 	rm -f *~
+ 	rm -f \#*
+ 	rm -f nettle-chacha/*.o

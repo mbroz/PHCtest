@@ -1,0 +1,17 @@
+---
+ battcrypt.h |    2 ++
+ 1 file changed, 2 insertions(+)
+
+Index: battcrypt/battcrypt.h
+===================================================================
+--- battcrypt.orig/battcrypt.h	2014-04-03 17:54:09.000000000 +0200
++++ battcrypt/battcrypt.h	2014-10-05 15:02:09.706961112 +0200
+@@ -5,6 +5,8 @@
+ 
+ #include "common.h"
+ 
++extern "C" {
+ int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
++}
+ 
+ #endif

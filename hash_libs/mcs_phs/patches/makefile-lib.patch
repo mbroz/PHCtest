@@ -1,0 +1,26 @@
+---
+ makefile |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+Index: mcs_phs/makefile
+===================================================================
+--- mcs_phs.orig/makefile	2014-04-03 17:54:10.000000000 +0200
++++ mcs_phs/makefile	2014-10-05 15:33:22.775051311 +0200
+@@ -2,7 +2,16 @@
+ # Principal Submitter: Mikhail Maslennikov
+ # Revision: 12.02.2014 
+ 
+-all: test
++#all: test
++all: mcs_phs.a
++
++OBJ=code/mcssha8/mcssha8.o code/mcs_psw/mcs_psw.o
++
++mcs_phs.a: $(OBJ)
++	ar rcs $@ $^
++
++clean:
++	-rm -f $(OBJ) *.a
+ 
+ test: mcssha8.o mcs_psw.o test.o  
+ 	g++ ./lib/mcssha8.o ./lib/mcs_psw.o ./lib/test.o -o ./bin/test.exe

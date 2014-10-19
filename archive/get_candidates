@@ -1,0 +1,8 @@
+#!/bin/bash
+
+wget -r -l 1 -nd -nc -e robots=off -A '*.pdf,*.tar.gz' https://password-hashing.net/candidates.html
+
+git clone https://github.com/khovratovich/Argon.git
+wget http://cache.gmane.org/gmane/comp/security/phc/2181-002.bin -O Rig2.zip
+
+git clone https://github.com/cforler/catena.git

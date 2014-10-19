@@ -1,0 +1,34 @@
+---
+ Makefile |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+Index: earworm/Makefile
+===================================================================
+--- earworm.orig/Makefile	2014-04-03 17:54:09.000000000 +0200
++++ earworm/Makefile	2014-10-05 15:09:06.186966617 +0200
+@@ -5,18 +5,23 @@ HEADERS = aes.h core.h phc.h sha256.h ut
+ 
+ OBJS_REF = aes-ref.o core-ref.o phc-ref.o sha256-ref.o test-ref.o
+ OBJS_OPT = aes-opt.o core-opt.o phc-opt.o sha256-opt.o test-opt.o
++OBJS_LIB = aes-opt.o core-opt.o phc-opt.o sha256-opt.o
+ 
+ TARGETS_REF = test-ref
+ TARGETS_OPT = test-opt
+ 
+ LIBS = -lpthread
+ 
+-all: ref opt
++#all: ref opt
++all: earworm.a
+ ref: $(TARGETS_REF)
+ opt: $(TARGETS_OPT)
+ 
++earworm.a: $(OBJS_LIB)
++	ar rcs $@ $^
++
+ clean:
+-	$(RM) $(OBJS_REF) $(OBJS_OPT) $(TARGETS_REF) $(TARGETS_OPT)
++	$(RM) $(OBJS_REF) $(OBJS_OPT) $(TARGETS_REF) $(TARGETS_OPT) *.a
+ 
+ aes-ref.o: aes.c $(HEADERS)
+ 	$(CC) -o $@ -c $(FLAGS_REF) $(CPPFLAGS) $(CFLAGS) $<

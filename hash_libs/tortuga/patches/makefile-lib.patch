@@ -1,0 +1,26 @@
+---
+ Makefile |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+Index: tortuga/Makefile
+===================================================================
+--- tortuga.orig/Makefile	2014-04-03 17:54:10.000000000 +0200
++++ tortuga/Makefile	2014-10-05 16:31:40.743338635 +0200
+@@ -1,13 +1,13 @@
+ CFLAGS=-O3
+ 
+-TEST_OBJECTS=test.o phs.a
++TEST_OBJECTS=test.o tortuga.a
+ 
+ LIBS=-lm
+ 
+-all: phs.a
++all: tortuga.a
+ 
+-phs.a: turtle.o tortuga.o phs.o
+-	ar rcs phs.a $?
++tortuga.a: turtle.o tortuga.o phs.o
++	ar rcs $@ $?
+ 
+ test: $(TEST_OBJECTS)
+ 	$(CC) $? -o $@ $(LIBS)

@@ -1,0 +1,26 @@
+Add library to Makefile.
+---
+ Makefile |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+Index: makwa/Makefile
+===================================================================
+--- makwa.orig/Makefile	2014-02-22 22:19:08.000000000 +0100
++++ makwa/Makefile	2014-09-20 09:54:31.724599540 +0200
+@@ -4,11 +4,15 @@ LD = gcc
+ LDFLAGS = 
+ LIBS = -lcrypto
+ 
+-EXE = makeKAT selftest keygen deleggen
++#EXE = makeKAT selftest keygen deleggen
++EXE = makwa.a
+ OBJ = makwa.o makeKAT.o selftest.o keygen.o deleggen.o phc.o
+ 
+ all: $(EXE)
+ 
++makwa.a: phc.o makwa.o
++	ar rcs $@ $^
++
+ makeKAT: makwa.o makeKAT.o
+ 	$(LD) $(LDFLAGS) -o makeKAT makwa.o makeKAT.o $(LIBS)
+ 

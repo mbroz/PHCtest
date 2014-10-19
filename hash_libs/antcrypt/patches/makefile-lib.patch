@@ -1,0 +1,31 @@
+Add library makefile.
+---
+ Makefile |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+Index: antcrypt/Makefile
+===================================================================
+--- antcrypt.orig/Makefile	2014-04-03 17:54:09.000000000 +0200
++++ antcrypt/Makefile	2014-10-05 11:54:14.465236412 +0200
+@@ -3,8 +3,14 @@ CCFLAGS_DBG = -g3 -DPHC_DEBUG_OUTPUT $(C
+ CCFLAGS = --std=gnu99 -pedantic -lcrypto -lm -Wall
+ CFILES = phc.c phc_demo.c
+ 
+-all: phc tvgen
++OBJ=phc.o
++CC=gcc
++CFLAGS=$(CCFLAGS)
+ 
++all: phc tvgen antcrypt.a
++
++antcrypt.a: $(OBJ)
++	ar rcs $@ $^
+ 
+ tvgen : phc.c phc_tv.c
+ 	gcc $(CCFLAGS_REL) phc.c phc_tv.c -o phc_ivgen $(CCFLAGS)
+@@ -22,4 +28,4 @@ phc: $(CFILES)
+ 	gcc $(CCFLAGS_REL) $(CFILES) -o phc_demo $(CCFLAGS)
+ 
+ clean:
+-	rm -rf phc_demo phc_ivgen
++	rm -rf phc_demo phc_ivgen $(OBJ) *.a

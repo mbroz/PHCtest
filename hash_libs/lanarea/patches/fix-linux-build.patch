@@ -1,0 +1,64 @@
+---
+ lanarea.c |   15 +++++++++++----
+ lanarea.h |    9 +++------
+ 2 files changed, 14 insertions(+), 10 deletions(-)
+
+Index: lanarea/lanarea.c
+===================================================================
+--- lanarea.orig/lanarea.c	2014-04-01 09:24:52.000000000 +0200
++++ lanarea/lanarea.c	2014-09-20 11:05:30.349069601 +0200
+@@ -3,8 +3,8 @@
+ #define ROL(value, shift) (value << (shift % sizeof(value))) | (value >> (sizeof(value) * 8 - (shift % sizeof(value))))
+ #define ROR(value, shift) (value >> (shift % sizeof(value))) | (value << (sizeof(value) * 8 - (shift % sizeof(value))))
+ 
+-static inline ssize_t diagonal_ur (ssize_t i, ssize_t w);
+-static inline ssize_t diagonal_dr (ssize_t i, ssize_t w, ssize_t h);
++static inline size_t diagonal_ur (size_t i, size_t w);
++//static inline size_t diagonal_dr (size_t i, size_t w, size_t h);
+ 
+ const uint8_t pi[] =	{
+ 			0x32, 0x43, 0xF6, 0xA8, 0x88, 0x5A, 0x30, 0x8D,
+@@ -67,7 +67,7 @@ size_t m_cost		// abstract amount of mem
+ 
+ 	// initialization
+ 	m_cost = m_cost * 16;
+-	ssize_t x, y;
++	size_t x, y;
+ 	uint8_t **matrix = malloc (m_cost * sizeof (uint8_t *));
+ 
+ 	// matrix size parameters
+@@ -214,9 +214,16 @@ size_t m_cost		// abstract amount of mem
+ }
+ 
+ // Creates the up-right diagonal pattern
+-static inline ssize_t diagonal_ur (ssize_t i, ssize_t w) {
++static inline size_t diagonal_ur (size_t i, size_t w) {
+ 	// http://stackoverflow.com/questions/22647907/multidimensional-array-patterned-access/22648975#22648975
+ 
+ 	// Simplification is left as an exercise for the compiler.
+ 	return (((w - i % w) % w) + (i / w)) % w  + (w * (i / (w * w)));
+ }
++
++int PHS (void *out, size_t outlen, const void *in, size_t inlen,
++		const void *salt, size_t saltlen, unsigned int t_cost,
++		unsigned int m_cost) {
++
++	return lanarea (out, outlen, in, inlen, salt, saltlen, t_cost, m_cost);
++}
+Index: lanarea/lanarea.h
+===================================================================
+--- lanarea.orig/lanarea.h	2014-04-01 09:24:52.000000000 +0200
++++ lanarea/lanarea.h	2014-09-20 11:05:34.477070236 +0200
+@@ -15,9 +15,6 @@ size_t t_cost,          // abstract amou
+ size_t m_cost           // abstract amount of memory to waste
+ );
+ 
+-static inline int PHS (void *out, size_t outlen, const void *in, size_t inlen,
+-		const void *salt, size_t saltlen, size_t t_cost,
+-		size_t m_cost) {
+-
+-	return lanarea (out, outlen, in, inlen, salt, saltlen, t_cost, m_cost);
+-}
++int PHS (void *out, size_t outlen, const void *in, size_t inlen,
++		const void *salt, size_t saltlen, unsigned int t_cost,
++		unsigned int m_cost);

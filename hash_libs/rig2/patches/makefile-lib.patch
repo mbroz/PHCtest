@@ -1,0 +1,22 @@
+---
+ Makefile |   13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+Index: rig2/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ rig2/Makefile	2014-10-12 19:04:02.562565309 +0200
+@@ -0,0 +1,13 @@
++CFLAGS=-Wall -std=c99 -msse4.2 -O3 -funroll-loops
++CC=gcc
++
++VER=Rig_v2-ref
++OBJ=$(VER)/rig.o $(VER)/blake_impl.o $(VER)/BLAKE/blake2b-ref.o
++
++rig2.a: $(OBJ)
++	ar rcs $@ $^
++
++clean:
++	rm -f *.o *~ core *.a $(OBJ)
++
++.PHONY: clean

@@ -1,0 +1,16 @@
+---
+ parallel.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: parallel/parallel.h
+===================================================================
+--- parallel.orig/parallel.h	2014-09-20 11:24:41.585245137 +0200
++++ parallel/parallel.h	2014-09-20 11:24:58.397247689 +0200
+@@ -5,6 +5,6 @@
+ 
+ #include "common.h"
+ 
+-int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
++extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
+ 
+ #endif

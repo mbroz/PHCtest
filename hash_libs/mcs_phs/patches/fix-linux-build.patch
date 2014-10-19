@@ -1,0 +1,40 @@
+---
+ code/mcs_psw/mcs_psw.cpp |    8 ++++++++
+ code/mcs_psw/mcs_psw.h   |    3 ++-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+Index: mcs_phs/code/mcs_psw/mcs_psw.cpp
+===================================================================
+--- mcs_phs.orig/code/mcs_psw/mcs_psw.cpp	2014-10-05 15:34:43.091051070 +0200
++++ mcs_phs/code/mcs_psw/mcs_psw.cpp	2014-10-05 15:34:43.087051070 +0200
+@@ -4,7 +4,15 @@
+ 
+ #include <stdio.h>
+ #include <memory.h>
++#ifdef WIN32
+ #include <windows.h>
++#else
++typedef unsigned long DWORD;
++typedef unsigned char BYTE;
++#define NTE_BAD_DATA 0x80090005
++#define NTE_FAIL 0x80090020
++void SetLastError(DWORD dwErrCode) {};
++#endif
+ #include "mcs_psw.h"
+ #include "../mcssha8/mcssha8.h"
+ 
+Index: mcs_phs/code/mcs_psw/mcs_psw.h
+===================================================================
+--- mcs_phs.orig/code/mcs_psw/mcs_psw.h	2014-04-03 17:54:10.000000000 +0200
++++ mcs_phs/code/mcs_psw/mcs_psw.h	2014-10-05 15:36:32.619051442 +0200
+@@ -5,8 +5,9 @@
+ #ifndef HEADER_MCS_PSW_H
+ #define HEADER_MCS_PSW_H
+ 
++extern "C" {
+ int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
+-
++}
+ 
+ 
+ #endif	

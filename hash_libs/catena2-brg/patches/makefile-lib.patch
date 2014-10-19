@@ -1,0 +1,38 @@
+Add library to makefile.
+---
+ Makefile |    9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+Index: catena2-brg/Makefile
+===================================================================
+--- catena2-brg.orig/Makefile	2014-10-11 10:34:14.227431563 +0200
++++ catena2-brg/Makefile	2014-10-11 10:51:47.087611560 +0200
+@@ -11,7 +11,9 @@ HASH=$(HDIR)/blake2b.c
+ 
+ $(shell mkdir -p $(TARGETDIR))
+ 
+-all: blake2b sha512
++#all: blake2b sha512
++all: catena2-brg.a
++CFLAGS=$(CFLAGS_$(ARCH))
+ 
+ blake2b: catena-BRG-blake2b-test catena-BRG-blake2b-test_vectors catena-DBG-blake2b-test catena-DBG-blake2b-test_vectors 
+ sha512: catena-BRG-sha512-test catena-BRG-sha512-test_vectors catena-DBG-sha512-test catena-DBG-sha512-test_vectors
+@@ -19,6 +21,9 @@ DBG: catena-DBG-blake2b-test catena-DBG-
+ BRG: catena-BRG-blake2b-test catena-BRG-blake2b-test_vectors catena-BRG-sha512-test catena-BRG-sha512-test_vectors
+ catena: catena-DBG catena-BRG
+ 
++catena2-brg.a: catena-BRG catena.o catena-blake2b.o
++	ar rcs $@ catena.o catena-BRG.o blake2b.o catena-blake2b.o
++
+ catena-DBG-blake2b-test:
+ 	$(CC) $(CFLAGS_$(ARCH)) -o $(TARGETDIR)/$@ test-catena.c catena.c catena-blake2b.c catena-DBG.c $(HASH)
+ 
+@@ -59,5 +64,5 @@ catena-BRG:
+ 
+ 
+ clean:
+-	rm -f  *~ *.o
++	rm -f  *~ *.o *.a
+ 	rm -rf $(TARGETDIR)
+\ No newline at end of file

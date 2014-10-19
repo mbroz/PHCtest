@@ -1,0 +1,36 @@
+---
+ Makefile         |   12 ++++++++++++
+ twocats/Makefile |    3 +++
+ 2 files changed, 15 insertions(+)
+
+Index: twocats/twocats/Makefile
+===================================================================
+--- twocats.orig/twocats/Makefile	2014-03-26 11:52:25.000000000 +0100
++++ twocats/twocats/Makefile	2014-04-27 14:07:49.000000000 +0200
+@@ -40,6 +40,9 @@ all: obj twocats-ref twocats twocats-tes
+ 
+ -include $(OBJS:.o=.d) $(REF_OBJS:.o=.d) $(TWOCATS_OBJS:.o=.d) $(ENC_OBJS:.o=.d) $(DEC_OBJS:.o=.d)
+ 
++twocats.a: obj $(OBJS) $(TWOCATS_OBJS)
++	ar rcs $@ $(OBJS) obj/twocats.o
++
+ twocats-ref: $(DEPS) $(OBJS) $(REF_OBJS)
+ 	$(CC) $(CFLAGS) $(OBJS) $(REF_OBJS) -o twocats-ref $(LIBS)
+ 
+Index: twocats/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ twocats/Makefile	2014-09-20 11:47:56.541482869 +0200
+@@ -0,0 +1,12 @@
++EXE=twocats.a
++
++default: $(EXE)
++
++$(EXE):
++	(cd twocats; make $(EXE))
++	-ln -s twocats/$(EXE) $(EXE)
++clean:
++	(cd twocats; make clean)
++	rm -f *.o $(EXE)
++
++.PHONY: clean default

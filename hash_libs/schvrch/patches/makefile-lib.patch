@@ -1,0 +1,21 @@
+---
+ Makefile |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+Index: schvrch/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ schvrch/Makefile	2014-10-05 16:28:18.527302858 +0200
+@@ -0,0 +1,12 @@
++CFLAGS=-Wall -O2
++CC=gcc
++
++OBJ=schvrch.o
++
++schvrch.a: $(OBJ)
++	ar rcs $@ $^
++
++clean:
++	rm -f *.o *~ core *.a
++
++.PHONY: clean

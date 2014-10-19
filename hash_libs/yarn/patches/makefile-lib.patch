@@ -1,0 +1,21 @@
+---
+ Makefile |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+Index: yarn/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ yarn/Makefile	2014-10-05 16:33:54.047371579 +0200
+@@ -0,0 +1,12 @@
++CFLAGS=-Wall -O2
++CC=gcc
++
++OBJ=yarn.o
++
++yarn.a: $(OBJ)
++	ar rcs $@ $^
++
++clean:
++	rm -f *.o *~ core *.a
++
++.PHONY: clean

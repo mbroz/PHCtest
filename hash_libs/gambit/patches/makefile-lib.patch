@@ -1,0 +1,23 @@
+---
+ Makefile |   14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+Index: gambit/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ gambit/Makefile	2014-10-05 15:15:25.250983288 +0200
+@@ -0,0 +1,14 @@
++CFLAGS=-O2 -Wall -fexceptions
++CC=gcc
++
++OBJ=gambit.o keccak.o
++
++all: gambit.a
++
++gambit.a: $(OBJ)
++	ar rcs $@ $^
++
++clean:
++	rm -f *.o *~ core *.a
++
++.PHONY: clean

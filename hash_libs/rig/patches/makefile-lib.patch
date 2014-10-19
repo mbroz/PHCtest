@@ -1,0 +1,33 @@
+---
+ makefile |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+Index: rig/makefile
+===================================================================
+--- rig.orig/makefile	2014-04-22 23:40:32.000000000 +0200
++++ rig/makefile	2014-10-12 19:15:58.002992446 +0200
+@@ -1,16 +1,19 @@
+-all: phc_rig
++all: rig.a
++
++rig.a: blake2b.o rig.o
++	ar rcs $@ $^
+ 
+ phc_rig: main.o rig.o blake2b.o
+-	gcc -Ofast -march=native -std=c99 -flto main.o rig.o blake2b.o -o phc_rig -lm
++	gcc -Ofast -march=native -std=c99 main.o rig.o blake2b.o -o phc_rig -lm
+ 
+ main.o: main.c
+-	gcc -Ofast -march=native -std=c99 -flto -c main.c
++	gcc -Ofast -march=native -std=c99 -c main.c
+ 
+ rig.o: rig.c
+-	gcc -Ofast -march=native -std=c99 -flto -c rig.c
++	gcc -Ofast -march=native -std=c99 -c rig.c
+    
+ blake2b.o:
+-	gcc -Ofast -march=native -std=c99 -flto -c BLAKE/blake2b.c
++	gcc -Ofast -march=native -std=c99 -c BLAKE/blake2b.c
+ 
+ clean:
+ 	rm -rf *o phc_rig
