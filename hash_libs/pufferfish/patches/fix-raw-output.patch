@@ -1,0 +1,24 @@
+---
+ common/api.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+Index: pufferfish/common/api.c
+===================================================================
+--- pufferfish.orig/common/api.c	2014-03-31 21:15:54.000000000 +0200
++++ pufferfish/common/api.c	2014-11-01 21:24:04.874953540 +0100
+@@ -126,13 +126,13 @@ int PHS (void *out, size_t outlen, const
+         char *hash;
+         char *settings = pf_gensalt (salt, saltlen, t_cost, m_cost);
+ 
+-        if (! (hash = (char *) pufferfish (in, inlen, settings, outlen, false)))
++        if (! (hash = (char *) pufferfish (in, inlen, settings, outlen, true)))
+         {
+                 free (settings);
+                 return 1;
+         }
+ 
+-        memmove (out, hash, strlen (hash));
++        memmove (out, hash, outlen);
+         free (settings);
+         free (hash);
+ 

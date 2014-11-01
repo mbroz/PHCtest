@@ -126,13 +126,13 @@ int PHS (void *out, size_t outlen, const void *in, size_t inlen, const void *sal
         char *hash;
         char *settings = pf_gensalt (salt, saltlen, t_cost, m_cost);
 
-        if (! (hash = (char *) pufferfish (in, inlen, settings, outlen, false)))
+        if (! (hash = (char *) pufferfish (in, inlen, settings, outlen, true)))
         {
                 free (settings);
                 return 1;
         }
 
-        memmove (out, hash, strlen (hash));
+        memmove (out, hash, outlen);
         free (settings);
         free (hash);
 
