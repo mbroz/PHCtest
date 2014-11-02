@@ -33,6 +33,7 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "bitops.h"
 
 int PHS(void *out, size_t outlen, const void *in, size_t inlen,
     const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
@@ -43,6 +44,8 @@ static size_t opt_out_len = 32;
 static unsigned int opt_mcost = 1;
 static unsigned int opt_tcost = 1;
 static unsigned int opt_repeat = 1;
+static unsigned int opt_rndtest = 0;
+static unsigned int opt_rndsize = 1; // rnd sample size in MiB
 static int opt_verbose = 0;
 static int opt_fork = 0;
 static int opt_display_hash = 0;
@@ -307,11 +310,49 @@ static int test_vectors(const char *file)
 	return r;
 }
 
+static int test_randomness(void)
+{
+	int i, r;
+	uint32_t i_le;
+	char *pwd = (char *)&i_le;
+	char out[opt_out_len];
+	char salt[opt_salt_len];
+
+	if (opt_rndtest != 1)
+		return 1;
+
+	if (isatty(STDOUT_FILENO)) {
+		fprintf(stderr, "Will not write binary output to terminal, exiting.\n");
+		return 1;
+	}
+
+	memset(salt, 0x1, opt_salt_len);
+
+	// Generate 1MiB of data
+	for (i = 0; i < (opt_rndsize * 1024 *1024 / opt_out_len); i++) {
+		i_le = cpu_to_le32(i);
+
+		if ((r = PHS(out, opt_out_len, pwd, sizeof(uint32_t),
+			salt, opt_salt_len, opt_tcost, opt_mcost)) != 0) {
+			fprintf(stderr, "Error running PHS, %i.\n", r);
+			return 1;
+		}
+		if (write(STDOUT_FILENO, out, opt_out_len) != opt_out_len) {
+			fprintf(stderr, "Error writing to stdout.\n");
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 static struct option long_options[] =
 {
 	{"verbose",  no_argument,       NULL, 'v'},
 	{"fork",     no_argument,       NULL, 'w'},
 	{"hash",     no_argument,       NULL, 'h'},
+	{"rndtest",  required_argument, NULL, 'x'},
+	{"rndsize",  required_argument, NULL, 'X'},
 	{"salt_len", required_argument, NULL, 's'},
 	{"in_len",   required_argument, NULL, 'i'},
 	{"out_len",  required_argument, NULL, 'o'},
@@ -327,7 +368,7 @@ int main (int argc, char *argv[])
 {
 	int c, r, option_index = 0;
 
-	while ((c = getopt_long (argc, argv, "vwhs:i:o:m:t:f:r:V:", long_options, &option_index)) != -1) {
+	while ((c = getopt_long (argc, argv, "vwhs:i:o:m:t:f:r:V:x:X:", long_options, &option_index)) != -1) {
 		switch (c) {
 		case 'v': opt_verbose  = 1; break;
 		case 'w': opt_fork     = 1; break;
@@ -338,6 +379,8 @@ int main (int argc, char *argv[])
 		case 'm': opt_mcost    = atoi(optarg); break;
 		case 't': opt_tcost    = atoi(optarg); break;
 		case 'r': opt_repeat   = atoi(optarg); break;
+		case 'x': opt_rndtest  = atoi(optarg); break;
+		case 'X': opt_rndsize  = atoi(optarg); break;
 		case 'f': opt_out_file = strdup(optarg); break;
 		case 'V': opt_vector_file = strdup(optarg); break;
 		case '?':
@@ -347,6 +390,8 @@ int main (int argc, char *argv[])
 
 	if (opt_vector_file)
 		return test_vectors(opt_vector_file);
+	else if (opt_rndtest)
+		return test_randomness();
 
 	if (opt_fork)
 		r = test_phc_wrapper_fork();
