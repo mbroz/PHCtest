@@ -1,0 +1,85 @@
+$ ./run_vectors
+
+antcrypt
+ERROR: output differs: f72fed42eb42750ff83e7d5b708573fb411f1665895a39275c6f7efc2f202523
+LINE[0]: password:00 salt:73616c7473616c7473616c7473616c74 t_cost:0 m_cost:0 -> b8677dba4f0a0d8273e3fb8eddb8057392df729c793380ae3a2b20bbdffb35e7
+
+argon
+ERROR: output differs: d11a4c07ffbf8c27929dbffc86818735ea54b34b8434cbd78e709455f776bb75
+LINE[0]: password:00 salt: t_cost:3 m_cost:1 -> 474515dd654baba366ca36adb14a095627aa2794d0df969f119122cf4f15af79
+
+battcrypt
+Vectors: hash_vectors/battcrypt, lines 898 OK
+
+catena
+Vectors: hash_vectors/catena, lines 771 OK
+
+catena2-brg
+Vectors: hash_vectors/catena2-brg, lines 867 OK
+
+catena2-dbg
+Vectors: hash_vectors/catena2-dbg, lines 771 OK
+
+centrifuge
+ERROR: output differs: c62c7a7db4c1f99a55779f20855f4710c0181dc42a976b01c0f051a33add39b0
+LINE[0]: password:00 salt:73616c7473616c7473616c7473616c74 t_cost:1 m_cost:1 -> cdf37ef75abd3d6a194be159facb986083c9a1e24286c330d1c14a2927f6352d
+
+earworm
+./run_vectors: line 5: 11046 Segmentation fault      $PRG -V hash_vectors/$alg
+
+gambit
+ERROR: output differs: 15853e7c241b364336071ba9f5c24e62ea0e3f2bc80e605b0ec999427eb2954c
+LINE[0]: password:00 salt:73616c7473616c7473616c7473616c74 t_cost:1 m_cost:1 -> 02afaece42f8a4cf73814ed576009feaa356f211818ca7b9cf44e4c4a0fb6b11
+
+lanarea
+ERROR: output differs: 42413defb5be242fea9c99392a03fd9614a01d07c8da5d511022634d589e784a
+LINE[0]: password:00 salt:73 t_cost:1 m_cost:1 -> 18bda839709a63a0088c8c4169f45e44dace01e980fc5cc4d62f491ba6a36088
+
+lyra2
+ERROR: output differs: 31d291ef25df38c105aa8ecae719024c370bd6984407e9b235032e9c23070a25
+LINE[0]: password:00 salt:73 t_cost:1 m_cost:3 -> 47592403b98298bcb0b206f5863ad2d0e1dc2bbe7136e518ab13f519a92ad109
+
+makwa
+Vectors: hash_vectors/makwa, lines 283 OK
+
+mcs_phs
+Vectors: hash_vectors/mcs_phs, lines 285 OK
+
+omegacrypt
+ERROR: output differs: 1da7c9640784a4a16585199daf91353b40a433d4b8a01d75b08c094eacb91d62
+LINE[0]: password:00 salt: t_cost:0 m_cost:0 -> 678d7679365e10ae7b9d3c94e384377bad9175f531a2f099ec7db39ec2f2b715
+
+parallel
+Vectors: hash_vectors/parallel, lines 774 OK
+
+pomelo
+ERROR: output differs: 2be5d8f4ce8b6586e01fa5f3b7b84448b1cc663ddcd28e9ec9b347010ab4cf81
+LINE[0]: password:00 salt: t_cost:1 m_cost:7 -> 725b7e71462f4b6c7cdc4fb30056b39d9dbb34e754a2382e99174ebab15aa8c1
+
+pufferfish
+ERROR: output differs: 103edb68bb92ecf9dc64b2129f3d9dc2a301c06b78d17881a243b28d8e3afe16
+LINE[0]: password:00 salt: t_cost:1 m_cost:1 -> c1982ba3ed4e0b340a9425b0d3f79a1b5db8fb5ee1513023823710ccf070f243
+
+rig
+ERROR: output differs: ca59b1ef5903bd51a9a404eefb4311225b60d4b2f7e6e5140c4b7a31062e091b
+LINE[0]: password:00 salt:73616c7473616c7473616c7473616c74 t_cost:1 m_cost:1 -> 19efe181d074d1a9133af9aa89e844d78d0e432df2898a0d42ad00b64948d91c
+
+rig2
+ERROR: output differs: fffb15ab7235b4e2ccac565b3f286f5ff912351906224d003c547c79f011ef07
+LINE[0]: password:00 salt:73616c7473616c7473616c7473616c74 t_cost:1 m_cost:1 -> 8688e03b60fd4d09442a6ec6eb59da482952241af8fce542a6ed6bc08bf3f51e
+
+schvrch
+ERROR: output differs: 2b7ed480f0ff8b715642ea087f37d854da61a8654423c6c934cefb20bef55f30
+LINE[0]: password:00 salt:73 t_cost:0 m_cost:0 -> 4e003d45c2a569ba5948162f676267298d5a51ca94db38ed0333780f896597ed
+
+tortuga
+Vectors: hash_vectors/tortuga, lines 1153 OK
+
+twocats
+./run_vectors: line 5: 11062 Bus error               $PRG -V hash_vectors/$alg
+
+yarn
+Vectors: hash_vectors/yarn, lines 1430 OK
+
+yescrypt
+Vectors: hash_vectors/yescrypt, lines 1177 OK

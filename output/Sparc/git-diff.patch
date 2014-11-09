@@ -1,0 +1,257 @@
+diff --git a/hash_libs/argon/Makefile b/hash_libs/argon/Makefile
+index 72cee5e..3341067 100644
+--- a/hash_libs/argon/Makefile
++++ b/hash_libs/argon/Makefile
+@@ -1,5 +1,5 @@
+ CC=gcc
+-CPPFLAGS=-O3 -maes -mavx -std=c++11
++CPPFLAGS=-O3 -std=c++11
+ LIBS=-pthread -lcrypto -lm
+ 
+ EXE = argon.a
+diff --git a/hash_libs/battcrypt/Makefile b/hash_libs/battcrypt/Makefile
+index 2157a8e..c306017 100644
+--- a/hash_libs/battcrypt/Makefile
++++ b/hash_libs/battcrypt/Makefile
+@@ -7,7 +7,7 @@ LFLAGS32 = -m32
+ #all: battcrypt-64 battcrypt-32 battcrypt.a
+ all: battcrypt.a
+ 
+-OBJ=battcrypt64.o blowfish64.o sha51264.o
++OBJ=battcrypt32.o blowfish32.o sha51232.o
+ CFLAGS=$(CFLAGS64)
+ 
+ battcrypt.a: $(OBJ)
+diff --git a/hash_libs/catena/Makefile b/hash_libs/catena/Makefile
+index 56211e8..bc428ec 100644
+--- a/hash_libs/catena/Makefile
++++ b/hash_libs/catena/Makefile
+@@ -1,8 +1,8 @@
+ CC=gcc
+ HDIR=./blake2
+-CFLAGS=-fomit-frame-pointer -O3 -std=c99 -fgnu89-inline -s -m64 -msse4.2 -W -Wall -L$(HDIR) -I$(HDIR)
++CFLAGS=-fomit-frame-pointer -O3 -std=c99 -fgnu89-inline -s -W -Wall -L$(HDIR) -I$(HDIR)
+ 
+-HASH=$(HDIR)/blake2b.c
++HASH=$(HDIR)/blake2b-ref.c
+ 
+ all: catena.a
+ 
+@@ -10,7 +10,7 @@ blake2b: catena-blake2b-test catena-blake2b-test_vectors
+ sha512: catena-sha512-test catena-sha512-test_vectors
+ 
+ catena.a: catena catena-blake2b.o
+-	ar rcs $@ catena.o catena-blake2b.o blake2b.o
++	ar rcs $@ catena.o catena-blake2b.o blake2b-ref.o
+ 
+ catena-blake2b-test:
+ 	$(CC) $(CFLAGS) -o $@ test-catena.c catena.c catena-blake2b.c $(HASH)
+diff --git a/hash_libs/catena2-brg/Makefile b/hash_libs/catena2-brg/Makefile
+index 0287c33..77b2042 100644
+--- a/hash_libs/catena2-brg/Makefile
++++ b/hash_libs/catena2-brg/Makefile
+@@ -4,10 +4,10 @@ TARGETDIR=./bin
+ 
+ ARCH := $(shell getconf LONG_BIT)
+ 
+-CFLAGS_32=-fomit-frame-pointer -O3 -std=c99 -fgnu89-inline -s -msse4.2 -W -Wall  -L$(HDIR) -I$(HDIR)
+-CFLAGS_64=-fomit-frame-pointer -O3 -std=c99 -fgnu89-inline -s -m64 -msse4.2 -W -Wall  -L$(HDIR) -I$(HDIR)
++CFLAGS_32=-fomit-frame-pointer -O3 -std=c99 -fgnu89-inline -s -W -Wall  -L$(HDIR) -I$(HDIR)
++CFLAGS_64=-fomit-frame-pointer -O3 -std=c99 -fgnu89-inline -s -m64 -W -Wall  -L$(HDIR) -I$(HDIR)
+ 
+-HASH=$(HDIR)/blake2b.c
++HASH=$(HDIR)/blake2b-ref.c
+ 
+ $(shell mkdir -p $(TARGETDIR))
+ 
+@@ -22,7 +22,7 @@ BRG: catena-BRG-blake2b-test catena-BRG-blake2b-test_vectors catena-BRG-sha512-t
+ catena: catena-DBG catena-BRG
+ 
+ catena2-brg.a: catena-BRG catena.o catena-blake2b.o
+-	ar rcs $@ catena.o catena-BRG.o blake2b.o catena-blake2b.o
++	ar rcs $@ catena.o catena-BRG.o blake2b-ref.o catena-blake2b.o
+ 
+ catena-DBG-blake2b-test:
+ 	$(CC) $(CFLAGS_$(ARCH)) -o $(TARGETDIR)/$@ test-catena.c catena.c catena-blake2b.c catena-DBG.c $(HASH)
+diff --git a/hash_libs/earworm/Makefile b/hash_libs/earworm/Makefile
+index 6951360..85067eb 100644
+--- a/hash_libs/earworm/Makefile
++++ b/hash_libs/earworm/Makefile
+@@ -1,11 +1,11 @@
+ FLAGS_REF = -std=c89 -g -O -Wall -Wextra -DEARWORM_BUILD_REF
+-FLAGS_OPT = -mmmx -msse -msse2 -msse3 -msse4 -maes -O3 -funroll-loops -Wall -Wextra -DEARWORM_BUILD_OPT -DNDEBUG
++FLAGS_OPT = -O3 -funroll-loops -Wall -Wextra -DEARWORM_BUILD_OPT -DNDEBUG
+ 
+ HEADERS = aes.h core.h phc.h sha256.h util.h util-ref.h util-opt.h
+ 
+ OBJS_REF = aes-ref.o core-ref.o phc-ref.o sha256-ref.o test-ref.o
+ OBJS_OPT = aes-opt.o core-opt.o phc-opt.o sha256-opt.o test-opt.o
+-OBJS_LIB = aes-opt.o core-opt.o phc-opt.o sha256-opt.o
++OBJS_LIB = aes-ref.o core-ref.o phc-ref.o sha256-ref.o
+ 
+ TARGETS_REF = test-ref
+ TARGETS_OPT = test-opt
+diff --git a/hash_libs/lanarea/Makefile b/hash_libs/lanarea/Makefile
+index a7c6d0c..b4aff33 100644
+--- a/hash_libs/lanarea/Makefile
++++ b/hash_libs/lanarea/Makefile
+@@ -7,7 +7,7 @@ OBJECTS=$(SOURCES:.c=.o)
+ 
+ all: lanarea.a
+ 
+-lanarea.a: libb2/src/.libs/libb2_la-blake2b.o lanarea.o
++lanarea.a: libb2/src/.libs/libb2_la-blake2b-ref.o lanarea.o
+ 	ar rcs $@ $^
+ 
+ libb2/src/.libs/libb2_la-blake2b.o:
+diff --git a/hash_libs/lanarea/libb2/configure b/hash_libs/lanarea/libb2/configure
+index 17752aa..ba6df7e 100755
+--- a/hash_libs/lanarea/libb2/configure
++++ b/hash_libs/lanarea/libb2/configure
+@@ -2527,8 +2527,8 @@ test "$program_suffix" != NONE &&
+ ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
+ program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
+ 
+-# Expand $ac_aux_dir to an absolute path.
+-am_aux_dir=`cd "$ac_aux_dir" && pwd`
++# expand $ac_aux_dir to an absolute path
++am_aux_dir=`cd $ac_aux_dir && pwd`
+ 
+ if test x"${MISSING+set}" != xset; then
+   case $am_aux_dir in
+@@ -13127,7 +13127,7 @@ $as_echo "$as_me: WARNING: Your processor support avx instructions but not your
+ 
+ 
+ 
+-  CFLAGS="${CFLAGS} -march=native"
++  CFLAGS="${CFLAGS}"
+ fi
+ 
+ case $host_os in
+diff --git a/hash_libs/lanarea/libb2/configure.ac b/hash_libs/lanarea/libb2/configure.ac
+index f77d294..7de1a9a 100644
+--- a/hash_libs/lanarea/libb2/configure.ac
++++ b/hash_libs/lanarea/libb2/configure.ac
+@@ -59,7 +59,7 @@ if test $enable_fat == "yes"; then
+   AX_CHECK_COMPILE_FLAG([-mxop],    [], AC_MSG_ERROR([Compiler does not know -mxop.]))
+ else
+   AX_EXT
+-  CFLAGS="${CFLAGS} -march=native"
++  CFLAGS="${CFLAGS}"
+ fi
+ 
+ case $host_os in
+diff --git a/hash_libs/lyra2/makefile b/hash_libs/lyra2/makefile
+index 101d8d2..4a7fd74 100644
+--- a/hash_libs/lyra2/makefile
++++ b/hash_libs/lyra2/makefile
+@@ -39,7 +39,7 @@ default: generic-x86-64 lyra2.a
+ 	@echo " "
+ 
+ 
+-lyra2.a: $(SSEDIR)Lyra2.o $(SSEDIR)Sponge.o
++lyra2.a: Lyra2.o Sponge.o
+ 	ar rcs $@ $^
+ 
+ generic-x86-64:	    Lyra2.c Sponge.c Main.c Lyra2.h Sponge.h
+diff --git a/hash_libs/parallel/Makefile b/hash_libs/parallel/Makefile
+index 2fa614b..d7cc35d 100644
+--- a/hash_libs/parallel/Makefile
++++ b/hash_libs/parallel/Makefile
+@@ -8,7 +8,7 @@ LFLAGS32 = -m32
+ all: parallel.a
+ 	
+ 
+-parallel.a: parallel64.o sha51264.o
++parallel.a: parallel32.o sha51232.o
+ 	ar rcs $@ $^
+ # 64 bit
+ parallel-64: main64.o parallel64.o sha51264.o
+diff --git a/hash_libs/pufferfish/Makefile b/hash_libs/pufferfish/Makefile
+index 4ce6f95..e090d0d 100644
+--- a/hash_libs/pufferfish/Makefile
++++ b/hash_libs/pufferfish/Makefile
+@@ -1,5 +1,5 @@
+ CC        = cc
+-CFLAGS    = -g -Wall -pedantic -O3 -march=native
++CFLAGS    = -g -Wall -pedantic -O3
+ LIBS      = -lcrypto
+ 
+ #all:  pfcrypt-ref pfcrypt-opt pfkdf-ref pfkdf-opt
+diff --git a/hash_libs/rig/makefile b/hash_libs/rig/makefile
+index 74ffd53..9d60184 100644
+--- a/hash_libs/rig/makefile
++++ b/hash_libs/rig/makefile
+@@ -4,16 +4,16 @@ rig.a: blake2b.o rig.o
+ 	ar rcs $@ $^
+ 
+ phc_rig: main.o rig.o blake2b.o
+-	gcc -Ofast -march=native -std=c99 main.o rig.o blake2b.o -o phc_rig -lm
++	gcc -Ofast -std=c99 main.o rig.o blake2b.o -o phc_rig -lm
+ 
+ main.o: main.c
+-	gcc -Ofast -march=native -std=c99 -c main.c
++	gcc -Ofast -std=c99 -c main.c
+ 
+ rig.o: rig.c
+-	gcc -Ofast -march=native -std=c99 -c rig.c
++	gcc -Ofast -std=c99 -c rig.c
+    
+ blake2b.o:
+-	gcc -Ofast -march=native -std=c99 -c BLAKE/blake2b.c
++	gcc -Ofast -std=c99 -c BLAKE/blake2b.c
+ 
+ clean:
+ 	rm -rf *.o *.a phc_rig
+diff --git a/hash_libs/rig2/Makefile b/hash_libs/rig2/Makefile
+index c5723c2..83fbb05 100644
+--- a/hash_libs/rig2/Makefile
++++ b/hash_libs/rig2/Makefile
+@@ -1,4 +1,4 @@
+-CFLAGS=-Wall -std=c99 -msse4.2 -O3 -funroll-loops
++CFLAGS=-Wall -std=c99 -O3 -funroll-loops
+ CC=gcc
+ 
+ VER=Rig_v2-ref
+diff --git a/hash_libs/twocats/twocats/Makefile b/hash_libs/twocats/twocats/Makefile
+index 5cb4433..dc84930 100644
+--- a/hash_libs/twocats/twocats/Makefile
++++ b/hash_libs/twocats/twocats/Makefile
+@@ -5,7 +5,7 @@ DEPS = Makefile
+ CC=gcc
+ 
+ # Use this for the normal release, unless you must support older machines
+-CFLAGS=-std=c99 -Wall -pedantic -O3 -march=native -funroll-loops
++CFLAGS=-std=c99 -Wall -pedantic -O3 -funroll-loops
+ 
+ # Use this for debugging
+ #CFLAGS=-std=c99 -Wall -pedantic -g -march=native
+diff --git a/hash_libs/twocats/twocats/twocats.c b/hash_libs/twocats/twocats/twocats.c
+index dd923fb..02d6070 100644
+--- a/hash_libs/twocats/twocats/twocats.c
++++ b/hash_libs/twocats/twocats/twocats.c
+@@ -22,9 +22,9 @@
+ #ifdef __AVX2__
+ #define HAVE_AVX2
+ #endif
+-#include "../blake2-sse/blake2-config.h"
++//#include "../blake2-sse/blake2-config.h"
+ 
+-#include <emmintrin.h>
++//#include <emmintrin.h>
+ #if defined(HAVE_SSSE3)
+ #include <tmmintrin.h>
+ #endif
+diff --git a/hash_libs/yescrypt/Makefile b/hash_libs/yescrypt/Makefile
+index 8ff697b..99b79c1 100644
+--- a/hash_libs/yescrypt/Makefile
++++ b/hash_libs/yescrypt/Makefile
+@@ -21,7 +21,7 @@ LD = $(CC)
+ RM = rm -f
+ OMPFLAGS = -fopenmp
+ OMPFLAGS_MAYBE = $(OMPFLAGS)
+-CFLAGS = -Wall -march=native -O2 -funroll-loops -fomit-frame-pointer $(OMPFLAGS_MAYBE)
++CFLAGS = -Wall -O2 -funroll-loops -fomit-frame-pointer $(OMPFLAGS_MAYBE)
+ #CFLAGS = -Wall -march=native -O2 -fomit-frame-pointer $(OMPFLAGS_MAYBE)
+ #CFLAGS = -Wall -O2 -fomit-frame-pointer $(OMPFLAGS_MAYBE)
+ LDFLAGS = -s $(OMPFLAGS_MAYBE)
