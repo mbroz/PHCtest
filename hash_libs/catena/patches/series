@@ -1,1 +1,2 @@
 makefile-lib.patch
+remove-min_garlic.patch
