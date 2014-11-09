@@ -119,7 +119,7 @@ Fail in these tests indicates some internal problem. (While passing tests indica
 <a href="http://comments.gmane.org/gmane.comp.security.phc/1583">here</a>).</p>
 <p>There is a lot of minor fails for rgb_lagged_sum and marsaglia_tsang_gcd test but because
 the input file is quite small,<br>these failures are probably not important.</p>
-<p>The full test output <a href="https://github.com/mbroz/PHCtest/output/Dieharder/">is here</a>.</p>
+<p>The full test output <a href="https://github.com/mbroz/PHCtest/tree/master/output/Dieharder">is here</a>.</p>
 
 <h1>Test 2. Portability test</h1>
 
@@ -132,7 +132,7 @@ the input file is quite small,<br>these failures are probably not important.</p>
   <li>BLAKE2 replaced with reference implementation (optimised code requires SSE at least)</li>
   <li>used 32bit compilation switches where required</li>
 </p>
-<p>The patch for Makefiles and run output <a href="https://github.com/mbroz/PHCtest/output/Sparc/">is here</a>
+<p>The patch for Makefiles and run output <a href="https://github.com/mbroz/PHCtest/tree/master/output/Sparc/">is here</a>
 (BLAKE2 reference code replacement not included in patch).</p>
 
 <h3>Test vectors</h3>
@@ -330,9 +330,9 @@ mcost and tcose - same as in previous test
 <br>While the most used architecture is x86_64 and optimizing it
 there is important, for project like cryptsetup is very important<br>that all supported architectures can use the same algorithms
 (Intel, ARM32/64, PowePC, S390, Sparc, etc).<br>Reference code probably should not rely on Intel only extensions.</p>
-<p>Just for the reference, <a href="https://github.com/mbroz/PHCtest/blob/master/sparc-compile/git-diff.patch ">this patch</a>
+<p>Just for the reference, <a href="https://github.com/mbroz/PHCtest/blob/master/output/Sparc/git-diff.patch ">this patch</a>
 was required to fix compilation on Sparc architecture.<br>
-And <a href="https://github.com/mbroz/PHCtest/blob/master/sparc-compile/run_vectors.log">this was the output</a> of run_vectors script...</p>
+And <a href="https://github.com/mbroz/PHCtest/blob/master/output/Sparc/run_vectors.log">this was the output</a> of run_vectors script...</p>
 
 <p>The Pufferfish PHS() API <a href="https://github.com/mbroz/PHCtest/blob/master/hash_libs/pufferfish/patches/fix-raw-output.patch">has to be fixed</a>
 to produce proper raw output.</p>
