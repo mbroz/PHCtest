@@ -6,7 +6,7 @@
 </head>
 <style>@media print { .pagebreak { page-break-before: always; } }</style>
 <body>
-<h1>Trivial PHC candidates parameters test</h1>
+<h1>Trivial PHC candidates (parameters) test</h1>
 <p>Milan Broz &lt;gmazyland@gmail.com&gt;</p>
 
 <h3>PHS() API</h3>
@@ -320,8 +320,8 @@ mcost and tcose - same as in previous test
 
 <p>The tests were formerly intended as comparison of PHC candidated in KDF mode<br>
 (for potential future use in <a href="https://code.google.com/p/cryptsetup/">cryptsetup/LUKS</a> full-disk encryption system).</p>
-<p>But because the only common interface is required PHS() function, I tried to at least visualize canditates this way.</p>
 <p>The tests independently extends some tests run by Bill Cox (and try to reuse some test vectors).</p>
+<p>The only common interface is required PHS() function so I tried to at least visualize canditates this way.</p>
 <h3>Found problems</h3>
 
 <p>The code of many candidates is not portable (as was seen by failing test vectors generated on Intel architecture).</p>
@@ -354,7 +354,7 @@ trivial tests<br>could be useful to find serious problems.</p>
 <p>The <b>variable input/output length tests</b> seems to show that
 <ul>
 <li>EARWORM run time increases with both input and output length.</li>
-<li>there is a very strong run time dependence on output length for MCS_PHS.</li>
+<li>There is a very strong run time dependence on output length for MCS_PHS.</li>
 <li>Argon seems to support only maximal of 32 bytes hash output but <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/argon.dat">
 API does not prevent generation of longer hashes</a> and output hash contain non-random sequence.</li>
 <li>Argon also supports <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/i_len/argon.dat">only maximal 256 characters input</a>,
@@ -366,13 +366,13 @@ ignoring longer hashes without error (and producing the same hash).</li>
 API wrongly produces hash if output length is greater than 256 bytes.</li>
 <li>Lanarea produces only <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/catena2-dbg.dat">multiple of 32 bytes hash outputs</a>
 but because hash is only shortened to expected length it is superfluous limitation.</li>
-<li>yescrypt seems to produce <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/yescrypt.dat">
+<li>Yescrypt seems to produce <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/yescrypt.dat">
 different output for 32 bytes</a> hash than for all other combinations.</li>
 </ul>
 </p>
 
 <p>The Antcrypt, Battcrypt, EARWORM, Gambit, Lanarea, Makwa, Parallel, Pufferfish, Tortuga and partially yescrypt hash calculation output
-is independent<br>of output length parameter (it affects only length written to output but not calculation).<br>
+is independent of output length parameter (it affects only length written to output but not calculation).<br>
 All other candidates will produce different hashes if output is shortened (IOW output 16 hash is not half of 32 bytes output).</p>
 
 <p>Most of the problems are implementation details but probably should be fixed if candidates are selected for the next round.</p>
