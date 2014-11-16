@@ -141,9 +141,10 @@ set terminal png enhanced font "arial,10" fontscale 1.0 size 1024, 1536
 set title ""
 set xlabel "Input length [bytes]"
 set ylabel "Run time [ms]"
+set label font "arial,16"
 set nologscale x
 set nologscale y
-set key inside
+set key off
 set output G3.'ilen_time.png'
 
 set multiplot
@@ -153,30 +154,30 @@ set xtics 50
 set xr [1:300]
 set yr [30:110]
 
-set origin 0.000,0.875 ; plot G3."antcrypt.dat"    using 1:5 title 'Antcrypt'    with points
-set origin 0.330,0.875 ; plot G3."argon.dat"       using 1:5 title 'Argon'       with points
-set origin 0.660,0.875 ; plot G3."battcrypt.dat"   using 1:5 title 'Battcrypt'   with points
-set origin 0.000,0.750 ; plot G3."catena.dat"      using 1:5 title 'Catena'      with points
-set origin 0.330,0.750 ; plot G3."catena2-brg.dat" using 1:5 title 'Catena2 BRG' with points
-set origin 0.660,0.750 ; plot G3."catena2-dbg.dat" using 1:5 title 'Catena2 DBG' with points
-set origin 0.000,0.625 ; plot G3."centrifuge.dat"  using 1:5 title 'Centrifuge'  with points
-set origin 0.330,0.625 ; plot G3."earworm.dat"     using 1:5 title 'EARWORM'     with points
-set origin 0.660,0.625 ; plot G3."gambit.dat"      using 1:5 title 'Gambit'      with points
-set origin 0.000,0.500 ; plot G3."lanarea.dat"     using 1:5 title 'Lanarea'     with points
-set origin 0.330,0.500 ; plot G3."lyra2.dat"       using 1:5 title 'Lyra2'       with points
-set origin 0.660,0.500 ; plot G3."makwa.dat"       using 1:5 title 'Makwa'       with points
-set origin 0.000,0.375 ; plot G3."mcs_phs.dat"     using 1:5 title 'MCS-PHS'     with points
-set origin 0.330,0.375 ; plot G3."omegacrypt.dat"  using 1:5 title 'Omegacrypt'  with points
-set origin 0.660,0.375 ; plot G3."parallel.dat"    using 1:5 title 'Parallel'    with points
-set origin 0.000,0.250 ; plot G3."pomelo.dat"      using 1:5 title 'POMELO'      with points
-set origin 0.330,0.250 ; plot G3."pufferfish.dat"  using 1:5 title 'Pufferfish'  with points
-set origin 0.660,0.250 ; plot G3."rig.dat"         using 1:5 title 'RIG'         with points
-set origin 0.000,0.125 ; plot G3."rig2.dat"        using 1:5 title 'RIG2'        with points
-set origin 0.330,0.125 ; plot G3."schvrch.dat"     using 1:5 title 'schvrch'     with points
-set origin 0.660,0.125 ; plot G3."tortuga.dat"     using 1:5 title 'Tortuga'     with points
-set origin 0.000,0.000 ; plot G3."twocats.dat"     using 1:5 title 'TwoCats'     with points
-set origin 0.330,0.000 ; plot G3."yarn.dat"        using 1:5 title 'Yarn'        with points
-set origin 0.660,0.000 ; plot G3."yescrypt.dat"    using 1:5 title 'yescrypt'    with points
+set origin 0.000,0.875 ; set label 1 'Antcrypt'    at 280,90 right ; plot G3."antcrypt.dat"    using 1:5 with points
+set origin 0.330,0.875 ; set label 1 'Argon'       at 280,90 right ; plot G3."argon.dat"       using 1:5 with points
+set origin 0.660,0.875 ; set label 1 'Battcrypt'   at 280,90 right ; plot G3."battcrypt.dat"   using 1:5 with points
+set origin 0.000,0.750 ; set label 1 'Catena'      at 280,90 right ; plot G3."catena.dat"      using 1:5 with points
+set origin 0.330,0.750 ; set label 1 'Catena2 BRG' at 280,90 right ; plot G3."catena2-brg.dat" using 1:5 with points
+set origin 0.660,0.750 ; set label 1 'Catena2 DBG' at 280,90 right ; plot G3."catena2-dbg.dat" using 1:5 with points
+set origin 0.000,0.625 ; set label 1 'Centrifuge ' at 280,90 right ; plot G3."centrifuge.dat"  using 1:5 with points
+set origin 0.330,0.625 ; set label 1 'EARWORM'     at 280,90 right ; plot G3."earworm.dat"     using 1:5 with points
+set origin 0.660,0.625 ; set label 1 'Gambit'      at 280,90 right ; plot G3."gambit.dat"      using 1:5 with points
+set origin 0.000,0.500 ; set label 1 'Lanarea'     at 280,90 right ; plot G3."lanarea.dat"     using 1:5 with points
+set origin 0.330,0.500 ; set label 1 'Lyra2'       at 280,90 right ; plot G3."lyra2.dat"       using 1:5 with points
+set origin 0.660,0.500 ; set label 1 'Makwa'       at 280,90 right ; plot G3."makwa.dat"       using 1:5 with points
+set origin 0.000,0.375 ; set label 1 'MCS-PHS'     at 280,90 right ; plot G3."mcs_phs.dat"     using 1:5 with points
+set origin 0.330,0.375 ; set label 1 'Omegacrypt'  at 280,90 right ; plot G3."omegacrypt.dat"  using 1:5 with points
+set origin 0.660,0.375 ; set label 1 'Parallel'    at 280,90 right ; plot G3."parallel.dat"    using 1:5 with points
+set origin 0.000,0.250 ; set label 1 'POMELO'      at 280,90 right ; plot G3."pomelo.dat"      using 1:5 with points
+set origin 0.330,0.250 ; set label 1 'Pufferfish'  at 280,90 right ; plot G3."pufferfish.dat"  using 1:5 with points
+set origin 0.660,0.250 ; set label 1 'RIG'         at 280,90 right ; plot G3."rig.dat"         using 1:5 with points
+set origin 0.000,0.125 ; set label 1 'RIG2'        at 280,90 right ; plot G3."rig2.dat"        using 1:5 with points
+set origin 0.330,0.125 ; set label 1 'schvrch'     at 280,90 right ; plot G3."schvrch.dat"     using 1:5 with points
+set origin 0.660,0.125 ; set label 1 'Tortuga'     at 280,90 right ; plot G3."tortuga.dat"     using 1:5 with points
+set origin 0.000,0.000 ; set label 1 'TwoCats'     at 280,90 right ; plot G3."twocats.dat"     using 1:5 with points
+set origin 0.330,0.000 ; set label 1 'Yarn'        at 280,90 right ; plot G3."yarn.dat"        using 1:5 with points
+set origin 0.660,0.000 ; set label 1 'yescrypt'    at 280,90 right ; plot G3."yescrypt.dat"    using 1:5 with points
 
 unset multiplot
 
@@ -186,9 +187,10 @@ set terminal png enhanced font "arial,10" fontscale 1.0 size 1024, 1536
 set title ""
 set xlabel "Output length [bytes]"
 set ylabel "Run time [ms]"
+set label font "arial,16"
 set nologscale x
 set nologscale y
-set key inside
+set key off
 set output G4.'olen_time.png'
 
 set multiplot
@@ -198,29 +200,29 @@ set xtics 50
 set xr [1:300]
 set yr [30:110]
 
-set origin 0.000,0.875 ; plot G4."antcrypt.dat"    using 2:5 title 'Antcrypt'    with points
-set origin 0.330,0.875 ; plot G4."argon.dat"       using 2:5 title 'Argon'       with points
-set origin 0.660,0.875 ; plot G4."battcrypt.dat"   using 2:5 title 'Battcrypt'   with points
-set origin 0.000,0.750 ; plot G4."catena.dat"      using 2:5 title 'Catena'      with points
-set origin 0.330,0.750 ; plot G4."catena2-brg.dat" using 2:5 title 'Catena2 BRG' with points
-set origin 0.660,0.750 ; plot G4."catena2-dbg.dat" using 2:5 title 'Catena2 DBG' with points
-set origin 0.000,0.625 ; plot G4."centrifuge.dat"  using 2:5 title 'Centrifuge'  with points
-set origin 0.330,0.625 ; plot G4."earworm.dat"     using 2:5 title 'EARWORM'     with points
-set origin 0.660,0.625 ; plot G4."gambit.dat"      using 2:5 title 'Gambit'      with points
-set origin 0.000,0.500 ; plot G4."lanarea.dat"     using 2:5 title 'Lanarea'     with points
-set origin 0.330,0.500 ; plot G4."lyra2.dat"       using 2:5 title 'Lyra2'       with points
-set origin 0.660,0.500 ; plot G4."makwa.dat"       using 2:5 title 'Makwa'       with points
-set origin 0.000,0.375 ; plot G4."mcs_phs.dat"     using 2:5 title 'MCS-PHS'     with points
-set origin 0.330,0.375 ; plot G4."omegacrypt.dat"  using 2:5 title 'Omegacrypt'  with points
-set origin 0.660,0.375 ; plot G4."parallel.dat"    using 2:5 title 'Parallel'    with points
-set origin 0.000,0.250 ; plot G4."pomelo.dat"      using 2:5 title 'POMELO'      with points
-set origin 0.330,0.250 ; plot G4."pufferfish.dat"  using 2:5 title 'Pufferfish'  with points
-set origin 0.660,0.250 ; plot G4."rig.dat"         using 2:5 title 'RIG'         with points
-set origin 0.000,0.125 ; plot G4."rig2.dat"        using 2:5 title 'RIG2'        with points
-set origin 0.330,0.125 ; plot G4."schvrch.dat"     using 2:5 title 'schvrch'     with points
-set origin 0.660,0.125 ; plot G4."tortuga.dat"     using 2:5 title 'Tortuga'     with points
-set origin 0.000,0.000 ; plot G4."twocats.dat"     using 2:5 title 'TwoCats'     with points
-set origin 0.330,0.000 ; plot G4."yarn.dat"        using 2:5 title 'Yarn'        with points
-set origin 0.660,0.000 ; plot G4."yescrypt.dat"    using 2:5 title 'yescrypt'    with points
+set origin 0.000,0.875 ; set label 1 'Antcrypt'    at 280,90 right ; plot G4."antcrypt.dat"    using 2:5 with points
+set origin 0.330,0.875 ; set label 1 'Argon'       at 280,90 right ; plot G4."argon.dat"       using 2:5 with points
+set origin 0.660,0.875 ; set label 1 'Battcrypt'   at 280,90 right ; plot G4."battcrypt.dat"   using 2:5 with points
+set origin 0.000,0.750 ; set label 1 'Catena'      at 280,90 right ; plot G4."catena.dat"      using 2:5 with points
+set origin 0.330,0.750 ; set label 1 'Catena2 BRG' at 280,90 right ; plot G4."catena2-brg.dat" using 2:5 with points
+set origin 0.660,0.750 ; set label 1 'Catena2 DBG' at 280,90 right ; plot G4."catena2-dbg.dat" using 2:5 with points
+set origin 0.000,0.625 ; set label 1 'Centrifuge ' at 280,90 right ; plot G4."centrifuge.dat"  using 2:5 with points
+set origin 0.330,0.625 ; set label 1 'EARWORM'     at 280,90 right ; plot G4."earworm.dat"     using 2:5 with points
+set origin 0.660,0.625 ; set label 1 'Gambit'      at 280,90 right ; plot G4."gambit.dat"      using 2:5 with points
+set origin 0.000,0.500 ; set label 1 'Lanarea'     at 280,90 right ; plot G4."lanarea.dat"     using 2:5 with points
+set origin 0.330,0.500 ; set label 1 'Lyra2'       at 280,90 right ; plot G4."lyra2.dat"       using 2:5 with points
+set origin 0.660,0.500 ; set label 1 'Makwa'       at 280,90 right ; plot G4."makwa.dat"       using 2:5 with points
+set origin 0.000,0.375 ; set label 1 'MCS-PHS'     at 280,90 right ; plot G4."mcs_phs.dat"     using 2:5 with points
+set origin 0.330,0.375 ; set label 1 'Omegacrypt'  at 280,90 right ; plot G4."omegacrypt.dat"  using 2:5 with points
+set origin 0.660,0.375 ; set label 1 'Parallel'    at 280,90 right ; plot G4."parallel.dat"    using 2:5 with points
+set origin 0.000,0.250 ; set label 1 'POMELO'      at 280,90 right ; plot G4."pomelo.dat"      using 2:5 with points
+set origin 0.330,0.250 ; set label 1 'Pufferfish'  at 280,90 right ; plot G4."pufferfish.dat"  using 2:5 with points
+set origin 0.660,0.250 ; set label 1 'RIG'         at 280,90 right ; plot G4."rig.dat"         using 2:5 with points
+set origin 0.000,0.125 ; set label 1 'RIG2'        at 280,90 right ; plot G4."rig2.dat"        using 2:5 with points
+set origin 0.330,0.125 ; set label 1 'schvrch'     at 280,90 right ; plot G4."schvrch.dat"     using 2:5 with points
+set origin 0.660,0.125 ; set label 1 'Tortuga'     at 280,90 right ; plot G4."tortuga.dat"     using 2:5 with points
+set origin 0.000,0.000 ; set label 1 'TwoCats'     at 280,90 right ; plot G4."twocats.dat"     using 2:5 with points
+set origin 0.330,0.000 ; set label 1 'Yarn'        at 280,90 right ; plot G4."yarn.dat"        using 2:5 with points
+set origin 0.660,0.000 ; set label 1 'yescrypt'    at 280,90 right ; plot G4."yescrypt.dat"    using 2:5 with points
 
 unset multiplot
