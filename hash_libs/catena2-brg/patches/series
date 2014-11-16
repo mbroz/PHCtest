@@ -1,1 +1,3 @@
 makefile-lib.patch
+fix_hashlen.patch
+fix_lambda_0.patch

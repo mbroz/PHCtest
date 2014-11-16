@@ -1,0 +1,19 @@
+Upstream commit 350d0bcbfdb90bc4798268cd3137ef0bb5b474ed
+---
+ catena.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+Index: catena2-brg/catena.c
+===================================================================
+--- catena2-brg.orig/catena.c	2014-11-16 21:25:31.205564967 +0100
++++ catena2-brg/catena.c	2014-11-16 21:25:31.205564967 +0100
+@@ -33,7 +33,8 @@ int __Catena(const uint8_t *pwd,   const
+  uint8_t t[5];
+  uint8_t c;
+ 
+- if ((hashlen > H_LEN) || (garlic > 63) || (min_garlic > garlic)) return -1;
++ if ((hashlen > H_LEN) || (garlic > 63) || (min_garlic > garlic) || (lambda == 0))
++   return -1;
+ 
+   /* Compute Tweak */
+   t[0] = 0xFF;
