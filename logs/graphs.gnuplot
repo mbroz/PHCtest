@@ -16,7 +16,7 @@ set logscale x
 set logscale y
 set key outside
 set output G1.'mcost_memory.png'
-plot [1:100000][1:20000000]\
+plot [1:1000000][1:20000000]\
 	G1."antcrypt.dat"    using 3:6 title "{/arial=12 AntCrypt}"    with points, \
 	G1."argon.dat"       using 3:6 title "{/arial=12 Argon}"       with points, \
 	G1."battcrypt.dat"   using 3:6 title "{/arial=12 battcrypt}"   with points, \
@@ -25,6 +25,7 @@ plot [1:100000][1:20000000]\
 	G1."catena2-brg.dat" using 3:6 title "{/arial=12 Catena2-BRG}" with points, \
 	G1."centrifuge.dat"  using 3:6 title "{/arial=12 Centrifuge}"  with points, \
 	G1."earworm.dat"     using 3:6 title "{/arial=12 EARWORM}"     with points, \
+	G1."gambit.dat"      using 3:6 title "{/arial=12 Gambit}"      with points, \
 	G1."lanarea.dat"     using 3:6 title "{/arial=12 Lanarea}"     with points, \
 	G1."lyra2.dat"       using 3:6 title "{/arial=12 Lyra2}"       with points, \
 	G1."omegacrypt.dat"  using 3:6 title "{/arial=12 OmegaCrypt}"  with points, \
@@ -45,7 +46,7 @@ set logscale x
 set logscale y
 set key outside
 set output G1.'mcost_time.png'
-plot [1:100000][1:10000]\
+plot [1:1000000][1:10000]\
 	G1."antcrypt.dat"    using 3:5 title "{/arial=12 AntCrypt}"    with points, \
 	G1."argon.dat"       using 3:5 title "{/arial=12 Argon}"       with points, \
 	G1."battcrypt.dat"   using 3:5 title "{/arial=12 battcrypt}"   with points, \
@@ -54,6 +55,7 @@ plot [1:100000][1:10000]\
 	G1."catena2-brg.dat" using 3:5 title "{/arial=12 Catena2-BRG}" with points, \
 	G1."centrifuge.dat"  using 3:5 title "{/arial=12 Centrifuge}"  with points, \
 	G1."earworm.dat"     using 3:5 title "{/arial=12 EARWORM}"     with points, \
+	G1."gambit.dat"      using 3:5 title "{/arial=12 Gambit}"      with points, \
 	G1."lanarea.dat"     using 3:5 title "{/arial=12 Lanarea}"     with points, \
 	G1."lyra2.dat"       using 3:5 title "{/arial=12 Lyra2}"       with points, \
 	G1."omegacrypt.dat"  using 3:5 title "{/arial=12 OmegaCrypt}"  with points, \
@@ -85,6 +87,7 @@ plot [1:1000000][1:500000]\
 	G2."catena2-brg.dat" using 4:6 title "{/arial=12 Catena2-BRG}" with points, \
 	G2."centrifuge.dat"  using 4:6 title "{/arial=12 Centrifuge}"  with points, \
 	G2."earworm.dat"     using 4:6 title "{/arial=12 EARWORM}"     with points, \
+	G2."gambit.dat"      using 4:6 title "{/arial=12 Gambit}"      with points, \
 	G2."lanarea.dat"     using 4:6 title "{/arial=12 Lanarea}"     with points, \
 	G2."lyra2.dat"       using 4:6 title "{/arial=12 Lyra2}"       with points, \
 	G2."makwa.dat"       using 4:6 title "{/arial=12 Makwa}"       with points, \
@@ -116,6 +119,7 @@ plot [1:1000000][1:20000]\
 	G2."catena2-brg.dat" using 4:5 title "{/arial=12 Catena2-BRG}" with points, \
 	G2."centrifuge.dat"  using 4:5 title "{/arial=12 Centrifuge}"  with points, \
 	G2."earworm.dat"     using 4:5 title "{/arial=12 EARWORM}"     with points, \
+	G2."gambit.dat"      using 4:5 title "{/arial=12 Gambit}"      with points, \
 	G2."lanarea.dat"     using 4:5 title "{/arial=12 Lanarea}"     with points, \
 	G2."lyra2.dat"       using 4:5 title "{/arial=12 Lyra2}"       with points, \
 	G2."makwa.dat"       using 4:5 title "{/arial=12 Makwa}"       with points, \

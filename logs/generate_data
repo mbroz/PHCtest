@@ -23,15 +23,15 @@ run catena2-dbg m_cost 0      1       25 "$PAR -t 0 -m "
 run catena2-brg m_cost 0      1       25 "$PAR -t 0 -m "
 run centrifuge  m_cost 0      1       23 "$PAR -t 0 -m "
 run earworm     m_cost 0      1       19 "$PAR -t 1 -m "
-#run gambit     m_cost 0      1       20 "$PAR -t 1 -m " # cost/memory dependent
+run gambit      m_cost 1   10000 1000001 "$PAR -t 100000 -m "
 run lanarea     m_cost 0     10      300 "$PAR -t 1 -m "
 run lyra2       m_cost 0    200    10000 "$PAR -t 1 -m "
 #run makwa      m_cost 0      1       20 "$PAR -t 0 -m " # no mcost
 #run mcs_phs    m_cost 0      1       20 "$PAR -t 1 -m " # cost/memory dependent
 run omegacrypt  m_cost 0      1       11 "$PAR -t 0 -m "
-#run parallel   m_cost 0      1     2000 "$PAR -t 0 -m "
+#run parallel   m_cost 0      1     2000 "$PAR -t 0 -m " # no mcost
 run pomelo      m_cost 0      1       17 "$PAR -t 0 -m "
-run pufferfish  m_cost 0      1       15 "$PAR -t 0 -m " # no mcost
+run pufferfish  m_cost 0      1       15 "$PAR -t 0 -m "
 run rig         m_cost 0      1       17 "$PAR -t 1 -m "
 run rig2        m_cost 0      1       17 "$PAR -t 1 -m "
 run schvrch     m_cost 0   1000    50000 "$PAR -t 0 -m "
@@ -50,7 +50,7 @@ run catena2-brg t_cost 0      5      100 "$PAR -m     14 -t "
 run catena2-dbg t_cost 0      5      100 "$PAR -m     14 -t "
 run centrifuge  t_cost 0      1       28 "$PAR -m      0 -t "
 run earworm     t_cost 0    500    20000 "$PAR -m     10 -t "
-#run gambit     t_cost 0   2000   200000 "$PAR -m     31 -t " # cost/memory dependent
+run gambit      t_cost 1   2000   400000 "$PAR -m      1 -t "
 run lanarea     t_cost 0      1        8 "$PAR -m    150 -t "
 run lyra2       t_cost 0   1000    20000 "$PAR -m    100 -t "
 run makwa       t_cost 0  10000   300000 "$PAR -m      0 -t "
