@@ -7,7 +7,13 @@
 <style>@media print { .pagebreak { page-break-before: always; } }</style>
 <body>
 <h1>Trivial PHC candidates (parameters) test</h1>
-<p>Milan Broz &lt;gmazyland@gmail.com&gt;</p>
+
+<p><b>Milan Broz &lt;gmazyland@gmail.com&gt;</b></p>
+
+<i>
+<p>v0 2014-11-10 Initial version</p>
+<p>v1 2014-11-17 Added Gambit test, fixed Catena limits, update conclusion notes.</p>
+</i>
 
 <h3>PHS() API</h3>
 <p>All PHC candidates provide API function</p>
@@ -73,14 +79,14 @@ The following table is partial list of limits which were detected in these tests
 Antcrypt   |   0    |  239   |     1     |           |    0    |         |    0    |         |
 Argon      |   0    |  256   |     1     |    32     |    0    |         |    1    |         |
 battcrypt  |   0    |        |     1     |    64     |    0    |         |    0    |         |
-Catena     |   0    |        |     1     |    64     |   18    |   63    |    0    |         |
-Catena2-BRG|   0    |        |     1     |    64     |    0    |         |    0    |         |
-Catena2-DBG|   0    |        |     1     |    64     |    1    |         |    0    |         |
+Catena     |   0    |        |     1     |    64     |   18    |   63    |    1    |         |
+Catena2-BRG|   0    |        |     1     |    64     |    1    |         |    1    |         |
+Catena2-DBG|   0    |        |     1     |    64     |    1    |         |    1    |         |
 Centrifuge |   0    |        |     1     |           |    0    |   63    |    0    |   63    |
 EARWORM    |   0    |        |     1     |           |    0    |         |    1    |         |
-Gambit     |   0    |  151   |     1     |           |    1    |         |    1    |         |
+Gambit     |   0    |  151   |     1     |   168     |    1    |         |    1    |         |
 Lanarea    |   1    |        |      mult 32          |    1    |         |    1    |         |
-Lyra2      |   0    |        |     1     |           |    4    |         |    0    |         |
+Lyra2      |   0    |        |     1     |   191     |    4    |         |    0    |         |
 Makwa      |   0    |        |     1     |           |    0    |         |    0    |         |
 MCS_PHS    |   1    |  238   |     4     |    64     |    0    |         |    0    |         |
 OmegaCrypt |   0    |  255   |      16,20,28,32,64   |    0    |         |    0    |         |
@@ -154,31 +160,31 @@ salt 16 bytes
 input 32 bytes
 output 32 bytes
 
-           |mcost_min|mcost_step|mcost_max|tcost|
-antcrypt   |   0     |     1    |     17  |   0 |
-argon      |   0     |   100    |   8000  |   0 |
-battcrypt  |   0     |     1    |     16  |   0 |
-catena     |   0     |     1    |     25  |   0 |
-catena2-dbg|   0     |     1    |     25  |   0 |
-catena2-brg|   0     |     1    |     25  |   0 |
-centrifuge |   0     |     1    |     23  |   0 |
-earworm    |   0     |     1    |     19  |   1 |
-gambit     | N/A - cost/memory dependent        |
-lanarea    |   0     |    10    |    300  |   1 |
-lyra2      |   0     |   200    |  10000  |   1 |
-makwa      | N/A -  mcost unused                |
-mcs_phs    | N/A - cost/memory dependent        |
-omegacrypt |   0     |     1    |     11  |   0 |
-parallel   | N/A -  mcost unused                |
-pomelo     |   0     |     1    |     17  |   0 |
-pufferfish |   0     |     1    |     15  |   0 |
-rig        |   0     |     1    |     17  |   1 |
-rig2       |   0     |     1    |     17  |   1 |
-schvrch    |   0     |  1000    |  50000  |   0 |
-tortuga    |   0     | 10000    |1048575  |   0 |
-twocats    |   0     |     1    |     20  |   0 |
-yarn       |   0     |     1    |     25  |   0 |
-yescrypt   |   0     |     1    |     20  |   0 |
+           |mcost_min|mcost_step|mcost_max|tcost |
+antcrypt   |   0     |     1    |     17  |   0  |
+argon      |   0     |   100    |   8000  |   0  |
+battcrypt  |   0     |     1    |     16  |   0  |
+catena     |   0     |     1    |     25  |   1  |
+catena2-dbg|   0     |     1    |     25  |   1  |
+catena2-brg|   0     |     1    |     25  |   1  |
+centrifuge |   0     |     1    |     23  |   0  |
+earworm    |   0     |     1    |     19  |   1  |
+gambit     |   1     | 10000    |1000001  |100000|
+lanarea    |   0     |    10    |    300  |   1  |
+lyra2      |   0     |   200    |  10000  |   1  |
+makwa      | N/A -  mcost unused                 |
+mcs_phs    | N/A - cost/memory dependent         |
+omegacrypt |   0     |     1    |     11  |   0  |
+parallel   | N/A -  mcost unused                 |
+pomelo     |   0     |     1    |     17  |   0  |
+pufferfish |   0     |     1    |     15  |   0  |
+rig        |   0     |     1    |     17  |   1  |
+rig2       |   0     |     1    |     17  |   1  |
+schvrch    |   0     |  1000    |  50000  |   0  |
+tortuga    |   0     | 10000    |1048575  |   0  |
+twocats    |   0     |     1    |     20  |   0  |
+yarn       |   0     |     1    |     25  |   0  |
+yescrypt   |   0     |     1    |     20  |   0  |
 </pre>
 
 <span class="pagebreak"></span>
@@ -216,7 +222,7 @@ catena2-brg|   0     |     5    |     100 |    14 |
 catena2-dbg|   0     |     5    |     100 |    14 |
 centrifuge |   0     |     1    |      28 |     0 |
 earworm    |   0     |   500    |   20000 |    10 |
-gambit     | N/A - cost/memory dependent          |
+gambit     |   1     |  2000    |  400000 |     1 |
 lanarea    |   0     |     1    |       8 |   150 |
 lyra2      |   0     |  1000    |   20000 |   100 |
 makwa      |   0     | 10000    |  300000 |     0 |
@@ -263,7 +269,7 @@ input 1 - 300, step 1 bytes
 antcrypt   |    0 |   800|
 argon      |    0 |  2000|
 battcrypt  |    0 |    17|
-catena     |   18 |     0|
+catena     |   14 |    10|
 catena2-brg|   14 |    10|
 catena2-dbg|   10 |    10|
 centrifuge |    0 |    21|
@@ -339,14 +345,14 @@ to produce proper raw output.</p>
 
 <p><b>The Dieharder tests</b> found nothing new, Tortuga algorithm <a href="http://comments.gmane.org/gmane.comp.security.phc/1583">has known weaknesses</a>
 (and there is no new version AFAIK).<p>
-<p>The Pufferfish mistake in PHS() implementation (which includes even buffer overflow) just underlines that these
+<p>The Pufferfish mistake in submitted PHS() implementation (which includes even buffer overflow) just underlines that these
 trivial tests<br>could be useful to find serious problems.</p>
 
 <p>From the <b>variable parameter run test</b> is interesting that
 <ul>
 <li>Centrifuge implementation cannot increase t_cost independently of m_cost, which could cause problems on systems with limited memory.</li>
 <li>All other algoritms seems to keep memory usage quite constant while increasing t_cost.</li>
-<li>The Gambit and MCS_PHS have dependent m_cost and t_const parameters, so testing variable parameters don't make much sense.</li>
+<li>The MCS_PHS has dependent m_cost and t_const parameters, so testing variable parameters don't make much sense.</li>
 <li>The variable m_cost test for Makwa and Parallel make no sense because m_cost parameter is intentionally unused.</li>
 </ul>
 </p>
@@ -359,15 +365,20 @@ trivial tests<br>could be useful to find serious problems.</p>
 API does not prevent generation of longer hashes</a> and output hash contain non-random sequence.</li>
 <li>Argon also supports <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/i_len/argon.dat">only maximal 256 characters input</a>,
 ignoring longer hashes without error (and producing the same hash).</li>
-<li>All Catena variants
+
+<li><s>All Catena variants
 (<a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/catena.dat">Catena</a>,
 <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/catena2-brg.dat">Catena2-BRG</a>,
 <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/catena2-dbg.dat">Catena2-DBG</a>)
-API wrongly produces hash if output length is greater than 256 bytes.</li>
+API wrongly produces hash if output length is greater than 256 bytes.
+</s><br>[v1: fixed by patch from upstream git]</li>
 <li>Lanarea produces only <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/catena2-dbg.dat">multiple of 32 bytes hash outputs</a>
 but because hash is only shortened to expected length it is superfluous limitation.</li>
 <li>Yescrypt seems to produce <a href="https://github.com/mbroz/PHCtest/blob/master/output/Lenovo_X230_i5_4G/o_len/yescrypt.dat">
-different output for 32 bytes</a> hash than for all other combinations.</li>
+different output for 32 bytes</a> hash than for all other combinations.<br>
+[v1: The 32 bytes hash is a special case for server relief,
+<a href="http://permalink.gmane.org/gmane.comp.security.phc/2238">more info here</a>].</li>
+<li>Lyra2 crashes (segfault) if requested output hash size is longer than 191 bytes. [v1]</li>
 </ul>
 </p>
 
