@@ -1,4 +1,4 @@
-set terminal png enhanced font "arial,18" fontscale 1.0 size 1200, 800
+set terminal png enhanced font "arial,18" fontscale 1.0 size 1200, 1000
 set pointsize 1.2
 
 # Dir for graphs with data and output
@@ -16,7 +16,7 @@ set logscale x
 set logscale y
 set key outside
 set output G1.'mcost_memory.png'
-plot [1:1000000][1:20000000]\
+plot [1:1000000][1:1000000]\
 	G1."antcrypt.dat"    using 3:6 title "{/arial=12 AntCrypt}"    with points, \
 	G1."argon.dat"       using 3:6 title "{/arial=12 Argon}"       with points, \
 	G1."battcrypt.dat"   using 3:6 title "{/arial=12 battcrypt}"   with points, \
@@ -46,7 +46,7 @@ set logscale x
 set logscale y
 set key outside
 set output G1.'mcost_time.png'
-plot [1:1000000][1:10000]\
+plot [1:1000000][1:100000]\
 	G1."antcrypt.dat"    using 3:5 title "{/arial=12 AntCrypt}"    with points, \
 	G1."argon.dat"       using 3:5 title "{/arial=12 Argon}"       with points, \
 	G1."battcrypt.dat"   using 3:5 title "{/arial=12 battcrypt}"   with points, \
@@ -78,7 +78,7 @@ set logscale x
 set logscale y
 set key outside
 set output G2.'tcost_memory.png'
-plot [1:1000000][1:500000]\
+plot [1:1000000][1:10000]\
 	G2."antcrypt.dat"    using 4:6 title "{/arial=12 AntCrypt}"    with points, \
 	G2."argon.dat"       using 4:6 title "{/arial=12 Argon}"       with points, \
 	G2."battcrypt.dat"   using 4:6 title "{/arial=12 battcrypt}"   with points, \
@@ -110,7 +110,7 @@ set logscale x
 set logscale y
 set key outside
 set output G2.'tcost_time.png'
-plot [1:1000000][1:20000]\
+plot [1:1000000][1:10000]\
 	G2."antcrypt.dat"    using 4:5 title "{/arial=12 AntCrypt}"    with points, \
 	G2."argon.dat"       using 4:5 title "{/arial=12 Argon}"       with points, \
 	G2."battcrypt.dat"   using 4:5 title "{/arial=12 battcrypt}"   with points, \
