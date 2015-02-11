@@ -1,5 +1,5 @@
 /*-
- * Copyright 2013,2014 Alexander Peslyak
+ * Copyright 2013-2015 Alexander Peslyak
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -18,7 +18,7 @@
  * SUCH DAMAGE.
  */
 
-#define YESCRYPT_FLAGS (YESCRYPT_RW | YESCRYPT_PWXFORM)
+#define YESCRYPT_FLAGS YESCRYPT_RW
 
 #define ROM_SHM_KEY			0x524f4d0a
 #define ROM_LOCAL_PARAM			"change this before use"
@@ -95,7 +95,7 @@ int main(int argc, const char * const *argv)
 	printf("Will use %.2f KiB ROM\n", rom_bytes / 1024.0);
 	printf("         %.2f KiB RAM\n", ram_bytes / 1024.0);
 
-	shared.shared1.aligned_size = rom_bytes;
+	shared.aligned_size = rom_bytes;
 
 	if (rom_filename) {
 		rom_fd = open(rom_filename, O_CREAT|O_RDWR|O_EXCL,
@@ -133,9 +133,9 @@ int main(int argc, const char * const *argv)
 			return 1;
 		}
 		close(rom_fd);
-		shared.shared1.base = shared.shared1.aligned = p;
+		shared.base = shared.aligned = p;
 	} else {
-		shmid = shmget(ROM_SHM_KEY, shared.shared1.aligned_size,
+		shmid = shmget(ROM_SHM_KEY, shared.aligned_size,
 #ifdef SHM_HUGETLB
 		    SHM_HUGETLB |
 #endif
@@ -144,7 +144,7 @@ int main(int argc, const char * const *argv)
 #ifdef SHM_HUGETLB
 			perror("shmget");
 			puts("Retrying without SHM_HUGETLB");
-			shmid = shmget(ROM_SHM_KEY, shared.shared1.aligned_size,
+			shmid = shmget(ROM_SHM_KEY, shared.aligned_size,
 			    IPC_CREAT|IPC_EXCL | S_IRUSR|S_IRGRP|S_IWUSR);
 #endif
 			if (shmid == -1) {
@@ -153,9 +153,8 @@ int main(int argc, const char * const *argv)
 			}
 		}
 
-		shared.shared1.base = shared.shared1.aligned =
-		    shmat(shmid, NULL, 0);
-		if (shared.shared1.base == (void *)-1) {
+		shared.base = shared.aligned = shmat(shmid, NULL, 0);
+		if (shared.base == (void *)-1) {
 			int save_errno = errno;
 			shmctl(shmid, IPC_RMID, NULL);
 			errno = save_errno;
@@ -170,7 +169,7 @@ int main(int argc, const char * const *argv)
 	    (uint8_t *)ROM_LOCAL_PARAM, strlen(ROM_LOCAL_PARAM),
 	    (uint64_t)1 << NROM_log2, r,
 	    rom_filename ? YESCRYPT_PROM_FILE : YESCRYPT_PROM_SHM,
-	    YESCRYPT_SHARED_PREALLOCATED, 1,
+	    YESCRYPT_SHARED_PREALLOCATED,
 	    digest, sizeof(digest))) {
 		puts(" FAILED");
 		if (rom_filename)
@@ -199,7 +198,7 @@ int main(int argc, const char * const *argv)
 		    hash, sizeof(hash)));
 	}
 
-	if (rom_filename && munmap(shared.shared1.base, rom_bytes)) {
+	if (rom_filename && munmap(shared.base, rom_bytes)) {
 		perror("munmap");
 		return 1;
 	}

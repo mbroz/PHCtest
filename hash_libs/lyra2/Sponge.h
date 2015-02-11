@@ -1,9 +1,9 @@
 /**
- * Header file for Blake2b's internal permutation in the form of a sponge. 
+ * Header file for Blake2b's and BlaMka's internal permutation in the form of a sponge. 
  * This code is based on the original Blake2b's implementation provided by 
  * Samuel Neves (https://blake2.net/)
  * 
- * Author: The Lyra PHC team (http://www.lyra-kdf.net/) -- 2014.
+ * Author: The Lyra PHC team (http://www.lyra2.net/) -- 2015.
  * 
  * This software is hereby placed in the public domain.
  *
@@ -32,6 +32,24 @@
 #define ALIGN
 #endif
 
+//Block length required so Blake2's Initialization Vector (IV) is not overwritten (THIS SHOULD NOT BE MODIFIED)
+#define BLOCK_LEN_BLAKE2_SAFE_INT64 8                                   //512 bits (=64 bytes, =8 uint64_t)
+#define BLOCK_LEN_BLAKE2_SAFE_BYTES (BLOCK_LEN_BLAKE2_SAFE_INT64 * 8)   //same as above, in bytes
+
+//default block length: 768 bits
+#ifndef BLOCK_LEN_INT64             
+        #define BLOCK_LEN_INT64 12                                      //Block length: 768 bits (=96 bytes, =12 uint64_t)
+#endif
+
+#define BLOCK_LEN_BYTES (BLOCK_LEN_INT64 * 8)                           //Block length, in bytes
+
+#ifndef SPONGE
+        #define SPONGE 0                                                //SPONGE 0 = BLAKE2, SPONGE 1 = BLAMKA and SPONGE 2 = HALF-ROUND BLAMKA
+#endif
+
+#ifndef RHO
+        #define RHO 1                                                   //Number of reduced rounds performed
+#endif
 
 /*Blake2b IV Array*/
 static const uint64_t blake2b_IV[8] =
@@ -47,6 +65,25 @@ static inline uint64_t rotr64( const uint64_t w, const unsigned c ){
     return ( w >> c ) | ( w << ( 64 - c ) );
 }
 
+/*Main change compared with Blake2b*/
+static inline uint64_t fBlaMka(uint64_t x, uint64_t y){
+    uint32_t lessX = (uint32_t) x;
+    uint32_t lessY = (uint32_t) y;
+    
+    uint64_t lessZ = (uint64_t) lessX;
+    lessZ = lessZ * lessY;
+    lessZ = lessZ << 1;
+    
+    uint64_t z = lessZ + x + y;
+    
+    return z;
+}
+
+#define DIAGONALIZE(r,v) \
+    t0=v[4];                      v[4]=v[5]; v[5]=v[6]; v[6]=v[7]; v[7]=t0; \
+    t0=v[8]; t1=v[9];             v[8]=v[10]; v[9]=v[11]; v[10]=t0; v[11]=t1; \
+    t0=v[12]; t1=v[13]; t2=v[14]; v[12]=v[15]; v[13]=t0; v[14]=t1; v[15]=t2;
+
 /*Blake2b's G function*/
 #define G(r,i,a,b,c,d) \
   do { \
@@ -60,6 +97,18 @@ static inline uint64_t rotr64( const uint64_t w, const unsigned c ){
     b = rotr64(b ^ c, 63); \
   } while(0)
 
+/*BLAMKA's G function*/
+#define GBLAMKA(r,i,a,b,c,d) \
+  do { \
+    a = fBlaMka(a,b); \
+    d = rotr64(d ^ a, 32); \
+    c = fBlaMka(c,d); \
+    b = rotr64(b ^ c, 24); \
+    a = fBlaMka(a,b); \
+    d = rotr64(d ^ a, 16); \
+    c = fBlaMka(c,d); \
+    b = rotr64(b ^ c, 63); \
+  } while(0)
 
 /*One Round of the Blake2b's compression function*/
 #define ROUND_LYRA(r)  \
@@ -72,30 +121,43 @@ static inline uint64_t rotr64( const uint64_t w, const unsigned c ){
     G(r,6,v[ 2],v[ 7],v[ 8],v[13]); \
     G(r,7,v[ 3],v[ 4],v[ 9],v[14]);
 
+/*One Round of the BlaMka's compression function*/
+#define ROUND_LYRA_BLAMKA(r)  \
+    GBLAMKA(r,0,v[ 0],v[ 4],v[ 8],v[12]); \
+    GBLAMKA(r,1,v[ 1],v[ 5],v[ 9],v[13]); \
+    GBLAMKA(r,2,v[ 2],v[ 6],v[10],v[14]); \
+    GBLAMKA(r,3,v[ 3],v[ 7],v[11],v[15]); \
+    GBLAMKA(r,4,v[ 0],v[ 5],v[10],v[15]); \
+    GBLAMKA(r,5,v[ 1],v[ 6],v[11],v[12]); \
+    GBLAMKA(r,6,v[ 2],v[ 7],v[ 8],v[13]); \
+    GBLAMKA(r,7,v[ 3],v[ 4],v[ 9],v[14]);
 
-/**
- * Initializes the Sponge State. The first 512 bits are set to zeros and the remainder 
- * receive Blake2b's IV as per Blake2b's specification. <b>Note:</b> Even though sponges
- * typically have their internal state initialized with zeros, Blake2b's G function
- * has a fixed point: if the internal state and message are both filled with zeros. the 
- * resulting permutation will always be a block filled with zeros; this happens because 
- * Blake2b does not use the constants originally employed in Blake2 inside its G function, 
- * relying on the IV for avoiding possible fixed points.
- * 
- * @param state         The 1024-bit array to be initialized
- */
+/*Half Round of the BlaMka's compression function*/
+#define HALF_ROUND_LYRA_BLAMKA(r)  \
+    GBLAMKA(r,0,v[ 0],v[ 4],v[ 8],v[12]); \
+    GBLAMKA(r,1,v[ 1],v[ 5],v[ 9],v[13]); \
+    GBLAMKA(r,2,v[ 2],v[ 6],v[10],v[14]); \
+    GBLAMKA(r,3,v[ 3],v[ 7],v[11],v[15]); \
+    DIAGONALIZE(r,v);
+
+//---- Housekeeping
 void initState(uint64_t state[/*16*/]);
 
-
+//---- Squeezes
 void squeeze(uint64_t *state, unsigned char *out, unsigned int len);
-void absorbBlock(uint64_t *state, const uint64_t *in);
-void squeezeBlock(uint64_t* state, uint64_t* block);
-void reducedSqueezeRow(uint64_t* state, uint64_t* row);
-void reducedDuplexRowSetup(uint64_t *state, uint64_t *rowIn, uint64_t *rowInOut, uint64_t *rowOut);
-void reducedDuplexRow(uint64_t *state, uint64_t *rowIn, uint64_t *rowInOut, uint64_t *rowOut);
+void reducedSqueezeRow0(uint64_t* state, uint64_t* rowOut);
 
+//---- Absorbs
+void absorbColumn(uint64_t *state, uint64_t *in);
+void absorbBlockBlake2Safe(uint64_t *state, const uint64_t *in);
+
+//---- Duplexes
+void reducedDuplexRow1and2(uint64_t *state, uint64_t *rowIn, uint64_t *rowOut);
+void reducedDuplexRowFilling(uint64_t *state, uint64_t *rowInOut, uint64_t *rowIn0, uint64_t *rowIn1, uint64_t *rowOut);
+void reducedDuplexRowWandering(uint64_t *state, uint64_t *rowInOut0, uint64_t *rowInOut1, uint64_t *rowIn0, uint64_t *rowIn1);
+void reducedDuplexRowWanderingParallel(uint64_t *state, uint64_t *rowInOut0, uint64_t *rowInP, uint64_t *rowIn0);
+
+//---- Misc
 void printArray(unsigned char *array, unsigned int size, char *name);
-
-////////////////////////////////////////////////////////////////////////////////////////////////
 
 #endif /* SPONGE_H_ */

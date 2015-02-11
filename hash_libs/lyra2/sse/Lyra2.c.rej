@@ -1,0 +1,12 @@
+--- sse/Lyra2.c	2014-04-08 09:07:06.000000000 +0200
++++ sse/Lyra2.c	2014-09-20 17:01:38.320149085 +0200
+@@ -90,6 +90,9 @@ int LYRA2(unsigned char *K, int kLen, co
+         return -1;
+     }
+ 
++    if (nRows < 3)
++      return -1;
++
+     //============================= Basic variables ============================//
+     int row = 2; //index of row to be processed
+     int prev = 1; //index of prev (last row ever computed/modified)

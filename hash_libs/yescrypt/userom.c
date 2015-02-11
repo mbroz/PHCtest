@@ -1,5 +1,5 @@
 /*-
- * Copyright 2013,2014 Alexander Peslyak
+ * Copyright 2013-2015 Alexander Peslyak
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -18,12 +18,8 @@
  * SUCH DAMAGE.
  */
 
-#define YESCRYPT_FLAGS (YESCRYPT_RW | YESCRYPT_PWXFORM)
-//#define YESCRYPT_FLAGS YESCRYPT_RW
+#define YESCRYPT_FLAGS YESCRYPT_RW
 //#define YESCRYPT_FLAGS YESCRYPT_WORM
-
-#define YESCRYPT_MASK_SHM		1
-#define YESCRYPT_MASK_FILE		0xe
 
 #define ROM_SHM_KEY			0x524f4d0a
 
@@ -59,7 +55,8 @@ int main(int argc, const char * const *argv)
 #endif
 	uint32_t r, min_r;
 	uint64_t NROM_log2, N_log2;
-	yescrypt_shared_t shared;
+	yescrypt_shared_t shared_s;
+	yescrypt_shared_t * shared = NULL;
 #ifndef DISABLE_ROM
 	int shmid;
 #endif
@@ -105,12 +102,6 @@ int main(int argc, const char * const *argv)
 	printf("Will use %.2f KiB ROM\n", rom_bytes / 1024.0);
 	printf("         %.2f KiB RAM\n", ram_bytes / 1024.0);
 
-	if (!rom_bytes && yescrypt_init_shared(&shared, NULL, 0, 0, 0, 0,
-	    YESCRYPT_SHARED_DEFAULTS, 1, NULL, 0)) {
-		puts("yescrypt_init_shared() FAILED");
-		return 1;
-	}
-
 #ifndef DISABLE_ROM
 	if (rom_filename) {
 		rom_fd = open(rom_filename, O_RDONLY);
@@ -140,30 +131,25 @@ int main(int argc, const char * const *argv)
 		}
 		close(rom_fd);
 
-		shared.shared1.base = shared.shared1.aligned = p;
-		shared.shared1.aligned_size = rom_bytes;
-		shared.mask1 = YESCRYPT_MASK_FILE;
+		shared = &shared_s;
+		shared->base = shared->aligned = p;
+		shared->aligned_size = rom_bytes;
 	} else if (rom_bytes) {
-		shared.shared1.aligned_size = rom_bytes;
-		shmid = shmget(ROM_SHM_KEY, shared.shared1.aligned_size, 0);
+		shared = &shared_s;
+		shared->aligned_size = rom_bytes;
+		shmid = shmget(ROM_SHM_KEY, shared->aligned_size, 0);
 		if (shmid == -1) {
 			perror("shmget");
 			return 1;
 		}
 
-		shared.shared1.base = shared.shared1.aligned =
-		    shmat(shmid, NULL, SHM_RDONLY);
-		if (shared.shared1.base == (void *)-1) {
+		shared->base = shared->aligned = shmat(shmid, NULL, SHM_RDONLY);
+		if (shared->base == (void *)-1) {
 			perror("shmat");
 			return 1;
 		}
-
-		shared.mask1 = YESCRYPT_MASK_SHM;
 	}
 #endif
-
-	if (rom_bytes)
-		printf("ROM access frequency mask: 0x%x\n", shared.mask1);
 
 	{
 		yescrypt_local_t local;
@@ -180,7 +166,7 @@ int main(int argc, const char * const *argv)
 
 		{
 			uint8_t hash[128];
-			printf("'%s'\n", (char *)yescrypt_r(&shared, &local,
+			printf("'%s'\n", (char *)yescrypt_r(shared, &local,
 			    (const uint8_t *)"pleaseletmein", 13, setting,
 			    hash, sizeof(hash)));
 		}
@@ -220,8 +206,7 @@ int main(int argc, const char * const *argv)
 #ifdef _OPENMP
 				const uint8_t *h =
 #endif
-				yescrypt_r(&shared,
-				    &local,
+				yescrypt_r(shared, &local,
 				    (const uint8_t *)p, strlen(p),
 				    setting, hash, sizeof(hash));
 #ifdef _OPENMP
@@ -279,14 +264,14 @@ int main(int argc, const char * const *argv)
 				uint8_t hash[128];
 				snprintf(p, sizeof(p), "%u", seed + j);
 #if 1
-				const uint8_t *h = yescrypt_r(&shared,
+				const uint8_t *h = yescrypt_r(shared,
 				    &locals[omp_get_thread_num()],
 				    (const uint8_t *)p, strlen(p),
 				    setting, hash, sizeof(hash));
 #else
 				yescrypt_local_t local;
 				yescrypt_init_local(&local);
-				const uint8_t *h = yescrypt_r(&shared,
+				const uint8_t *h = yescrypt_r(shared,
 				    &local,
 				    (const uint8_t *)p, strlen(p),
 				    setting, hash, sizeof(hash));
@@ -326,7 +311,7 @@ int main(int argc, const char * const *argv)
 #endif
 	}
 
-	if (rom_filename && munmap(shared.shared1.base, rom_bytes)) {
+	if (rom_filename && munmap(shared->base, rom_bytes)) {
 		perror("munmap");
 		return 1;
 	}

@@ -1,5 +1,5 @@
 /*-
- * Copyright 2013,2014 Alexander Peslyak
+ * Copyright 2013-2015 Alexander Peslyak
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -115,7 +115,7 @@ yescrypt_r(const yescrypt_shared_t * shared, yescrypt_local_t * local,
 	uint8_t version;
 	uint64_t N;
 	uint32_t r, p;
-	yescrypt_flags_t flags = YESCRYPT_WORM;
+	yescrypt_flags_t flags = 0;
 
 	if (setting[0] != '$' || setting[1] != '7')
 		return NULL;
@@ -170,7 +170,7 @@ yescrypt_r(const yescrypt_shared_t * shared, yescrypt_local_t * local,
 		return NULL;
 
 	if (yescrypt_kdf(shared, local, passwd, passwdlen, salt, saltlen,
-	    N, r, p, 0, flags, hash, sizeof(hash)))
+	    N, r, p, 0, 0, flags, hash, sizeof(hash)))
 		return NULL;
 
 	dst = buf;
@@ -193,24 +193,14 @@ uint8_t *
 yescrypt(const uint8_t * passwd, const uint8_t * setting)
 {
 	static uint8_t buf[4 + 1 + 5 + 5 + BYTES2CHARS(32) + 1 + HASH_LEN + 1];
-	yescrypt_shared_t shared;
 	yescrypt_local_t local;
 	uint8_t * retval;
 
-	if (yescrypt_init_shared(&shared, NULL, 0,
-	    0, 0, 0, YESCRYPT_SHARED_DEFAULTS, 0, NULL, 0))
+	if (yescrypt_init_local(&local))
 		return NULL;
-	if (yescrypt_init_local(&local)) {
-		yescrypt_free_shared(&shared);
-		return NULL;
-	}
-	retval = yescrypt_r(&shared, &local,
+	retval = yescrypt_r(NULL, &local,
 	    passwd, strlen((char *)passwd), setting, buf, sizeof(buf));
-	if (yescrypt_free_local(&local)) {
-		yescrypt_free_shared(&shared);
-		return NULL;
-	}
-	if (yescrypt_free_shared(&shared))
+	if (yescrypt_free_local(&local))
 		return NULL;
 	return retval;
 }
@@ -225,9 +215,6 @@ yescrypt_gensalt_r(uint32_t N_log2, uint32_t r, uint32_t p,
 	size_t prefixlen = 3 + 1 + 5 + 5;
 	size_t saltlen = BYTES2CHARS(srclen);
 	size_t need;
-
-	if (p == 1)
-		flags &= ~YESCRYPT_PARALLEL_SMIX;
 
 	if (flags) {
 		if (flags & ~0x3f)
@@ -289,24 +276,14 @@ crypto_scrypt(const uint8_t * passwd, size_t passwdlen,
     const uint8_t * salt, size_t saltlen, uint64_t N, uint32_t r, uint32_t p,
     uint8_t * buf, size_t buflen)
 {
-	yescrypt_shared_t shared;
 	yescrypt_local_t local;
 	int retval;
 
-	if (yescrypt_init_shared(&shared, NULL, 0,
-	    0, 0, 0, YESCRYPT_SHARED_DEFAULTS, 0, NULL, 0))
+	if (yescrypt_init_local(&local))
 		return -1;
-	if (yescrypt_init_local(&local)) {
-		yescrypt_free_shared(&shared);
-		return -1;
-	}
-	retval = yescrypt_kdf(&shared, &local,
-	    passwd, passwdlen, salt, saltlen, N, r, p, 0, 0, buf, buflen);
-	if (yescrypt_free_local(&local)) {
-		yescrypt_free_shared(&shared);
-		return -1;
-	}
-	if (yescrypt_free_shared(&shared))
+	retval = yescrypt_kdf(NULL, &local,
+	    passwd, passwdlen, salt, saltlen, N, r, p, 0, 0, 0, buf, buflen);
+	if (yescrypt_free_local(&local))
 		return -1;
 	return retval;
 }

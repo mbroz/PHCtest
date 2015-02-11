@@ -33,7 +33,7 @@ int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt
 		return 1;
 	}
 
-	// key = SHA512(SHA512(salt) || in)
+	// key = hash(hash(salt) || in)
 	Sha512::hash(salt, saltlen, key);
 	sha512.init();
 	sha512.update(key, HASH_LENGTH);
@@ -51,12 +51,10 @@ int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt
 
 		for (uint64_t j = 0; j < parallelLoops; j++)
 		{
-			// work ^= SHA512(WRITE_BIG_ENDIAN_64(i) || WRITE_BIG_ENDIAN_64(j) || key)
-			uint64_t tmpI = WRITE_BIG_ENDIAN_64(i);
+			// work ^= hash(WRITE_BIG_ENDIAN_64(j) || key)
 			uint64_t tmpJ = WRITE_BIG_ENDIAN_64(j);
 
 			sha512.init();
-			sha512.update(&tmpI, sizeof(tmpI));
 			sha512.update(&tmpJ, sizeof(tmpJ));
 			sha512.update(key,   HASH_LENGTH);
 			sha512.finish(tmp);
@@ -67,7 +65,7 @@ int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt
 		}
 
 		// Finish
-		// key = truncate(SHA512(SHA512(work || key)), outlen) || zeros(HASH_LENGTH - outlen)
+		// key = truncate(hash(hash(work || key)), outlen) || zeros(HASH_LENGTH - outlen)
 		sha512.init();
 		sha512.update(work, HASH_LENGTH);
 		sha512.update(key,  HASH_LENGTH);
@@ -102,7 +100,7 @@ int parallelKdf(void *out, size_t outlen, const void *in, size_t inlen, const vo
 		return 1;
 	}
 
-	// key = SHA512(SHA512(salt) || in)
+	// key = hash(hash(salt) || in)
 	Sha512::hash(salt, saltlen, key);
 	sha512.init();
 	sha512.update(key, HASH_LENGTH);
@@ -127,12 +125,11 @@ int parallelKdf(void *out, size_t outlen, const void *in, size_t inlen, const vo
 	}
 
 	// Finish
-	// key = truncate(SHA512(SHA512(work || key)), outlen) || zeros(HASH_LENGTH - outlen)
 	for (int32_t i = 0, left = (int32_t) outlen; left > 0; left -= HASH_LENGTH, i++)
 	{
 		uint64_t tmpI = WRITE_BIG_ENDIAN_64(i);
 
-		// out = out || SHA512(WRITE_BIG_ENDIAN_64(i) || work || in)
+		// out = out || hash(WRITE_BIG_ENDIAN_64(i) || work || in)
 		sha512.init();
 		sha512.update(&tmpI, sizeof(tmpI));
 		sha512.update(work,  HASH_LENGTH);

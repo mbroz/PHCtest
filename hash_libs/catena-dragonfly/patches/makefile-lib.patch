@@ -1,0 +1,37 @@
+---
+ Makefile |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+Index: catena-butterfly/Makefile
+===================================================================
+--- catena-butterfly.orig/Makefile	2015-01-31 18:49:15.000000000 +0100
++++ catena-butterfly/Makefile	2015-02-11 10:02:53.219180417 +0100
+@@ -43,13 +43,21 @@ endif
+ 
+ .PHONY: all blake2b Butterfly Dragonfly catena
+ 
+-all: blake2b catena
++#all: blake2b catena
++all: catena-butterfly.a catena-dragonfly.a
++HASH_OBJ=$(HASHIMPL:.c=.o)
+ 
+ blake2b: catena-Dragonfly-blake2b-test catena-Dragonfly-blake2b-test_vectors catena-Butterfly-blake2b-test catena-Butterfly-blake2b-test_vectors 
+ Butterfly: catena-Butterfly-blake2b-test catena-Butterfly-blake2b-test_vectors
+ Dragonfly: catena-Dragonfly-blake2b-test catena-Dragonfly-blake2b-test_vectors
+ catena: catena-BRG catena-DBG
+ 
++catena-butterfly.a: catena-DBG $(HASH_OBJ)
++	ar rcs $@ catena.o catena-DBG.o blake2b.o catena-helpers.o $(HASH_OBJ)
++
++catena-dragonfly.a: catena-BRG $(HASH_OBJ)
++	ar rcs $@ catena.o catena-BRG.o blake2b.o catena-helpers.o $(HASH_OBJ)
++
+ catena-Butterfly-blake2b-test:
+ 	$(CC) $(CFLAGS) -o $(TARGETDIR)/$@ test-catena.c $(BASEFILES) $(HASHIMPL) catena-DBG.c $(HASH)
+ 
+@@ -71,4 +79,4 @@ catena-BRG:
+ 	$(CC) $(CFLAGS) -c $(BASEFILES) catena-BRG.c $(HASH)
+ 
+ clean:
+-	rm -f  *~ *.o
++	rm -f  *~ *.o *.a

@@ -1,5 +1,5 @@
 /*-
- * Copyright 2013,2014 Alexander Peslyak
+ * Copyright 2013-2015 Alexander Peslyak
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -21,11 +21,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#define YESCRYPT_FLAGS (YESCRYPT_RW | YESCRYPT_PARALLEL_SMIX | YESCRYPT_PWXFORM)
-//#define YESCRYPT_FLAGS (YESCRYPT_RW | YESCRYPT_PWXFORM)
-//#define YESCRYPT_FLAGS (YESCRYPT_RW | YESCRYPT_PARALLEL_SMIX)
+#define YESCRYPT_FLAGS YESCRYPT_RW
 #if 1
-#define YESCRYPT_P 41
+#define YESCRYPT_P 11
 #define YESCRYPT_PROM 8
 #else
 #define YESCRYPT_P 1
@@ -34,6 +32,7 @@
 
 #undef TEST_PBKDF2_SHA256
 #define TEST_SCRYPT
+#define TEST_YESCRYPT_KDF
 #define TEST_YESCRYPT_ENCODING
 #define TEST_ROM
 #define TEST_ROM_PREALLOC
@@ -104,9 +103,47 @@ print_scrypt(const char * passwd, const char * salt,
 }
 #endif
 
+#ifdef TEST_YESCRYPT_KDF
+static void
+print_yescrypt(const char * passwd, const char * salt,
+    uint64_t N, uint32_t r, uint32_t p, uint32_t t, uint32_t g,
+    yescrypt_flags_t flags,
+    uint32_t dklen)
+{
+	yescrypt_local_t local;
+	uint8_t dk[64];
+	int i;
+
+	if (dklen > sizeof(dk) || yescrypt_init_local(&local)) {
+		puts("FAILED");
+		return;
+	}
+
+	printf("yescrypt(\"%s\", \"%s\", %llu, %u, %u, %u, %u, %u) =",
+	    passwd, salt, (unsigned long long)N, r, p, t, g, flags);
+
+	if (yescrypt_kdf(NULL, &local,
+	    (const uint8_t *) passwd, strlen(passwd),
+	    (const uint8_t *) salt, strlen(salt), N, r, p, t, g, flags,
+	    dk, dklen)) {
+		yescrypt_free_local(&local);
+		puts(" FAILED");
+		return;
+	}
+
+	yescrypt_free_local(&local);
+
+	for (i = 0; i < dklen; i++)
+		printf(" %02x", dk[i]);
+	puts("");
+}
+#endif
+
 int
 main(int argc, char *argv[])
 {
+	int i;
+
 	setvbuf(stdout, NULL, _IOLBF, 0);
 
 #ifdef TEST_PBKDF2_SHA256
@@ -141,26 +178,80 @@ main(int argc, char *argv[])
 	print_scrypt("pleaseletmein", "SodiumChloride", 1048576, 8, 1);
 #endif
 
+#ifdef TEST_YESCRYPT_KDF
+	print_yescrypt("", "", 16, 1, 1, 0, 0, 0, 64);
+	print_yescrypt("", "", 16, 1, 1, 0, 0, 0, 8);
+	print_yescrypt("", "", 4, 1, 1, 0, 0, 0, 64);
+	print_yescrypt("", "", 4, 1, 1, 0, 0, YESCRYPT_WORM, 64);
+	print_yescrypt("", "", 4, 1, 1, 0, 0, YESCRYPT_WORM, 8);
+	print_yescrypt("", "", 4, 1, 1, 1, 0, YESCRYPT_WORM, 64);
+	print_yescrypt("", "", 4, 1, 1, 2, 0, YESCRYPT_WORM, 64);
+	print_yescrypt("", "", 4, 1, 1, 3, 0, YESCRYPT_WORM, 64);
+	print_yescrypt("", "", 4, 1, 1, 3, 0, YESCRYPT_WORM, 33);
+	print_yescrypt("", "", 4, 1, 1, 3, 0, YESCRYPT_WORM, 32);
+	print_yescrypt("", "", 4, 1, 1, 3, 0, YESCRYPT_WORM, 31);
+	print_yescrypt("", "", 4, 1, 1, 3, 0, YESCRYPT_WORM, 1);
+	print_yescrypt("", "", 4, 1, 1, 0, 0, YESCRYPT_RW, 64);
+	print_yescrypt("", "", 4, 1, 1, 0, 0, YESCRYPT_RW, 4);
+	print_yescrypt("", "", 4, 1, 1, 1, 0, YESCRYPT_RW, 64);
+	print_yescrypt("", "", 4, 1, 1, 1, 0, YESCRYPT_RW, 33);
+	print_yescrypt("", "", 4, 1, 1, 1, 0, YESCRYPT_RW, 32);
+	print_yescrypt("", "", 4, 1, 1, 1, 0, YESCRYPT_RW, 31);
+	print_yescrypt("", "", 4, 1, 1, 1, 0, YESCRYPT_RW, 1);
+	for (i = 0; i <= 6; i++)
+		print_yescrypt("p", "s", 16, 8, 1, 0, i, YESCRYPT_RW, 40);
+	for (i = 0; i <= 6; i++)
+		print_yescrypt("p", "s", 16, 8, 1, 0, i, YESCRYPT_WORM, 40);
+	for (i = 0; i <= 2; i++)
+		print_yescrypt("p", "s", 16, 8, 1, 0, i, YESCRYPT_RW, 32);
+	for (i = 0; i <= 2; i++)
+		print_yescrypt("p", "s", 16, 8, 1, 0, i, YESCRYPT_RW, 8);
+#endif
+
 #ifdef TEST_YESCRYPT_ENCODING
 	{
-		uint8_t * setting = yescrypt_gensalt(14, 8,
-		    YESCRYPT_P, YESCRYPT_FLAGS,
-		    (const uint8_t *)"binary data", 12);
-		printf("'%s'\n", (char *)setting);
-		if (setting) {
-			uint8_t * hash = yescrypt(
-			    (const uint8_t *)"pleaseletmein", setting);
-			printf("'%s'\n", (char *)hash);
-			if (hash)
-				printf("'%s'\n", (char *)yescrypt(
-				    (const uint8_t *)"pleaseletmein", hash));
+		uint8_t * setting;
+
+		for (i = 0; i < 18; i++) {
+			uint32_t N_log2 = (i < 14) ? (16 - i) : 2;
+			uint32_t r = (i < 8) ? (8 - i) : (1 + (i & 1));
+			uint32_t p = (i & 1) ? 1 : YESCRYPT_P;
+			yescrypt_flags_t flags = YESCRYPT_RW | YESCRYPT_FLAGS;
+			if ((int)p - (i / 2) > 1)
+				p -= i / 2;
+			if (i & 2) {
+				flags = YESCRYPT_WORM;
+			} else {
+				while ((1ULL << N_log2) / p <= 3)
+					N_log2++;
+			}
+			setting = yescrypt_gensalt(N_log2, r, p, flags,
+			    (const uint8_t *)"binary data", 12);
+			if (i == 0)
+				printf("'%s'\n", (char *)setting);
+			if (!setting)
+				printf("%d yescrypt_gensalt() = NULL", i);
+			if (setting) {
+				uint8_t * hash = yescrypt(
+				    (const uint8_t *)"pleaseletmein", setting);
+				printf("'%s'\n", (char *)hash);
+				if (!hash || strcmp(
+				    (char *)hash, (char *)yescrypt(
+				    (const uint8_t *)"pleaseletmein", hash)))
+					puts("Validation FAILED");
+			}
 		}
+
 		printf("'%s'\n", (char *)yescrypt(
 		    (const uint8_t *)"pleaseletmein",
 		    (const uint8_t *)"$7$C6..../....SodiumChloride"));
 
+		printf("'%s'\n", (char *)yescrypt(
+		    (const uint8_t *)"pleaseletmein",
+		    (const uint8_t *)"$7$06..../....SodiumChloride"));
+
 #ifdef TEST_ROM
-		uint64_t rom_bytes = 3 * (1024ULL*1024*1024);
+		uint64_t rom_bytes = 256 * (1024ULL*1024);
 		uint64_t ram_bytes = 2 * (1024ULL*1024);
 		uint32_t r;
 		uint64_t NROM_log2, N_log2;
@@ -193,7 +284,7 @@ main(int argc, char *argv[])
 		if (yescrypt_init_shared(&shared,
 		    (uint8_t *)"local param", 12,
 		    (uint64_t)1 << NROM_log2, r,
-		    YESCRYPT_PROM, YESCRYPT_SHARED_DEFAULTS, 1,
+		    YESCRYPT_PROM, YESCRYPT_SHARED_DEFAULTS,
 		    NULL, 0)) {
 			puts(" FAILED");
 			return 1;
@@ -219,29 +310,28 @@ main(int argc, char *argv[])
 #ifdef TEST_ROM_PREALLOC
 		yescrypt_free_shared(&shared);
 
-		shared.shared1.aligned_size =
-		    ((uint64_t)1 << NROM_log2) * 128 * r * 1;
-		shared.shared1.aligned = malloc(shared.shared1.aligned_size);
+		shared.aligned_size = ((uint64_t)1 << NROM_log2) * 128 * r * 1;
+		shared.aligned = malloc(shared.aligned_size);
 
 /* These should be unused by yescrypt_init_shared() */
-		shared.shared1.base_size = 0;
-		shared.shared1.base = NULL;
+		shared.base_size = 0;
+		shared.base = NULL;
 
-		void * where = shared.shared1.aligned;
+		void * where = shared.aligned;
 
 		printf("Initializing ROM in preallocated memory ...");
 		fflush(stdout);
 		if (yescrypt_init_shared(&shared,
 		    (uint8_t *)"local param", 12,
 		    (uint64_t)1 << NROM_log2, r,
-		    YESCRYPT_PROM, YESCRYPT_SHARED_PREALLOCATED, 1,
+		    YESCRYPT_PROM, YESCRYPT_SHARED_PREALLOCATED,
 		    NULL, 0)) {
 			puts(" FAILED");
 			return 1;
 		}
 		puts(" DONE");
 
-		if (where != shared.shared1.aligned)
+		if (where != shared.aligned)
 			puts("YESCRYPT_SHARED_PREALLOCATED failed");
 #endif
 
@@ -263,6 +353,14 @@ main(int argc, char *argv[])
 
 		printf("'%s'\n", (char *)yescrypt_r(&shared, &local,
 		    (const uint8_t *)"pleaseletmeIn", 13, setting,
+		    hash, sizeof(hash)));
+
+		setting = yescrypt_gensalt(
+		    2, 1, 1, YESCRYPT_FLAGS,
+		    (const uint8_t *)"binary data", 12);
+
+		printf("'%s'\n", (char *)yescrypt_r(&shared, &local,
+		    (const uint8_t *)"pleaseletmein", 13, setting,
 		    hash, sizeof(hash)));
 #endif
 	}

@@ -1,45 +1,49 @@
-Add library to makefile.
 ---
- makefile |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ Makefile |   14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-Index: lyra2/makefile
+Index: lyra2/Makefile
 ===================================================================
---- lyra2.orig/makefile	2014-04-08 09:07:06.000000000 +0200
-+++ lyra2/makefile	2014-09-20 09:44:40.576584654 +0200
-@@ -8,7 +8,7 @@ CC?=gcc
+--- lyra2.orig/Makefile	2015-01-24 19:32:08.000000000 +0100
++++ lyra2/Makefile	2015-02-11 10:32:57.578485653 +0100
+@@ -6,9 +6,10 @@
+ CC?=gcc
  NVCC=nvcc
- CFLAGS=-std=c99 -Wall -pedantic -O3
+ 
+-CFLAGS=-std=c99 -Wall -pedantic -O3 -msse2 -ftree-vectorizer-verbose=1 -fopenmp -funroll-loops -march=native -Ofast -mprefer-avx128 -flto -Wno-unused-variable
++#CFLAGS=-std=c99 -Wall -pedantic -O3 -msse2 -ftree-vectorizer-verbose=1 -fopenmp -funroll-loops -march=native -Ofast -mprefer-avx128 -flto -Wno-unused-variable
++CFLAGS=-std=c99 -Wall -pedantic -O3 -msse2 -ftree-vectorizer-verbose=1 -fopenmp -funroll-loops -march=native -Ofast -mprefer-avx128 -Wno-unused-variable
  
 -BINDIR=../bin
 +BINDIR=bin
- BIN=$(BINDIR)/Lyra2
- BINCUDA=$(BINDIR)/Lyra2CUDA
- nCols=64
-@@ -20,7 +20,7 @@ PTX = 10  # Must suits the GPU board use
- SM = 20   # Must suits the GPU board used.
  CUDADIR=cuda/
+ SSEDIR=sse/
+ BIN=$(BINDIR)/Lyra2
+@@ -24,7 +25,9 @@ bench=0
+ 
+ parameters=-DN_COLS=$(nCols)  -DnPARALLEL=$(nThreads) -DRHO=$(nRoundsSponge) -DBLOCK_LEN_INT64=$(bSponge) -DSPONGE=$(sponge) -DBENCH=$(bench)
  
 -default:
 +default: generic-x86-64 lyra2.a
++
++default-old:
  	
  	@echo " "
  	@echo "To build Lyra2, type:"
-@@ -39,6 +39,9 @@ default:
- 	@echo " "
- 
+@@ -84,6 +87,9 @@ else
+ 	$(error $(spongeTestError))
+ endif
  
 +lyra2.a: $(SSEDIR)Lyra2.o $(SSEDIR)Sponge.o
 +	ar rcs $@ $^
 +
- generic-x86-64:	    Lyra2.c Sponge.c Main.c Lyra2.h Sponge.h
+ generic-x86-64:	    Lyra2.c Sponge.c Main.c Lyra2.h Sponge.h $(makeTests)
  	mkdir -p $(BINDIR)	
- 	$(CC) $(CFLAGS) Sponge.c Lyra2.c Main.c -o $(BIN) -DN_COLS=$(nCols) -O3
-@@ -70,6 +73,6 @@ win-cygwin-x86-64-sse2:	$(SSEDIR)Lyra2.c
- 	@echo "Build completed, binaries in $(BIN)"
+ 	$(CC) $(CFLAGS) Sponge.c Lyra2.c Main.c -o $(BIN) $(parameters)
+@@ -109,5 +115,5 @@ linux-x86-64-cuda-attack:  $(CUDADIR)att
+ 	@echo "Build completed, binaries in $(BINCUDATTACK)"
  	
  clean:
--	rm -rf *.o $(BIN) $(BINCUDA)
-+	rm -rf *.o *.a $(BIN) $(BINDIR) $(BINCUDA) $(SSEDIR)*.o
- 
+-	rm -rf *.o $(BIN) $(BINCUDA) $(BINDIR)
++	rm -rf *.o *.a $(BIN) $(BINCUDA) $(BINDIR) $(SSEDIR)*.o
  

@@ -1,7 +1,7 @@
 CFLAGS=-O2 -Wall
 CC=gcc
 
-OBJ=pomelo.o
+OBJ=pomelo_sse2.o
 
 pomelo.a: $(OBJ)
 	ar rcs $@ $^

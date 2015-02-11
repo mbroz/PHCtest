@@ -1,0 +1,21 @@
+---
+ Makefile |   12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+Index: pomelo/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ pomelo/Makefile	2014-10-05 16:04:56.883115152 +0200
+@@ -0,0 +1,12 @@
++CFLAGS=-O2 -Wall
++CC=gcc
++
++OBJ=pomelo.o
++
++pomelo.a: $(OBJ)
++	ar rcs $@ $^
++
++clean:
++	rm -f *.o *~ core *.a
++
++.PHONY: clean

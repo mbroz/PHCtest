@@ -1,0 +1,88 @@
+Fix build on Linux.
+---
+ argon-ref.cpp |   30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
+
+Index: argon/argon-ref.cpp
+===================================================================
+--- argon.orig/argon-ref.cpp	2014-10-12 20:49:55.732596076 +0200
++++ argon/argon-ref.cpp	2014-10-19 13:04:57.707955962 +0200
+@@ -1,11 +1,13 @@
+ #include "stdio.h"
+ 
+-#include "wmmintrin.h"
+-#include <immintrin.h> 
+-#include <intrin.h> 
++//#include "wmmintrin.h"
++//#include <immintrin.h> 
++//#include <intrin.h> 
+ #include <time.h> 
+ 
+-#include <string>
++#include <string.h>
++#include <vector>
++
+ using namespace std;
+ 
+ #define MAX_THREADS 32
+@@ -29,8 +31,8 @@ using namespace std;
+ #define u32 unsigned __int32
+ #define u64 unsigned long long int
+ 
+-#define KAT
+-#define _MEASURE
++//#define KAT
++//#define _MEASURE
+ //#define KATINT
+ 
+ unsigned char subkeys[11][16]={
+@@ -337,7 +339,7 @@ int ArgonRef(void *out, size_t outlen, c
+ 	state = new int128[state_size];
+ 	if(state==NULL)
+ 		return 1;
+-	printf("Memory allocated: %d KBytes\n",state_size*sizeof(int128)/(1<<10));
++	//printf("Memory allocated: %d KBytes\n",state_size*sizeof(int128)/(1<<10));
+ 
+ 	for(unsigned i=0; i<state_size; ++i)
+ 	{
+@@ -467,7 +469,7 @@ int ArgonRef(void *out, size_t outlen, c
+ 		fprintf(fp,"%2.2x ",((unsigned char*)out)[i]);
+ 	fprintf(fp,"\n");
+ 	fclose(fp);
+-#endif KAT
++#endif
+ 	
+ 
+ 	delete state;
+@@ -479,7 +481,7 @@ int ArgonRef(void *out, size_t outlen, c
+ 
+ 
+ 
+-int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
++extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
+ 	unsigned int t_cost, unsigned int m_cost)
+ //The major difference is that the slices are stored sequentially
+ {
+@@ -502,7 +504,7 @@ void GenKat(unsigned outlen)
+ 		for(unsigned s_len=8; s_len<=32; s_len+=8)
+ 		{
+ #ifdef _MEASURE
+-			unsigned __int64 i1,i2,i3,d1,d2;
++			uint64_t i1,i2,i3,d1,d2;
+ 			unsigned int ui1,ui2,ui3;
+ #endif
+ 	
+@@ -532,7 +534,7 @@ void GenKat(unsigned outlen)
+ 	}
+ }
+ 
+-int main(int argc, char* argv[])
+-{
+-	GenKat(32);
+-}
+\ No newline at end of file
++//int main(int argc, char* argv[])
++//{
++//	GenKat(32);
++//}
+\ No newline at end of file

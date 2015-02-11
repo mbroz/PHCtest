@@ -1,0 +1,27 @@
+---
+ Makefile |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+Index: pufferfish/Makefile
+===================================================================
+--- pufferfish.orig/Makefile	2014-03-31 21:15:54.000000000 +0200
++++ pufferfish/Makefile	2014-10-12 20:07:09.865664904 +0200
+@@ -2,7 +2,11 @@ CC        = cc
+ CFLAGS    = -g -Wall -pedantic -O3 -march=native
+ LIBS      = -lcrypto
+ 
+-all:  pfcrypt-ref pfcrypt-opt pfkdf-ref pfkdf-opt
++#all:  pfcrypt-ref pfcrypt-opt pfkdf-ref pfkdf-opt
++default: pufferfish.a
++
++pufferfish.a: pufferfish-opt.o itoa64.o api-opt.o sha512.o hmac-sha512.o
++	ar rcs $@ optimized/pufferfish-opt.o common/itoa64.o common/api-opt.o optimized/sha512.o optimized/hmac-sha512.o
+ 
+ pfcrypt-ref: pfcrypt-ref.o pufferfish-ref.o itoa64.o api-ref.o
+ 	$(CC) -o pfcrypt-ref examples/pfcrypt-ref.o reference/pufferfish-ref.o common/itoa64.o common/api-ref.o $(LIBS)
+@@ -50,4 +54,4 @@ itoa64.o:
+ 	$(CC) -c $(CFLAGS) -o common/itoa64.o common/itoa64.c
+ 
+ clean:
+-	rm -f pfcrypt-ref pfcrypt-opt pfkdf-ref pfkdf-opt examples/*.o common/*.o reference/*.o optimized/*.o
++	rm -f pfcrypt-ref pfcrypt-opt pfkdf-ref pfkdf-opt examples/*.o common/*.o reference/*.o optimized/*.o *.a

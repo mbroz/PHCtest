@@ -1,0 +1,46 @@
+Add library to Makefile.
+---
+ Makefile |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+Index: yescrypt/Makefile
+===================================================================
+--- yescrypt.orig/Makefile	2014-03-31 06:26:57.000000000 +0200
++++ yescrypt/Makefile	2014-09-20 09:48:40.440626481 +0200
+@@ -26,13 +26,14 @@ CFLAGS = -Wall -march=native -O2 -funrol
+ #CFLAGS = -Wall -O2 -fomit-frame-pointer $(OMPFLAGS_MAYBE)
+ LDFLAGS = -s $(OMPFLAGS_MAYBE)
+ 
+-PROJ = tests phc-test initrom userom
++#PROJ = tests phc-test initrom userom
++PROJ=yescrypt.a
+ OBJS_CORE = yescrypt-best.o
+ OBJS_TESTS = $(OBJS_CORE) yescrypt-common.o sha256.o tests.o
+ OBJS_PHC = $(OBJS_CORE) yescrypt-common.o sha256.o phc-test.o
+ OBJS_INITROM = $(OBJS_CORE) yescrypt-common.o sha256.o initrom.o
+ OBJS_USEROM = $(OBJS_CORE) yescrypt-common.o sha256.o userom.o
+-OBJS_RM = yescrypt-*.o
++OBJS_RM = yescrypt-*.o yescrypt.a
+ 
+ all: $(PROJ)
+ 
+@@ -46,6 +47,9 @@ check: tests phc-test
+ 		cmp PHC-TEST-OK PHC-TEST-OUT && echo PASSED || echo FAILED; \
+ 	fi
+ 
++yescrypt.a: $(OBJS_PHC)
++	ar rcs $@ $^
++
+ ref:
+ 	$(MAKE) $(PROJ) OBJS_CORE=yescrypt-ref.o
+ 
+@@ -62,7 +66,8 @@ tests: $(OBJS_TESTS)
+ 	$(LD) $(LDFLAGS) $(OBJS_TESTS) -o $@
+ 
+ phc-test.o: phc.c
+-	$(CC) -c $(CFLAGS) -DTEST phc.c -o $@
++	$(CC) -c $(CFLAGS) phc.c -o $@
++#	$(CC) -c $(CFLAGS) -DTEST phc.c -o $@
+ 
+ phc-test: $(OBJS_PHC)
+ 	$(LD) $(LDFLAGS) $(OBJS_PHC) -o $@

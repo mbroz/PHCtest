@@ -1,0 +1,31 @@
+---
+ Makefile |   12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+Index: battcrypt/Makefile
+===================================================================
+--- battcrypt.orig/Makefile	2014-04-03 17:54:09.000000000 +0200
++++ battcrypt/Makefile	2014-10-05 12:03:41.669666081 +0200
+@@ -4,8 +4,14 @@ CFLAGS32 = -c -Wall -m32 -O2
+ LFLAGS64 = -m64
+ LFLAGS32 = -m32
+  
+-all: battcrypt-64 battcrypt-32
+-	
++#all: battcrypt-64 battcrypt-32 battcrypt.a
++all: battcrypt.a
++
++OBJ=battcrypt64.o blowfish64.o sha51264.o
++CFLAGS=$(CFLAGS64)
++
++battcrypt.a: $(OBJ)
++	ar rcs $@ $^
+ 
+ # 64 bit
+ battcrypt-64: main64.o battcrypt64.o blowfish64.o sha51264.o
+@@ -40,4 +46,4 @@ sha51232.o: sha512.cpp sha512.h common.h
+ 	$(CC) $(CFLAGS32) -o sha51232.o sha512.cpp
+ 
+ clean:
+-	-rm *.o battcrypt-64 battcrypt-32
++	-rm -f *.o battcrypt-64 battcrypt-32 *.a
