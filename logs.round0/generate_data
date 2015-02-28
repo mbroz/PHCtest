@@ -1,0 +1,126 @@
+#!/bin/bash
+
+function run() # $1 name $2 log $3 from $4 to
+{
+	echo " -- $2 / $1 --"
+
+	[ ! -d $2 ] && mkdir $2
+	OUT=$2/$1.dat
+	for i in $(seq $3 $4 $5); do
+		../tst-$1 -f $OUT -w -r 3 $6 $i
+		echo -n "[$i]"
+	done
+	echo
+}
+
+# G1 tcost MIN, mcost variable
+PAR="-s 16 -i 32 -o 32 "
+run antcrypt    m_cost 0      1       17 "$PAR -t 0 -m "
+run argon       m_cost 0    100     8000 "$PAR -t 0 -m "
+run battcrypt   m_cost 0      1       16 "$PAR -t 0 -m "
+run catena      m_cost 0      1       25 "$PAR -t 1 -m "
+run catena2-dbg m_cost 0      1       25 "$PAR -t 1 -m "
+run catena2-brg m_cost 0      1       25 "$PAR -t 1 -m "
+run centrifuge  m_cost 0      1       23 "$PAR -t 0 -m "
+run earworm     m_cost 0      1       19 "$PAR -t 1 -m "
+run gambit      m_cost 1   10000 1000001 "$PAR -t 100000 -m "
+run lanarea     m_cost 0     10      300 "$PAR -t 1 -m "
+run lyra2       m_cost 0    200    10000 "$PAR -t 1 -m "
+#run makwa      m_cost 0      1       20 "$PAR -t 0 -m " # no mcost
+#run mcs_phs    m_cost 0      1       20 "$PAR -t 1 -m " # cost/memory dependent
+run omegacrypt  m_cost 0      1       11 "$PAR -t 0 -m "
+#run parallel   m_cost 0      1     2000 "$PAR -t 0 -m " # no mcost
+run pomelo      m_cost 0      1       17 "$PAR -t 0 -m "
+run pufferfish  m_cost 0      1       15 "$PAR -t 0 -m "
+run rig         m_cost 0      1       17 "$PAR -t 1 -m "
+run rig2        m_cost 0      1       17 "$PAR -t 1 -m "
+run schvrch     m_cost 0   1000    50000 "$PAR -t 0 -m "
+run tortuga     m_cost 0  10000  1048575 "$PAR -t 0 -m "
+run twocats     m_cost 0      1       20 "$PAR -t 0 -m "
+run yarn        m_cost 0      1       25 "$PAR -t 0 -m "
+run yescrypt    m_cost 0      1       20 "$PAR -t 0 -m "
+
+# G2 mcost min, tcost variable
+PAR="-s 16 -i 32 -o 32 "
+run antcrypt    t_cost 0      1       30 "$PAR -m     10 -t "
+run argon       t_cost 0     10      300 "$PAR -m    500 -t "
+run battcrypt   t_cost 0      1       20 "$PAR -m      5 -t "
+run catena      t_cost 0      5      100 "$PAR -m     18 -t "
+run catena2-brg t_cost 0      5      100 "$PAR -m     14 -t "
+run catena2-dbg t_cost 0      5      100 "$PAR -m     14 -t "
+run centrifuge  t_cost 0      1       28 "$PAR -m      0 -t "
+run earworm     t_cost 0    500    20000 "$PAR -m     10 -t "
+run gambit      t_cost 1   2000   400000 "$PAR -m      1 -t "
+run lanarea     t_cost 0      1        8 "$PAR -m    150 -t "
+run lyra2       t_cost 0   1000    20000 "$PAR -m    100 -t "
+run makwa       t_cost 0  10000   300000 "$PAR -m      0 -t "
+#run mcs_phs    t_cost 0   2000   200000 "$PAR -m      0 -t " # cost/memory dependent
+run omegacrypt  t_cost 0      1        9 "$PAR -m      2 -t "
+run parallel    t_cost 0      1       26 "$PAR -m      0 -t "
+run pomelo      t_cost 0      1       15 "$PAR -m      5 -t "
+run pufferfish  t_cost 0      1        9 "$PAR -m     10 -t "
+run rig         t_cost 0   1000    20000 "$PAR -m      5 -t "
+run rig2        t_cost 0   1000    20000 "$PAR -m      5 -t "
+run schvrch     t_cost 0   2000   200000 "$PAR -m   1000 -t "
+run tortuga     t_cost 0  10000  1048575 "$PAR -m 100000 -t "
+run twocats     t_cost 0      1       20 "$PAR -m      7 -t "
+run yarn        t_cost 0 100000 10000000 "$PAR -m     15 -t "
+run yescrypt    t_cost 0     10      300 "$PAR -m     10 -t "
+
+# G3 input len 1-MAX, mcost, tcost, output fixed
+PAR="-h -s 16 -o 32 "
+MAX=300
+STEP=1
+run antcrypt    i_len 1 $STEP $MAX "$PAR -m     0 -t    800 -i "
+run argon       i_len 1 $STEP $MAX "$PAR -m     0 -t   2000 -i "
+run battcrypt   i_len 1 $STEP $MAX "$PAR -m     0 -t     17 -i "
+run catena      i_len 1 $STEP $MAX "$PAR -m    14 -t     10 -i "
+run catena2-brg i_len 1 $STEP $MAX "$PAR -m    14 -t     10 -i "
+run catena2-dbg i_len 1 $STEP $MAX "$PAR -m    10 -t     10 -i "
+run centrifuge  i_len 1 $STEP $MAX "$PAR -m     0 -t     21 -i "
+run earworm     i_len 1 $STEP $MAX "$PAR -m     0 -t   1000 -i "
+run gambit      i_len 1 $STEP $MAX "$PAR -m 30001 -t  30001 -i "
+run lanarea     i_len 1 $STEP $MAX "$PAR -m     1 -t    600 -i "
+run lyra2       i_len 1 $STEP $MAX "$PAR -m     3 -t  10000 -i "
+run makwa       i_len 1 $STEP $MAX "$PAR -m     0 -t  30000 -i "
+run mcs_phs     i_len 1 $STEP $MAX "$PAR -m     0 -t  30000 -i "
+run omegacrypt  i_len 1 $STEP $MAX "$PAR -m     0 -t      1 -i "
+run parallel    i_len 1 $STEP $MAX "$PAR -m     0 -t     11 -i "
+run pomelo      i_len 1 $STEP $MAX "$PAR -m     0 -t     13 -i "
+run pufferfish  i_len 1 $STEP $MAX "$PAR -m     0 -t     12 -i "
+run rig         i_len 1 $STEP $MAX "$PAR -m     1 -t 500000 -i "
+run rig2        i_len 1 $STEP $MAX "$PAR -m     1 -t   3000 -i "
+run schvrch     i_len 1 $STEP $MAX "$PAR -m     0 -t  12000 -i "
+run tortuga     i_len 1 $STEP $MAX "$PAR -m     0 -t  80000 -i "
+run twocats     i_len 1 $STEP $MAX "$PAR -m     7 -t     12 -i "
+run yarn        i_len 1 $STEP $MAX "$PAR -m     0 -t 500000 -i "
+run yescrypt    i_len 1 $STEP $MAX "$PAR -m    10 -t     10 -i "
+
+# G4 output len 1-MAX, mcost, tcost, input fixed
+PAR="-h -s 16 -i 32 "
+MAX=300
+STEP=1
+run antcrypt    o_len 1 $STEP $MAX "$PAR -m     0 -t    800 -o "
+run argon       o_len 1 $STEP $MAX "$PAR -m     0 -t   2000 -o "
+run battcrypt   o_len 1 $STEP $MAX "$PAR -m     0 -t     17 -o "
+run catena      o_len 1 $STEP $MAX "$PAR -m    14 -t     10 -o "
+run catena2-brg o_len 1 $STEP $MAX "$PAR -m    14 -t     10 -o "
+run catena2-dbg o_len 1 $STEP $MAX "$PAR -m    10 -t     10 -o "
+run centrifuge  o_len 1 $STEP $MAX "$PAR -m     0 -t     21 -o "
+run earworm     o_len 1 $STEP $MAX "$PAR -m     0 -t   1000 -o "
+run gambit      o_len 1 $STEP $MAX "$PAR -m 30001 -t  30001 -o "
+run lanarea     o_len 1 $STEP $MAX "$PAR -m     1 -t    600 -o "
+run lyra2       o_len 1 $STEP $MAX "$PAR -m     3 -t  10000 -o "
+run makwa       o_len 1 $STEP $MAX "$PAR -m     0 -t  30000 -o "
+run mcs_phs     o_len 1 $STEP $MAX "$PAR -m     0 -t  30000 -o "
+run omegacrypt  o_len 1 $STEP $MAX "$PAR -m     0 -t      1 -o "
+run parallel    o_len 1 $STEP $MAX "$PAR -m     0 -t     11 -o "
+run pomelo      o_len 1 $STEP $MAX "$PAR -m     0 -t     13 -o "
+run pufferfish  o_len 1 $STEP $MAX "$PAR -m     0 -t     12 -o "
+run rig         o_len 1 $STEP $MAX "$PAR -m     1 -t 500000 -o "
+run rig2        o_len 1 $STEP $MAX "$PAR -m     1 -t   3000 -o "
+run schvrch     o_len 1 $STEP $MAX "$PAR -m     0 -t  12000 -o "
+run tortuga     o_len 1 $STEP $MAX "$PAR -m     0 -t  80000 -o "
+run twocats     o_len 1 $STEP $MAX "$PAR -m     7 -t     12 -o "
+run yarn        o_len 1 $STEP $MAX "$PAR -m     0 -t 500000 -o "
+run yescrypt    o_len 1 $STEP $MAX "$PAR -m    10 -t     10 -o "

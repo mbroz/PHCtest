@@ -4,6 +4,7 @@
 
 for alg in $(cd ../hash_vectors; ls); do
 	PRG=../tst-$alg
+	[ ! -d ../hash_libs/$alg ] && continue;
 	[ ! -x "$PRG" ] && echo "ERROR: no test for $alg" && continue;
 	echo $alg
 	$PRG -V ../hash_vectors/$alg

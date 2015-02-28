@@ -4,40 +4,33 @@ DIR=dieharder
 
 function run() # $1 name $2 log $3 from $4 to
 {
-	echo " -- $2 / $1 --"
+	echo "[$(date --rfc-3339=seconds)] -- $2 / $1 --"
 
 	[ ! -d $2 ] && mkdir $2
 	OUT=$2/$1.dat
 	[ -f $OUT ] && echo "SKIPPED" && return
 	../tst-$1 -x 1 -X 400 $3 >$OUT
+	echo "[$(date --rfc-3339=seconds)] --"
 }
 
 # Generate "random" files
 PAR="-h 32 -s 16 "
-run antcrypt    $DIR "$PAR -m  0 -t  0"
-run argon       $DIR "$PAR -m  0 -t  0"
-run battcrypt   $DIR "$PAR -m  0 -t  0"
-run catena      $DIR "$PAR -m  0 -t  0"
-run catena2-brg $DIR "$PAR -m  0 -t  0"
-run catena2-dbg $DIR "$PAR -m  1 -t  0"
-run centrifuge  $DIR "$PAR -m  0 -t  0"
-run earworm     $DIR "$PAR -m  0 -t  1"
-run gambit      $DIR "$PAR -m  1 -t  1"
-run lanarea     $DIR "$PAR -m  1 -t  1"
-run lyra2       $DIR "$PAR -m  4 -t  0"
-run makwa       $DIR "$PAR -m  0 -t  0"
-run mcs_phs     $DIR "$PAR -m  0 -t  0"
-run omegacrypt  $DIR "$PAR -m  0 -t  0"
-run parallel    $DIR "$PAR -m  0 -t  0"
-run pomelo      $DIR "$PAR -m  0 -t  0"
-run pufferfish  $DIR "$PAR -m  0 -t  0"
-run rig         $DIR "$PAR -m  1 -t  1"
-run rig2        $DIR "$PAR -m  1 -t  1"
-run schvrch     $DIR "$PAR -m  0 -t  0"
-run tortuga     $DIR "$PAR -m  0 -t  0"
-run twocats     $DIR "$PAR -m  0 -t  0"
-run yarn        $DIR "$PAR -m  0 -t  0"
-run yescrypt    $DIR "$PAR -m  0 -t  0"
+run argon            $DIR "$PAR -m  0 -t  0"
+run argon-aesni      $DIR "$PAR -m  0 -t  0"
+run argon2d          $DIR "$PAR -m  0 -t  0"
+run argon2i          $DIR "$PAR -m  0 -t  0"
+run battcrypt        $DIR "$PAR -m  0 -t  0"
+run catena-dragonfly $DIR "$PAR -m 14 -t  1"
+run catena-butterfly $DIR "$PAR -m  1 -t  1"
+run lyra2            $DIR "$PAR -m  6 -t  1"
+run lyra2-sse        $DIR "$PAR -m  6 -t  1"
+run makwa            $DIR "$PAR -m  0 -t  0"
+run parallel         $DIR "$PAR -m  0 -t  0"
+run pomelo           $DIR "$PAR -m  0 -t  0"
+run pomelo-sse       $DIR "$PAR -m  0 -t  0"
+run pufferfish       $DIR "$PAR -m  0 -t  0"
+run yescrypt         $DIR "$PAR -m  0 -t  0"
+run yescrypt-sse     $DIR "$PAR -m  0 -t  0"
 
 # Run dieharder tests
 for alg in $(cd $DIR; ls |grep -v '.log'); do

@@ -1,0 +1,27 @@
+Add library Makefile.
+---
+ Makefile |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+Index: argon2i/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ argon2i/Makefile	2015-02-26 17:57:39.456688997 +0100
+@@ -0,0 +1,17 @@
++CC=g++
++CPPFLAGS=-lpthread -std=c++11 -O2
++#LIBS=-pthread -lcrypto -lm
++
++TARGETS=argon2i.a
++
++SOURCES_ARGON2I=$(wildcard ref/*.cpp)
++
++default: $(TARGETS)
++
++argon2i.a: $(SOURCES_ARGON2I:.cpp=.o)
++	ar rcs $@ $^
++
++clean:
++	rm -f ref/*.o $(TARGETS)
++
++.PHONY: clean

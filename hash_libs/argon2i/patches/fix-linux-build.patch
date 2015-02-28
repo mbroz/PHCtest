@@ -1,0 +1,55 @@
+Fix build on Linux.
+---
+ ref/argon2i-ref.cpp |    2 +-
+ ref/argon2i.h       |    6 +++---
+ ref/genkat.cpp      |    2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+Index: argon2i/ref/argon2i-ref.cpp
+===================================================================
+--- argon2i.orig/ref/argon2i-ref.cpp	2015-02-26 10:09:06.000000000 +0100
++++ argon2i/ref/argon2i-ref.cpp	2015-02-26 18:12:01.166433337 +0100
+@@ -10,7 +10,7 @@
+ #include <stdint.h>
+ #include <time.h> 
+ 
+-#include <string>
++#include <string.h>
+ #include <vector>
+ #include <thread>
+ using namespace std;
+Index: argon2i/ref/argon2i.h
+===================================================================
+--- argon2i.orig/ref/argon2i.h	2015-02-26 10:09:06.000000000 +0100
++++ argon2i/ref/argon2i.h	2015-02-27 09:21:36.919509207 +0100
+@@ -1,6 +1,6 @@
+ 
+-#define KAT
+-#define KAT_INTERNAL
++//#define KAT
++//#define KAT_INTERNAL
+ 
+ #define MIN_LANES  1
+ #define SYNC_POINTS 4
+@@ -60,7 +60,7 @@ struct position_info_t {
+ 
+ 
+ 
+-extern int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, uint32_t  saltlen,
++extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, uint32_t  saltlen,
+ 	uint32_t t_cost, uint32_t m_cost);
+ 
+ extern int Argon2iRef(uint8_t *out, uint32_t outlen, const uint8_t *msg, uint32_t msglen, const uint8_t *nonce, uint32_t noncelen, const uint8_t *secret,
+Index: argon2i/ref/genkat.cpp
+===================================================================
+--- argon2i.orig/ref/genkat.cpp	2015-02-26 10:09:06.000000000 +0100
++++ argon2i/ref/genkat.cpp	2015-02-27 09:20:17.351177391 +0100
+@@ -11,7 +11,7 @@ using namespace std;
+ 
+ #include "argon2i.h"
+ #include "blake2.h"
+-#define _MEASURE
++//#define _MEASURE
+ 
+ void GenKat()
+ {

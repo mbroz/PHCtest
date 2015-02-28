@@ -1,42 +1,43 @@
 Fix build on Linux.
 ---
- argon-ref.cpp |   30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+ Argon-Optimized/Linux-AES-NI/aes.cpp |    2 +-
+ Argon-Optimized/Linux-AES-NI/data.h  |    4 ++--
+ Argon-Reference/Argon-Reference.cpp  |   17 +++++++++--------
+ Argon-Reference/blake2.h             |    2 +-
+ 4 files changed, 13 insertions(+), 12 deletions(-)
 
-Index: argon/argon-ref.cpp
+Index: argon/Argon-Reference/Argon-Reference.cpp
 ===================================================================
---- argon.orig/argon-ref.cpp	2014-10-12 20:49:55.732596076 +0200
-+++ argon/argon-ref.cpp	2014-10-19 13:04:57.707955962 +0200
-@@ -1,11 +1,13 @@
+--- argon.orig/Argon-Reference/Argon-Reference.cpp	2015-02-26 17:19:51.864630302 +0100
++++ argon/Argon-Reference/Argon-Reference.cpp	2015-02-26 20:17:21.137526235 +0100
+@@ -1,12 +1,13 @@
  #include "stdio.h"
  
 -#include "wmmintrin.h"
 -#include <immintrin.h> 
--#include <intrin.h> 
+-#include <intrin.h>
 +//#include "wmmintrin.h"
 +//#include <immintrin.h> 
-+//#include <intrin.h> 
++//#include <intrin.h>
+ #include <stdint.h>
  #include <time.h> 
  
 -#include <string>
 +#include <string.h>
 +#include <vector>
-+
  using namespace std;
  
- #define MAX_THREADS 32
-@@ -29,8 +31,8 @@ using namespace std;
- #define u32 unsigned __int32
- #define u64 unsigned long long int
+ #include "blake2.h"
+@@ -163,7 +164,7 @@ int ArgonRef(uint8_t *out, uint32_t outl
  
--#define KAT
--#define _MEASURE
-+//#define KAT
-+//#define _MEASURE
- //#define KATINT
+ 	blake2b_final(&BlakeHash, (uint8_t*)input_hash, 32);	
  
- unsigned char subkeys[11][16]={
-@@ -337,7 +339,7 @@ int ArgonRef(void *out, size_t outlen, c
+-#if defined KATINT
++#ifdef KATINT
+ 	fprintf(fp, "Input hash:\n");
+ 	for (unsigned i = 0; i<4; ++i)
+ 	{
+@@ -178,7 +179,7 @@ int ArgonRef(uint8_t *out, uint32_t outl
  	state = new int128[state_size];
  	if(state==NULL)
  		return 1;
@@ -45,8 +46,8 @@ Index: argon/argon-ref.cpp
  
  	for(unsigned i=0; i<state_size; ++i)
  	{
-@@ -467,7 +469,7 @@ int ArgonRef(void *out, size_t outlen, c
- 		fprintf(fp,"%2.2x ",((unsigned char*)out)[i]);
+@@ -277,7 +278,7 @@ int ArgonRef(uint8_t *out, uint32_t outl
+ 		fprintf(fp,"%2.2x ",((uint8_t*)out)[i]);
  	fprintf(fp,"\n");
  	fclose(fp);
 -#endif KAT
@@ -54,35 +55,59 @@ Index: argon/argon-ref.cpp
  	
  
  	delete state;
-@@ -479,7 +481,7 @@ int ArgonRef(void *out, size_t outlen, c
+@@ -289,7 +290,7 @@ int ArgonRef(uint8_t *out, uint32_t outl
  
  
  
--int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
-+extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
- 	unsigned int t_cost, unsigned int m_cost)
- //The major difference is that the slices are stored sequentially
+-int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, uint32_t  saltlen, 
++extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, uint32_t  saltlen, 
+ 	uint32_t t_cost, uint32_t m_cost)
  {
-@@ -502,7 +504,7 @@ void GenKat(unsigned outlen)
- 		for(unsigned s_len=8; s_len<=32; s_len+=8)
- 		{
- #ifdef _MEASURE
--			unsigned __int64 i1,i2,i3,d1,d2;
-+			uint64_t i1,i2,i3,d1,d2;
- 			unsigned int ui1,ui2,ui3;
- #endif
- 	
-@@ -532,7 +534,7 @@ void GenKat(unsigned outlen)
- 	}
- }
+ 	return ArgonRef((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, saltlen, NULL, 0, NULL,0, t_cost, m_cost,1);
+Index: argon/Argon-Reference/blake2.h
+===================================================================
+--- argon.orig/Argon-Reference/blake2.h	2015-02-26 17:19:51.864630302 +0100
++++ argon/Argon-Reference/blake2.h	2015-02-26 17:19:51.860630274 +0100
+@@ -143,7 +143,7 @@ extern "C" {
+   int blake2sp( uint8_t *out, const void *in, const void *key, const uint8_t outlen, const uint64_t inlen, uint8_t keylen );
+   int blake2bp( uint8_t *out, const void *in, const void *key, const uint8_t outlen, const uint64_t inlen, uint8_t keylen );
  
--int main(int argc, char* argv[])
--{
--	GenKat(32);
--}
+-  static _inline int blake2( uint8_t *out, const void *in, const void *key, const uint8_t outlen, const uint64_t inlen, uint8_t keylen )
++  static inline int blake2( uint8_t *out, const void *in, const void *key, const uint8_t outlen, const uint64_t inlen, uint8_t keylen )
+   {
+     return blake2b( out, in, key, outlen, inlen, keylen );
+   }
+Index: argon/Argon-Optimized/Linux-AES-NI/data.h
+===================================================================
+--- argon.orig/Argon-Optimized/Linux-AES-NI/data.h	2015-02-26 17:19:51.864630302 +0100
++++ argon/Argon-Optimized/Linux-AES-NI/data.h	2015-02-27 09:18:08.142678820 +0100
+@@ -1,7 +1,7 @@
+ 
+ //#define KAT
+ //#define KAT_INTERNAL
+-#define _MEASURE
++//#define _MEASURE
+ //#define _MEASUREINT 
+ #define THREADING
+ #define RANDOMIZE //make slice selection pseudo-random
+@@ -54,5 +54,5 @@ struct int128{
+ extern  void AES_reduced_batch_intr(__m128i* batch, uint32_t batch_size);
+ extern int ArgonFast64Ext(uint8_t *out, uint32_t outlen, const uint8_t *pwd, uint32_t pwdlen, const uint8_t *salt, uint32_t saltlen, const uint8_t *secret,
+ uint8_t secretlen, const void *ad, uint32_t adlen, uint32_t t_cost, uint32_t m_cost, uint8_t parallel_degree);
+-extern int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
++extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
+ 	uint32_t t_cost, size_t m_cost, uint32_t thread_n);
 \ No newline at end of file
-+//int main(int argc, char* argv[])
-+//{
-+//	GenKat(32);
-+//}
-\ No newline at end of file
+Index: argon/Argon-Optimized/Linux-AES-NI/aes.cpp
+===================================================================
+--- argon.orig/Argon-Optimized/Linux-AES-NI/aes.cpp	2015-01-31 10:49:55.000000000 +0100
++++ argon/Argon-Optimized/Linux-AES-NI/aes.cpp	2015-02-26 17:24:25.486562691 +0100
+@@ -93,7 +93,7 @@ const static unsigned char sbox[256] = {
+ 
+ 
+ 
+-inline void AES_reduced_batch_intr(__m128i* batch, uint32_t batch_size) //Encrypts batch_size in parallel
++/*inline*/ void AES_reduced_batch_intr(__m128i* batch, uint32_t batch_size) //Encrypts batch_size in parallel
+ {
+ 	//Round Key initialization
+ 	__m128i roundkey[AES_ROUNDS + 1];
