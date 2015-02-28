@@ -11,7 +11,7 @@ using namespace std;
 
 #include "argon2d.h"
 #include "blake2.h"
-#define _MEASURE
+//#define _MEASURE
 
 void GenKat()
 {

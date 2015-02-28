@@ -1,10 +1,11 @@
 Fix build on Linux.
 ---
- Argon-Optimized/Linux-AES-NI/aes.cpp |    2 +-
- Argon-Optimized/Linux-AES-NI/data.h  |    4 ++--
- Argon-Reference/Argon-Reference.cpp  |   17 +++++++++--------
- Argon-Reference/blake2.h             |    2 +-
- 4 files changed, 13 insertions(+), 12 deletions(-)
+ Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp |    2 +-
+ Argon-Optimized/Linux-AES-NI/aes.cpp             |    2 +-
+ Argon-Optimized/Linux-AES-NI/data.h              |    4 ++--
+ Argon-Reference/Argon-Reference.cpp              |   17 +++++++++--------
+ Argon-Reference/blake2.h                         |    2 +-
+ 5 files changed, 14 insertions(+), 13 deletions(-)
 
 Index: argon/Argon-Reference/Argon-Reference.cpp
 ===================================================================
@@ -111,3 +112,16 @@ Index: argon/Argon-Optimized/Linux-AES-NI/aes.cpp
  {
  	//Round Key initialization
  	__m128i roundkey[AES_ROUNDS + 1];
+Index: argon/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp
+===================================================================
+--- argon.orig/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp	2015-02-28 19:47:28.903109976 +0100
++++ argon/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp	2015-02-28 19:47:50.079117430 +0100
+@@ -6,7 +6,7 @@
+ //To enable measurement of SubGroups and ShuffleSlices, uncomment #define _MEASUREINT
+ //Threading is always enabled
+ 
+-
++#define __STDC_FORMAT_MACROS
+ #include "stdio.h"
+ #include "stdint.h"
+ #include "inttypes.h"

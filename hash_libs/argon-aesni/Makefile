@@ -1,8 +1,8 @@
 all:
-	@ln -s ../argon/argon-aesni.a argon-aesni.a
+	@ln -f -s ../argon/argon-aesni.a argon-aesni.a
 
 clean:
-	@rm *.a
+	@rm -f *.a
 
 .PHONY: clean
 

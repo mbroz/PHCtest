@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <time.h> 
 
+#include <stdlib.h>
 #include <string.h>
 #include <vector>
 #include <thread>

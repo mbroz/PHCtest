@@ -21,6 +21,7 @@ yescrypt-sse_FLAGS=-fopenmp
 
 #CFLAGS=-O2 -Wall
 CFLAGS=-g -Wall
+LDFLAGS=-lrt
 CC=gcc
 SOURCES=$(wildcard src/*.c)
 OBJECTS=$(SOURCES:.c=.o)
@@ -28,7 +29,7 @@ OBJECTS=$(SOURCES:.c=.o)
 all: hash_libs $(TARGETS)
 
 $(TARGETS): $(OBJECTS)
-	$(CC) -o tst-$@ $^ $($@_FLAGS) $(HASH_DIR)/$@/$@.a
+	$(CC) -o tst-$@ $^ $(LDFLAGS) $($@_FLAGS) $(HASH_DIR)/$@/$@.a
 
 hash_libs:
 	for alg in $(TARGETS) ; do \

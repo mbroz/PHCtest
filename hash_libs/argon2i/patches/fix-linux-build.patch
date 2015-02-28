@@ -1,19 +1,20 @@
 Fix build on Linux.
 ---
- ref/argon2i-ref.cpp |    2 +-
+ ref/argon2i-ref.cpp |    3 ++-
  ref/argon2i.h       |    6 +++---
  ref/genkat.cpp      |    2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ 3 files changed, 6 insertions(+), 5 deletions(-)
 
 Index: argon2i/ref/argon2i-ref.cpp
 ===================================================================
 --- argon2i.orig/ref/argon2i-ref.cpp	2015-02-26 10:09:06.000000000 +0100
-+++ argon2i/ref/argon2i-ref.cpp	2015-02-26 18:12:01.166433337 +0100
-@@ -10,7 +10,7 @@
++++ argon2i/ref/argon2i-ref.cpp	2015-02-28 19:49:52.959163814 +0100
+@@ -10,7 +10,8 @@
  #include <stdint.h>
  #include <time.h> 
  
 -#include <string>
++#include <stdlib.h>
 +#include <string.h>
  #include <vector>
  #include <thread>

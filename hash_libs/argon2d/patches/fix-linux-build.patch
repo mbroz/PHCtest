@@ -2,7 +2,8 @@ Fix build on Linux.
 ---
  ref/argon2d-ref.cpp |    4 ++--
  ref/argon2d.h       |    4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ ref/genkat.cpp      |    2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
 Index: argon2d/ref/argon2d-ref.cpp
 ===================================================================
@@ -43,3 +44,16 @@ Index: argon2d/ref/argon2d.h
  	uint32_t t_cost, uint32_t m_cost);
  
  extern int Argon2dRef(uint8_t *out, uint32_t outlen, const uint8_t *msg, uint32_t msglen, const uint8_t *nonce, uint32_t noncelen, const uint8_t *secret,
+Index: argon2d/ref/genkat.cpp
+===================================================================
+--- argon2d.orig/ref/genkat.cpp	2015-01-31 23:51:38.000000000 +0100
++++ argon2d/ref/genkat.cpp	2015-02-28 19:48:57.711142307 +0100
+@@ -11,7 +11,7 @@ using namespace std;
+ 
+ #include "argon2d.h"
+ #include "blake2.h"
+-#define _MEASURE
++//#define _MEASURE
+ 
+ void GenKat()
+ {

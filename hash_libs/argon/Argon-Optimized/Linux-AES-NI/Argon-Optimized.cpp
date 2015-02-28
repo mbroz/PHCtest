@@ -6,7 +6,7 @@
 //To enable measurement of SubGroups and ShuffleSlices, uncomment #define _MEASUREINT
 //Threading is always enabled
 
-
+#define __STDC_FORMAT_MACROS
 #include "stdio.h"
 #include "stdint.h"
 #include "inttypes.h"
