@@ -1,0 +1,95 @@
+#!/bin/bash
+
+function run() # $1 name $2 log $3 from $4 to
+{
+	echo "[$(date --rfc-3339=seconds)] -- $2 / $1 --"
+
+	[ ! -d $2 ] && mkdir $2
+	OUT=$2/$1
+	for i in $(seq $3 $4 $5); do
+		../tst-$1 -G $OUT $6 $i
+		echo -n "[$i]"
+	done
+	echo
+	echo "[$(date --rfc-3339=seconds)] --"
+}
+
+# G1 tcost MIN, mcost variable
+PAR="-s 16 -i 32 -o 32 "
+run argon            hash_vectors 0    100     8000 "$PAR -t 0 -m "
+run argon-aesni      hash_vectors 0    100     8000 "$PAR -t 0 -m "
+run argon2d          hash_vectors 0    100     8000 "$PAR -t 0 -m "
+run argon2i          hash_vectors 0    100     8000 "$PAR -t 0 -m "
+run battcrypt        hash_vectors 0      1       16 "$PAR -t 0 -m "
+run catena-butterfly hash_vectors 0      1       25 "$PAR -t 1 -m "
+run catena-dragonfly hash_vectors 0      1       25 "$PAR -t 1 -m "
+run lyra2            hash_vectors 0    200     9000 "$PAR -t 1 -m "
+run lyra2-sse        hash_vectors 0    200     9000 "$PAR -t 1 -m "
+#run makwa           hash_vectors 0      1       20 "$PAR -t 0 -m " # no mcost
+#run parallel        hash_vectors 0      1     2000 "$PAR -t 0 -m " # no mcost
+run pomelo           hash_vectors 0      1       17 "$PAR -t 0 -m "
+run pomelo-sse       hash_vectors 0      1       17 "$PAR -t 0 -m "
+run pufferfish       hash_vectors 0      1       15 "$PAR -t 0 -m "
+run yescrypt         hash_vectors 0      1       20 "$PAR -t 0 -m "
+run yescrypt-sse     hash_vectors 0      1       20 "$PAR -t 0 -m "
+
+# G2 mcost min, tcost variable
+PAR="-s 16 -i 32 -o 32 "
+run argon            hash_vectors 0     10      260 "$PAR -m    500 -t "
+run argon-aesni      hash_vectors 0     10      260 "$PAR -m    500 -t "
+run argon2d          hash_vectors 0     10      250 "$PAR -m    500 -t "
+run argon2i          hash_vectors 0     10      260 "$PAR -m    500 -t "
+run battcrypt        hash_vectors 0      1       20 "$PAR -m      5 -t "
+run catena-butterfly hash_vectors 0      5      100 "$PAR -m     14 -t "
+run catena-dragonfly hash_vectors 0      5      100 "$PAR -m     14 -t "
+run lyra2            hash_vectors 0   1000    20000 "$PAR -m    100 -t "
+run lyra2-sse        hash_vectors 0   1000    20000 "$PAR -m    100 -t "
+run makwa            hash_vectors 0  10000   300000 "$PAR -m      0 -t "
+run parallel         hash_vectors 0      1       26 "$PAR -m      0 -t "
+run pomelo           hash_vectors 0      1       15 "$PAR -m      5 -t "
+run pomelo-sse       hash_vectors 0      1       15 "$PAR -m      5 -t "
+run pufferfish       hash_vectors 0      1        9 "$PAR -m     10 -t "
+run yescrypt         hash_vectors 0     10      300 "$PAR -m     10 -t "
+run yescrypt-sse     hash_vectors 0     10      300 "$PAR -m     10 -t "
+
+# G3 input len 1-MAX, mcost, tcost, output fixed
+PAR="-h -s 16 -o 32 "
+MAX=300
+STEP=1
+run argon            hash_vectors 1 $STEP $MAX "$PAR -m     0 -t  2000 -i "
+run argon-aesni      hash_vectors 1 $STEP $MAX "$PAR -m     0 -t  2000 -i "
+run argon2d          hash_vectors 1 $STEP $MAX "$PAR -m   100 -t   255 -i "
+run argon2i          hash_vectors 1 $STEP $MAX "$PAR -m   100 -t  2000 -i "
+run battcrypt        hash_vectors 1 $STEP $MAX "$PAR -m     0 -t    17 -i "
+run catena-dragonfly hash_vectors 1 $STEP $MAX "$PAR -m    14 -t   100 -i "
+run catena-butterfly hash_vectors 1 $STEP $MAX "$PAR -m    10 -t    60 -i "
+run lyra2            hash_vectors 1 $STEP $MAX "$PAR -m     6 -t  2000 -i "
+run lyra2-sse        hash_vectors 1 $STEP $MAX "$PAR -m     6 -t  2000 -i "
+run makwa            hash_vectors 1 $STEP $MAX "$PAR -m     0 -t 30000 -i "
+run parallel         hash_vectors 1 $STEP $MAX "$PAR -m     0 -t    11 -i "
+run pomelo           hash_vectors 1 $STEP $MAX "$PAR -m     0 -t    13 -i "
+run pomelo-sse       hash_vectors 1 $STEP $MAX "$PAR -m     0 -t    13 -i "
+run pufferfish       hash_vectors 1 $STEP $MAX "$PAR -m     0 -t    12 -i "
+run yescrypt         hash_vectors 1 $STEP $MAX "$PAR -m    10 -t     1 -i "
+run yescrypt-sse     hash_vectors 1 $STEP $MAX "$PAR -m    10 -t     1 -i "
+
+# G4 output len 1-MAX, mcost, tcost, input fixed
+PAR="-h -s 16 -i 32 "
+MAX=300
+STEP=1
+run argon            hash_vectors 1 $STEP $MAX "$PAR -m     0 -t   2000 -o "
+run argon-aesni      hash_vectors 1 $STEP $MAX "$PAR -m     0 -t   2000 -o "
+run argon2d          hash_vectors 1 $STEP $MAX "$PAR -m   100 -t    255 -o "
+run argon2i          hash_vectors 1 $STEP $MAX "$PAR -m   100 -t   2000 -o "
+run battcrypt        hash_vectors 1 $STEP $MAX "$PAR -m     0 -t     17 -o "
+run catena-dragonfly hash_vectors 1 $STEP $MAX "$PAR -m    14 -t    100 -o "
+run catena-butterfly hash_vectors 1 $STEP $MAX "$PAR -m    10 -t     60 -o "
+run lyra2            hash_vectors 1 $STEP $MAX "$PAR -m     6 -t   2000 -o "
+run lyra2-sse        hash_vectors 1 $STEP $MAX "$PAR -m     6 -t   2000 -o "
+run makwa            hash_vectors 1 $STEP $MAX "$PAR -m     0 -t  30000 -o "
+run parallel         hash_vectors 1 $STEP $MAX "$PAR -m     0 -t     11 -o "
+run pomelo           hash_vectors 1 $STEP $MAX "$PAR -m     0 -t     13 -o "
+run pomelo-sse       hash_vectors 1 $STEP $MAX "$PAR -m     0 -t     13 -o "
+run pufferfish       hash_vectors 1 $STEP $MAX "$PAR -m     0 -t     12 -o "
+run yescrypt         hash_vectors 1 $STEP $MAX "$PAR -m    10 -t      1 -o "
+run yescrypt-sse     hash_vectors 1 $STEP $MAX "$PAR -m    10 -t      1 -o "

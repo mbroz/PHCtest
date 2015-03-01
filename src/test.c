@@ -49,6 +49,7 @@ static unsigned int opt_rndsize = 1; // rnd sample size in MiB
 static int opt_verbose = 0;
 static int opt_fork = 0;
 static int opt_display_hash = 0;
+static int opt_gen_vectors = 0;
 static char *opt_out_file = NULL;
 static char *opt_vector_file = NULL;
 
@@ -157,6 +158,43 @@ static long muse_mean(long *muse, int count)
 	return l / count;
 }
 
+static int test_phc_wrapper_vector(void)
+{
+	char key[opt_out_len], pwd[opt_in_len], salt[opt_salt_len];
+	FILE *f = NULL;
+	int status = EXIT_SUCCESS;
+	double ms;
+	long muse;
+
+	f = fopen(opt_vector_file, "a+");
+	if (!f)
+		return EXIT_FAILURE;
+
+	// FIXME: should use something more sensible
+	memset(key, 0xab, opt_out_len);
+	memset(pwd, 0xcd, opt_in_len);
+	memset(salt,0xef, opt_salt_len);
+
+	if (test_phc(opt_out_len, key, opt_salt_len, salt, opt_in_len, pwd, opt_tcost,
+		     opt_mcost, &ms, &muse)) {
+		fprintf(f, "# ERROR %zu %zu %d %d\n", opt_in_len, opt_out_len, opt_mcost, opt_tcost);
+		status = EXIT_FAILURE;
+	} else {
+		//"password:%4096s salt:%4096s t_cost:%u m_cost:%u -> %4096s"
+		fprintf(f, "password:");
+		print_hex(f, opt_in_len, pwd);
+		fprintf(f, " salt:");
+		print_hex(f, opt_salt_len, salt);
+		fprintf(f, " t_cost:%u m_cost:%u -> ", opt_tcost, opt_mcost);
+		print_hex(f, opt_out_len, key);
+		fprintf(f, "\n");
+	}
+
+	fclose(f);
+
+	return status;
+}
+
 static int test_phc_wrapper(void)
 {
 	char key[opt_out_len], pwd[opt_in_len], salt[opt_salt_len];
@@ -167,6 +205,8 @@ static int test_phc_wrapper(void)
 
 	if (opt_out_file) {
 		f = fopen(opt_out_file, "a+");
+		if (!f)
+			return EXIT_FAILURE;
 		setvbuf(f, NULL, _IONBF, 0);
 	}
 
@@ -285,6 +325,9 @@ static int test_vectors(const char *file)
 		return 1;
 
 	while (!r && fgets(line, sizeof(line), f)) {
+		// Comment
+		if (line[0] == '#')
+			continue;
 		if (sscanf(line, "password:%4096s salt:%4096s t_cost:%u m_cost:%u -> %4096s",
 			password, salt, &t_cost, &m_cost, out) == 5) {
 		} else if (sscanf(line, "password: salt:%4096s t_cost:%u m_cost:%u -> %4096s",
@@ -361,6 +404,7 @@ static struct option long_options[] =
 	{"out_file", required_argument, NULL, 'f'},
 	{"repeat",   required_argument, NULL, 'r'},
 	{"vector",   required_argument, NULL, 'V'},
+	{"gen-vector",required_argument,NULL, 'G'},
 	{0, 0, NULL, 0}
 };
 
@@ -368,7 +412,7 @@ int main (int argc, char *argv[])
 {
 	int c, r, option_index = 0;
 
-	while ((c = getopt_long (argc, argv, "vwhs:i:o:m:t:f:r:V:x:X:", long_options, &option_index)) != -1) {
+	while ((c = getopt_long (argc, argv, "vwhs:i:o:m:t:f:G:r:V:x:X:", long_options, &option_index)) != -1) {
 		switch (c) {
 		case 'v': opt_verbose  = 1; break;
 		case 'w': opt_fork     = 1; break;
@@ -383,17 +427,20 @@ int main (int argc, char *argv[])
 		case 'X': opt_rndsize  = atoi(optarg); break;
 		case 'f': opt_out_file = strdup(optarg); break;
 		case 'V': opt_vector_file = strdup(optarg); break;
+		case 'G': opt_vector_file = strdup(optarg); opt_gen_vectors = 1; break;
 		case '?':
 		default: perror("bad option"); exit(EXIT_FAILURE); break;
 		}
 	}
 
-	if (opt_vector_file)
+	if (opt_vector_file && !opt_gen_vectors)
 		return test_vectors(opt_vector_file);
 	else if (opt_rndtest)
 		return test_randomness();
 
-	if (opt_fork)
+	if (opt_gen_vectors)
+		r = test_phc_wrapper_vector();
+	else if (opt_fork)
 		r = test_phc_wrapper_fork();
 	else
 		r = test_phc_wrapper();
