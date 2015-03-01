@@ -53,10 +53,10 @@ Dragonfly: catena-Dragonfly-blake2b-test catena-Dragonfly-blake2b-test_vectors
 catena: catena-BRG catena-DBG
 
 catena-butterfly.a: catena-DBG $(HASH_OBJ)
-	ar rcs $@ catena.o catena-DBG.o blake2b.o catena-helpers.o $(HASH_OBJ)
+	ar rcs $@ catena.o catena-DBG.o blake2b*.o catena-helpers.o $(HASH_OBJ)
 
 catena-dragonfly.a: catena-BRG $(HASH_OBJ)
-	ar rcs $@ catena.o catena-BRG.o blake2b.o catena-helpers.o $(HASH_OBJ)
+	ar rcs $@ catena.o catena-BRG.o blake2b*.o catena-helpers.o $(HASH_OBJ)
 
 catena-Butterfly-blake2b-test:
 	$(CC) $(CFLAGS) -o $(TARGETDIR)/$@ test-catena.c $(BASEFILES) $(HASHIMPL) catena-DBG.c $(HASH)
