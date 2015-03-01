@@ -5,8 +5,10 @@
 *.gz
 *.pdf
 *.zip
-hash_libs/lanarea/libb2/autom4te.cache/
 .kdev4
 PHCtest.kdev4
 archive/Argon/
-archive/catena/
+archive/Argon2/
+archive/Catena/
+archive/Lyra/
+archive/Pufferfish/
