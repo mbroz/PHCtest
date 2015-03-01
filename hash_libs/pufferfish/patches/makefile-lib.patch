@@ -1,13 +1,15 @@
 ---
- Makefile |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ Makefile |   10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
 Index: pufferfish/Makefile
 ===================================================================
 --- pufferfish.orig/Makefile	2015-02-11 13:15:29.495897797 +0100
-+++ pufferfish/Makefile	2015-02-11 13:24:10.565818636 +0100
-@@ -2,7 +2,11 @@ CC        = cc
- CFLAGS    = -g -Wall -pedantic -O3 -march=native
++++ pufferfish/Makefile	2015-03-01 22:07:25.302412367 +0100
+@@ -1,8 +1,12 @@
+ CC        = cc
+-CFLAGS    = -g -Wall -pedantic -O3 -march=native
++CFLAGS    = -g -Wall -pedantic -O3
  LIBS      = -lcrypto
  
 -all:  pfcrypt-ref pfkdf-ref

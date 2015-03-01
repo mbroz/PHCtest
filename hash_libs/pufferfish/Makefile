@@ -1,5 +1,5 @@
 CC        = cc
-CFLAGS    = -g -Wall -pedantic -O3 -march=native
+CFLAGS    = -g -Wall -pedantic -O3
 LIBS      = -lcrypto
 
 #all:  pfcrypt-ref pfkdf-ref
