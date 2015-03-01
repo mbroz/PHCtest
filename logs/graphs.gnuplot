@@ -120,28 +120,28 @@ set key off
 set output G3.'ilen_time.png'
 
 set multiplot
-set size 0.33,0.125
+set size 0.5,0.125
 set xtics 50
 
 set xr [1:300]
 set yr [30:110]
 
 set origin 0.000,0.875 ; set label 1 'Argon'            at 280,90 right ; plot G3."argon.dat"            using 1:5 with points
-set origin 0.330,0.875 ; set label 1 'Argon-AESNI'      at 280,90 right ; plot G3."argon-aesni.dat"      using 1:5 with points
-set origin 0.660,0.875 ; set label 1 'Argon2d'          at 280,90 right ; plot G3."argon2d.dat"          using 1:5 with points
-set origin 0.000,0.750 ; set label 1 'Argon2i'          at 280,90 right ; plot G3."argon2i.dat"          using 1:5 with points
-set origin 0.330,0.750 ; set label 1 'battcrypt'        at 280,90 right ; plot G3."battcrypt.dat"        using 1:5 with points
-set origin 0.660,0.750 ; set label 1 'Catena-Butterfly' at 280,90 right ; plot G3."catena-butterfly.dat" using 1:5 with points
-set origin 0.000,0.625 ; set label 1 'Catena-Dragonfly' at 280,90 right ; plot G3."catena-dragonfly.dat" using 1:5 with points
-set origin 0.330,0.625 ; set label 1 'Lyra2'            at 280,90 right ; plot G3."lyra2.dat"            using 1:5 with points
-set origin 0.660,0.625 ; set label 1 'Lyra2-SSE'        at 280,90 right ; plot G3."lyra2-sse.dat"        using 1:5 with points
-set origin 0.000,0.500 ; set label 1 'Makwa'            at 280,90 right ; plot G3."makwa.dat"            using 1:5 with points
-set origin 0.330,0.500 ; set label 1 'Parallel'         at 280,90 right ; plot G3."parallel.dat"         using 1:5 with points
-set origin 0.660,0.500 ; set label 1 'POMELO'           at 280,90 right ; plot G3."pomelo.dat"           using 1:5 with points
-set origin 0.000,0.375 ; set label 1 'POMELO-SSE'       at 280,90 right ; plot G3."pomelo-sse.dat"       using 1:5 with points
-set origin 0.330,0.375 ; set label 1 'Pufferfish'       at 280,90 right ; plot G3."pufferfish.dat"       using 1:5 with points
-set origin 0.660,0.375 ; set label 1 'yescrypt'         at 280,90 right ; plot G3."yescrypt.dat"         using 1:5 with points
-set origin 0.000,0.250 ; set label 1 'yescrypt-sse'     at 280,90 right ; plot G3."yescrypt-sse.dat"     using 1:5 with points
+set origin 0.500,0.875 ; set label 1 'Argon-AESNI'      at 280,90 right ; plot G3."argon-aesni.dat"      using 1:5 with points
+set origin 0.000,0.750 ; set label 1 'Argon2d'          at 280,90 right ; plot G3."argon2d.dat"          using 1:5 with points
+set origin 0.500,0.750 ; set label 1 'Argon2i'          at 280,90 right ; plot G3."argon2i.dat"          using 1:5 with points
+set origin 0.000,0.625 ; set label 1 'battcrypt'        at 280,90 right ; plot G3."battcrypt.dat"        using 1:5 with points
+set origin 0.500,0.625 ; set label 1 'Catena-Butterfly' at 280,90 right ; plot G3."catena-butterfly.dat" using 1:5 with points
+set origin 0.000,0.500 ; set label 1 'Catena-Dragonfly' at 280,90 right ; plot G3."catena-dragonfly.dat" using 1:5 with points
+set origin 0.500,0.500 ; set label 1 'Lyra2'            at 280,90 right ; plot G3."lyra2.dat"            using 1:5 with points
+set origin 0.000,0.375 ; set label 1 'Lyra2-SSE'        at 280,90 right ; plot G3."lyra2-sse.dat"        using 1:5 with points
+set origin 0.500,0.375 ; set label 1 'Makwa'            at 280,90 right ; plot G3."makwa.dat"            using 1:5 with points
+set origin 0.000,0.250 ; set label 1 'Parallel'         at 280,90 right ; plot G3."parallel.dat"         using 1:5 with points
+set origin 0.500,0.250 ; set label 1 'POMELO'           at 280,90 right ; plot G3."pomelo.dat"           using 1:5 with points
+set origin 0.000,0.125 ; set label 1 'POMELO-SSE'       at 280,90 right ; plot G3."pomelo-sse.dat"       using 1:5 with points
+set origin 0.500,0.125 ; set label 1 'Pufferfish'       at 280,90 right ; plot G3."pufferfish.dat"       using 1:5 with points
+set origin 0.000,0.000 ; set label 1 'yescrypt'         at 280,90 right ; plot G3."yescrypt.dat"         using 1:5 with points
+set origin 0.500,0.000 ; set label 1 'yescrypt-sse'     at 280,90 right ; plot G3."yescrypt-sse.dat"     using 1:5 with points
 
 unset multiplot
 
@@ -158,27 +158,27 @@ set key off
 set output G4.'olen_time.png'
 
 set multiplot
-set size 0.33,0.125
+set size 0.5,0.125
 set xtics 50
 
 set xr [1:300]
 set yr [30:110]
 
 set origin 0.000,0.875 ; set label 1 'Argon'            at 280,90 right ; plot G4."argon.dat"            using 2:5 with points
-set origin 0.330,0.875 ; set label 1 'Argon-AESNI'      at 280,90 right ; plot G4."argon-aesni.dat"      using 2:5 with points
-set origin 0.660,0.875 ; set label 1 'Argon2d'          at 280,90 right ; plot G4."argon2d.dat"          using 2:5 with points
-set origin 0.000,0.750 ; set label 1 'Argon2i'          at 280,90 right ; plot G4."argon2i.dat"          using 2:5 with points
-set origin 0.330,0.750 ; set label 1 'battcrypt'        at 280,90 right ; plot G4."battcrypt.dat"        using 2:5 with points
-set origin 0.660,0.750 ; set label 1 'Catena-Butterfly' at 280,90 right ; plot G4."catena-butterfly.dat" using 2:5 with points
-set origin 0.000,0.625 ; set label 1 'Catena-Dragonfly' at 280,90 right ; plot G4."catena-dragonfly.dat" using 2:5 with points
-set origin 0.330,0.625 ; set label 1 'Lyra2'            at 280,90 right ; plot G4."lyra2.dat"            using 2:5 with points
-set origin 0.660,0.625 ; set label 1 'Lyra2-SSE'        at 280,90 right ; plot G4."lyra2-sse.dat"        using 2:5 with points
-set origin 0.000,0.500 ; set label 1 'Makwa'            at 280,90 right ; plot G4."makwa.dat"            using 2:5 with points
-set origin 0.330,0.500 ; set label 1 'Parallel'         at 280,90 right ; plot G4."parallel.dat"         using 2:5 with points
-set origin 0.660,0.500 ; set label 1 'POMELO'           at 280,90 right ; plot G4."pomelo.dat"           using 2:5 with points
-set origin 0.000,0.375 ; set label 1 'POMELO-SSE'       at 280,90 right ; plot G4."pomelo-sse.dat"       using 2:5 with points
-set origin 0.330,0.375 ; set label 1 'Pufferfish'       at 280,90 right ; plot G4."pufferfish.dat"       using 2:5 with points
-set origin 0.660,0.375 ; set label 1 'yescrypt'         at 280,90 right ; plot G4."yescrypt.dat"         using 2:5 with points
-set origin 0.000,0.250 ; set label 1 'yescrypt-sse'     at 280,90 right ; plot G4."yescrypt-sse.dat"     using 2:5 with points
+set origin 0.500,0.875 ; set label 1 'Argon-AESNI'      at 280,90 right ; plot G4."argon-aesni.dat"      using 2:5 with points
+set origin 0.000,0.750 ; set label 1 'Argon2d'          at 280,90 right ; plot G4."argon2d.dat"          using 2:5 with points
+set origin 0.500,0.750 ; set label 1 'Argon2i'          at 280,90 right ; plot G4."argon2i.dat"          using 2:5 with points
+set origin 0.000,0.625 ; set label 1 'battcrypt'        at 280,90 right ; plot G4."battcrypt.dat"        using 2:5 with points
+set origin 0.500,0.625 ; set label 1 'Catena-Butterfly' at 280,90 right ; plot G4."catena-butterfly.dat" using 2:5 with points
+set origin 0.000,0.500 ; set label 1 'Catena-Dragonfly' at 280,90 right ; plot G4."catena-dragonfly.dat" using 2:5 with points
+set origin 0.500,0.500 ; set label 1 'Lyra2'            at 280,90 right ; plot G4."lyra2.dat"            using 2:5 with points
+set origin 0.000,0.375 ; set label 1 'Lyra2-SSE'        at 280,90 right ; plot G4."lyra2-sse.dat"        using 2:5 with points
+set origin 0.500,0.375 ; set label 1 'Makwa'            at 280,90 right ; plot G4."makwa.dat"            using 2:5 with points
+set origin 0.000,0.250 ; set label 1 'Parallel'         at 280,90 right ; plot G4."parallel.dat"         using 2:5 with points
+set origin 0.500,0.250 ; set label 1 'POMELO'           at 280,90 right ; plot G4."pomelo.dat"           using 2:5 with points
+set origin 0.000,0.125 ; set label 1 'POMELO-SSE'       at 280,90 right ; plot G4."pomelo-sse.dat"       using 2:5 with points
+set origin 0.500,0.125 ; set label 1 'Pufferfish'       at 280,90 right ; plot G4."pufferfish.dat"       using 2:5 with points
+set origin 0.000,0.000 ; set label 1 'yescrypt'         at 280,90 right ; plot G4."yescrypt.dat"         using 2:5 with points
+set origin 0.500,0.000 ; set label 1 'yescrypt-sse'     at 280,90 right ; plot G4."yescrypt-sse.dat"     using 2:5 with points
 
 unset multiplot
