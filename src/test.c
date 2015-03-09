@@ -297,8 +297,10 @@ static int test_vector(const char *password_hex, const char *salt_hex,
 		return 1;
 
 	r = PHS(real_out, out_len, password, password_len, salt, salt_len, t_cost, m_cost);
-	if (r)
+	if (r) {
+		printf("ERROR: %d\n", r);
 		return r;
+	}
 
 	if (memcmp(real_out, out, out_len)) {
 		printf("ERROR: output differs: ");
