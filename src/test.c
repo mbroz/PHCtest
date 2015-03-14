@@ -147,15 +147,16 @@ static double ms_mean(double *ms, int count)
 	return d / (double)count;
 }
 
-static long muse_mean(long *muse, int count)
+static long muse_max(long *muse, int count)
 {
 	int i;
-	long l = 0;
+	long l = -1;
 
 	for (i = 0; i < count; i++)
-		l += muse[i];
+		if (muse[i] > l)
+			l = muse[i];
 
-	return l / count;
+	return l;
 }
 
 static int test_phc_wrapper_vector(void)
@@ -222,8 +223,8 @@ static int test_phc_wrapper(void)
 			status = EXIT_FAILURE;
 			break;
 		}
-		printl("[%02d] Cost: %d,%d In %zu, Out %zu, Time %02.2f, memory %lu",
-			count, opt_tcost, opt_mcost, opt_in_len, opt_out_len, ms[count], muse[count]);
+		printl("[%02d] Cost: %d,%d In %zu, Out %zu, Time %02.2f, max memory %lu",
+			count, opt_tcost, opt_mcost, opt_in_len, opt_out_len, ms[count], muse_max(muse, count+1));
 		count++;
 	}
 
@@ -231,7 +232,7 @@ static int test_phc_wrapper(void)
 		// in out m_cost t_cost time [ms] memory[kb]
 		fprintf(f ?: stdout , "%zu %zu %u %d %2.0f %li",
 			opt_in_len, opt_out_len, opt_mcost, opt_tcost,
-			ms_mean(ms, opt_repeat), muse_mean(muse, opt_repeat));
+			ms_mean(ms, opt_repeat), muse_max(muse, opt_repeat));
 		if (opt_display_hash) {
 			fprintf(f ?: stdout , " :");
 			print_hex(f ?: stdout, opt_out_len, key);
