@@ -290,8 +290,8 @@ int ArgonRef(uint8_t *out, uint32_t outlen, const uint8_t *pwd, uint32_t pwdlen,
 
 
 
-extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, uint32_t  saltlen, 
-	uint32_t t_cost, uint32_t m_cost)
+extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
+	unsigned int t_cost, unsigned int m_cost)
 {
-	return ArgonRef((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, saltlen, NULL, 0, NULL,0, t_cost, m_cost,1);
+	return ArgonRef((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, 1);
 }

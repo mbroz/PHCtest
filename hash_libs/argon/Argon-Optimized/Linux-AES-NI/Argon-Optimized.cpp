@@ -523,7 +523,13 @@ for (unsigned l = 0; l <t_cost; ++l)
 
 
 int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
-	uint32_t t_cost, size_t m_cost, uint32_t thread_n=1)
+	unsigned int t_cost, unsigned int m_cost)
 {
-	return ArgonFast64Ext((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, saltlen, NULL, 0, NULL,0,t_cost, m_cost, thread_n);
+	return ArgonFast64Ext((uint8_t*)out, (uint32_t)outlen, (const uint8_t*)in, (uint32_t)inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, 1);
+}
+
+int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
+	unsigned int t_cost, unsigned int m_cost, unsigned int m_thread)
+{
+	return ArgonFast64Ext((uint8_t*)out, (uint32_t)outlen, (const uint8_t*)in, (uint32_t)inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, (uint32_t)m_thread);
 }

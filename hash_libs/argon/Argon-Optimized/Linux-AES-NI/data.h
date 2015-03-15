@@ -55,4 +55,6 @@ extern  void AES_reduced_batch_intr(__m128i* batch, uint32_t batch_size);
 extern int ArgonFast64Ext(uint8_t *out, uint32_t outlen, const uint8_t *pwd, uint32_t pwdlen, const uint8_t *salt, uint32_t saltlen, const uint8_t *secret,
 uint8_t secretlen, const void *ad, uint32_t adlen, uint32_t t_cost, uint32_t m_cost, uint8_t parallel_degree);
 extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
-	uint32_t t_cost, size_t m_cost, uint32_t thread_n);
+	unsigned int t_cost, unsigned int m_cost);
+extern "C" int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
+	unsigned int t_cost, unsigned int m_cost, unsigned int m_thread);

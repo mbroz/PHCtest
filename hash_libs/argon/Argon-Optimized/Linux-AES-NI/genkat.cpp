@@ -135,7 +135,7 @@ void Run(void *out, size_t outlen, size_t inlen, size_t saltlen,
 	unsigned char one_array[256];
 	memset(one_array, 1, 256);
 
-	PHS(out, outlen, zero_array, inlen, one_array, saltlen, t_cost, m_cost, thread_n);
+	PHSx(out, outlen, zero_array, inlen, one_array, saltlen, t_cost, m_cost, thread_n);
 
 #ifdef _MEASURE
 	i3 = __rdtscp(&ui3);
