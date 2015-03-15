@@ -1,14 +1,14 @@
 Fix build on Linux.
 ---
- ref/argon2i-ref.cpp |    3 ++-
- ref/argon2i.h       |    6 +++---
+ ref/argon2i-ref.cpp |    9 +++++----
+ ref/argon2i.h       |    8 ++++----
  ref/genkat.cpp      |    2 +-
- 3 files changed, 6 insertions(+), 5 deletions(-)
+ 3 files changed, 10 insertions(+), 9 deletions(-)
 
 Index: argon2i/ref/argon2i-ref.cpp
 ===================================================================
 --- argon2i.orig/ref/argon2i-ref.cpp	2015-02-26 10:09:06.000000000 +0100
-+++ argon2i/ref/argon2i-ref.cpp	2015-02-28 19:49:52.959163814 +0100
++++ argon2i/ref/argon2i-ref.cpp	2015-03-15 09:17:48.890502364 +0100
 @@ -10,7 +10,8 @@
  #include <stdint.h>
  #include <time.h> 
@@ -19,10 +19,22 @@ Index: argon2i/ref/argon2i-ref.cpp
  #include <vector>
  #include <thread>
  using namespace std;
+@@ -369,8 +370,8 @@ int Argon2iRef(uint8_t *out, uint32_t ou
+ 	return 0;
+ }
+ 
+-int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, uint32_t  saltlen,
+-	uint32_t t_cost, uint32_t m_cost)
++int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
++	 unsigned int t_cost, unsigned int m_cost)
+ {
+-	return Argon2iRef((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, saltlen, NULL, 0, NULL, 0, t_cost, m_cost, 1);
++	return Argon2iRef((uint8_t*)out, (uint32_t)outlen, (const uint8_t*)in, (uint32_t)inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, 1);
+ }
 Index: argon2i/ref/argon2i.h
 ===================================================================
 --- argon2i.orig/ref/argon2i.h	2015-02-26 10:09:06.000000000 +0100
-+++ argon2i/ref/argon2i.h	2015-02-27 09:21:36.919509207 +0100
++++ argon2i/ref/argon2i.h	2015-03-15 09:16:31.565867232 +0100
 @@ -1,6 +1,6 @@
  
 -#define KAT
@@ -32,15 +44,18 @@ Index: argon2i/ref/argon2i.h
  
  #define MIN_LANES  1
  #define SYNC_POINTS 4
-@@ -60,7 +60,7 @@ struct position_info_t {
+@@ -60,8 +60,8 @@ struct position_info_t {
  
  
  
 -extern int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, uint32_t  saltlen,
-+extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, uint32_t  saltlen,
- 	uint32_t t_cost, uint32_t m_cost);
+-	uint32_t t_cost, uint32_t m_cost);
++extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
++	unsigned int t_cost, unsigned int m_cost);
  
  extern int Argon2iRef(uint8_t *out, uint32_t outlen, const uint8_t *msg, uint32_t msglen, const uint8_t *nonce, uint32_t noncelen, const uint8_t *secret,
+ 	uint8_t secretlen, const uint8_t *ad, uint32_t adlen, uint32_t t_cost, uint32_t m_cost, uint8_t lanes);
+\ No newline at end of file
 Index: argon2i/ref/genkat.cpp
 ===================================================================
 --- argon2i.orig/ref/genkat.cpp	2015-02-26 10:09:06.000000000 +0100
