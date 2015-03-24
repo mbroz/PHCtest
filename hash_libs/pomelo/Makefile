@@ -2,7 +2,7 @@ CC=gcc
 CPPFLAGS_REF=-Wall -O2 -Wno-unused-variable
 CPPFLAGS_SSE=-Wall -O2 -msse2 -Wno-unused-variable
 
-TARGETS=pomelo.a pomelo-sse.a
+TARGETS=pomelo.a
 
 SOURCES_POMELO=pomelo_x64.c
 SOURCES_POMELO_SSE=pomelo_sse2.c

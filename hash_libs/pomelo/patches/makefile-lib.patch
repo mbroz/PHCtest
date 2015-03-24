@@ -5,13 +5,13 @@
 Index: pomelo/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ pomelo/Makefile	2015-02-26 19:37:27.168373890 +0100
++++ pomelo/Makefile	2015-03-24 08:55:12.674116712 +0100
 @@ -0,0 +1,27 @@
 +CC=gcc
 +CPPFLAGS_REF=-Wall -O2 -Wno-unused-variable
 +CPPFLAGS_SSE=-Wall -O2 -msse2 -Wno-unused-variable
 +
-+TARGETS=pomelo.a pomelo-sse.a
++TARGETS=pomelo.a
 +
 +SOURCES_POMELO=pomelo_x64.c
 +SOURCES_POMELO_SSE=pomelo_sse2.c
