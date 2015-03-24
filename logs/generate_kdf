@@ -1,0 +1,96 @@
+#!/bin/bash
+
+function run() # $1 name $2 log $3 from $4 to
+{
+	echo "[$(date --rfc-3339=seconds)] -- $2 / $1 --"
+
+	[ ! -d $2 ] && mkdir $2
+	OUT=$2/$1.dat
+	[ ! -f "$OUT" ] && echo "# in_len out_len m_cost t_cost time[ms] memory[kB]" > "$OUT"
+	for i in $(seq $3 $4 $5); do
+		../tst-$1 -f $OUT -w -r 1 $6 $i
+#		../tst-$1 -r 1 $6 $i
+		echo -n "[$i]"
+	done
+	echo
+	echo "[$(date --rfc-3339=seconds)] --"
+}
+
+function run1() # $1 name $2 log $3 from $4 to
+{
+	echo "[$(date --rfc-3339=seconds)] -- $2 / $1 $3 --"
+
+	[ ! -d $2 ] && mkdir $2
+	OUT=$2/$1.dat
+	[ ! -f "$OUT" ] && echo "# in_len out_len m_cost t_cost time[ms] memory[kB]" > "$OUT"
+	../tst-$1 -f $OUT -v $3
+	echo
+	echo "[$(date --rfc-3339=seconds)] --"
+}
+
+# Minimum
+PAR="-r 5 -s 32 -i 256 -o 64 "
+run1 argon            m_kdf "$PAR -t 2 -m    1024"
+run1 argon            m_kdf "$PAR -t 2 -m  102400"
+run1 argon            m_kdf "$PAR -t 2 -m 1024000"
+run1 argon-aesni      m_kdf "$PAR -t 2 -m    1024"
+run1 argon-aesni      m_kdf "$PAR -t 2 -m  102400"
+run1 argon-aesni      m_kdf "$PAR -t 2 -m 1024000"
+#run1 argon2i         m_kdf "$PAR -t 2 -m    1024"
+#run1 argon2i         m_kdf "$PAR -t 2 -m  102400"
+#run1 argon2i         m_kdf "$PAR -t 2 -m 1024000"
+run1 battcrypt        m_kdf "$PAR -t 0 -m       6"
+run1 battcrypt        m_kdf "$PAR -t 0 -m      14"
+run1 battcrypt        m_kdf "$PAR -t 0 -m      17"
+run1 catena-butterfly m_kdf "$PAR -t 1 -m      14"
+run1 catena-butterfly m_kdf "$PAR -t 1 -m      20"
+run1 catena-butterfly m_kdf "$PAR -t 1 -m      24"
+run1 lyra2            m_kdf "$PAR -t 1 -m      67"
+run1 lyra2            m_kdf "$PAR -t 1 -m    5000"
+run1 lyra2            m_kdf "$PAR -t 1 -m   43000"
+run1 lyra2-sse        m_kdf "$PAR -t 1 -m      67"
+run1 lyra2-sse        m_kdf "$PAR -t 1 -m    5000"
+run1 lyra2-sse        m_kdf "$PAR -t 1 -m   43000"
+run1 yescrypt         m_kdf "$PAR -t 0 -m       8"
+run1 yescrypt         m_kdf "$PAR -t 0 -m      14"
+run1 yescrypt         m_kdf "$PAR -t 0 -m      17"
+run1 yescrypt-sse     m_kdf "$PAR -t 0 -m       8"
+run1 yescrypt-sse     m_kdf "$PAR -t 0 -m      14"
+run1 yescrypt-sse     m_kdf "$PAR -t 0 -m      17"
+
+# test weights
+PAR="-s 32 -i 256 -o 64 "
+run1 argon            m_kdf2 "$PAR -t     32 -m    1024"
+run1 argon            m_kdf2 "$PAR -t    700 -m    1024"
+run1 argon-aesni      m_kdf2 "$PAR -t    410 -m    1024"
+run1 argon-aesni      m_kdf2 "$PAR -t   8200 -m    1024"
+run1 argon-aesni      m_kdf2 "$PAR -t      5 -m  102400"
+run1 argon-aesni      m_kdf2 "$PAR -t    103 -m  102400"
+run1 argon-aesni      m_kdf2 "$PAR -t      9 -m 1024000"
+run1 battcrypt        m_kdf2 "$PAR -t     17 -m       4"
+run1 battcrypt        m_kdf2 "$PAR -t     26 -m       4"
+run1 battcrypt        m_kdf2 "$PAR -t      6 -m      14"
+run1 catena-butterfly m_kdf2 "$PAR -t    250 -m      12"
+run1 catena-butterfly m_kdf2 "$PAR -t     11 -m      20"
+run1 lyra2            m_kdf2 "$PAR -t  20000 -m      10"
+run1 lyra2            m_kdf2 "$PAR -t 400000 -m      10"
+run1 lyra2            m_kdf2 "$PAR -t     35 -m    5000"
+run1 lyra2            m_kdf2 "$PAR -t    720 -m    5000"
+run1 lyra2            m_kdf2 "$PAR -t      2 -m   43000"
+run1 lyra2            m_kdf2 "$PAR -t     81 -m   43000"
+run1 lyra2-sse        m_kdf2 "$PAR -t  30000 -m      10"
+run1 lyra2-sse        m_kdf2 "$PAR -t 600000 -m      10"
+run1 lyra2-sse        m_kdf2 "$PAR -t     45 -m    5000"
+run1 lyra2-sse        m_kdf2 "$PAR -t    930 -m    5000"
+run1 lyra2-sse        m_kdf2 "$PAR -t      4 -m   43000"
+run1 lyra2-sse        m_kdf2 "$PAR -t    109 -m   43000"
+run1 yescrypt         m_kdf2 "$PAR -t    170 -m       8"
+run1 yescrypt         m_kdf2 "$PAR -t   3700 -m       8"
+run1 yescrypt         m_kdf2 "$PAR -t      3 -m      14"
+run1 yescrypt         m_kdf2 "$PAR -t     55 -m      14"
+run1 yescrypt         m_kdf2 "$PAR -t      7 -m      17"
+run1 yescrypt-sse     m_kdf2 "$PAR -t    900 -m       8"
+run1 yescrypt-sse     m_kdf2 "$PAR -t  19000 -m       8"
+run1 yescrypt-sse     m_kdf2 "$PAR -t     12 -m      14"
+run1 yescrypt-sse     m_kdf2 "$PAR -t    238 -m      14"
+run1 yescrypt-sse     m_kdf2 "$PAR -t     27 -m      17"
