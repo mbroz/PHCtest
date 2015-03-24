@@ -1,4 +1,4 @@
-set terminal png enhanced font "arial,18" fontscale 1.0 size 1200, 1000
+set terminal png enhanced font "arial,18" fontscale 1.0 size 1600, 1000
 set pointsize 1.2
 
 # Dir for graphs with data and output
@@ -17,20 +17,20 @@ set logscale y
 set key outside
 set output G1.'mcost_memory.png'
 plot [1:10000][100:1000000]\
-	G1."argon.dat"            using 3:6 title "{/arial=12 Argon}"            with points, \
-	G1."argon-aesni.dat"      using 3:6 title "{/arial=12 Argon-AESNI}"      with points, \
-	G1."argon2d.dat"          using 3:6 title "{/arial=12 Argon2d}"          with points, \
-	G1."argon2i.dat"          using 3:6 title "{/arial=12 Argon2i}"          with points, \
-	G1."battcrypt.dat"        using 3:6 title "{/arial=12 battcrypt}"        with points, \
-	G1."catena-butterfly.dat" using 3:6 title "{/arial=12 Catena-Butterfly}" with points, \
-	G1."catena-dragonfly.dat" using 3:6 title "{/arial=12 Catena-Dragonfly}" with points, \
-	G1."lyra2.dat"            using 3:6 title "{/arial=12 Lyra2}"            with points, \
-	G1."lyra2-sse.dat"        using 3:6 title "{/arial=12 Lyra2-SSE}"        with points, \
-	G1."pomelo.dat"           using 3:6 title "{/arial=12 POMELO}"           with points, \
-	G1."pomelo-sse.dat"       using 3:6 title "{/arial=12 POMELO-SSE}"       with points, \
-	G1."pufferfish.dat"       using 3:6 title "{/arial=12 Pufferfish}"       with points, \
-	G1."yescrypt.dat"         using 3:6 title "{/arial=12 yescrypt}"         with points, \
-	G1."yescrypt-sse.dat"     using 3:6 title "{/arial=12 yescrypt SSE}"     with points
+	G1."argon.dat"            using 3:6 title "{/arial=16 Argon}"            with points, \
+	G1."argon-aesni.dat"      using 3:6 title "{/arial=16 Argon-AESNI}"      with points, \
+	G1."argon2d.dat"          using 3:6 title "{/arial=16 Argon2d}"          with points, \
+	G1."argon2i.dat"          using 3:6 title "{/arial=16 Argon2i}"          with points, \
+	G1."battcrypt.dat"        using 3:6 title "{/arial=16 battcrypt}"        with points, \
+	G1."catena-butterfly.dat" using 3:6 title "{/arial=16 Catena-Butterfly}" with points, \
+	G1."catena-dragonfly.dat" using 3:6 title "{/arial=16 Catena-Dragonfly}" with points, \
+	G1."lyra2.dat"            using 3:6 title "{/arial=16 Lyra2}"            with points, \
+	G1."lyra2-sse.dat"        using 3:6 title "{/arial=16 Lyra2-SSE}"        with points, \
+	G1."pomelo.dat"           using 3:6 title "{/arial=16 POMELO}"           with points, \
+	G1."pomelo-sse.dat"       using 3:6 title "{/arial=16 POMELO-SSE}"       with points, \
+	G1."pufferfish.dat"       using 3:6 title "{/arial=16 Pufferfish}"       with points, \
+	G1."yescrypt.dat"         using 3:6 title "{/arial=16 yescrypt}"         with points, \
+	G1."yescrypt-sse.dat"     using 3:6 title "{/arial=16 yescrypt SSE}"     with points
 
 set title "PHC candidates, Real run time vs memory cost\n{/arial=12[salt = 16, in,out = 32, tcost = MIN]}"
 set xlabel "Memory cost"
@@ -40,20 +40,20 @@ set logscale y
 set key outside
 set output G1.'mcost_time.png'
 plot [1:10000][1:100000]\
-	G1."argon.dat"            using 3:5 title "{/arial=12 Argon}"            with points, \
-	G1."argon-aesni.dat"      using 3:5 title "{/arial=12 Argon-AESNI}"      with points, \
-	G1."argon2d.dat"          using 3:5 title "{/arial=12 Argon2d}"          with points, \
-	G1."argon2i.dat"          using 3:5 title "{/arial=12 Argon2i}"          with points, \
-	G1."battcrypt.dat"        using 3:5 title "{/arial=12 battcrypt}"        with points, \
-	G1."catena-butterfly.dat" using 3:5 title "{/arial=12 Catena-Butterfly}" with points, \
-	G1."catena-dragonfly.dat" using 3:5 title "{/arial=12 Catena-Dragonfly}" with points, \
-	G1."lyra2.dat"            using 3:5 title "{/arial=12 Lyra2}"            with points, \
-	G1."lyra2-sse.dat"        using 3:5 title "{/arial=12 Lyra2-SSE}"        with points, \
-	G1."pomelo.dat"           using 3:5 title "{/arial=12 POMELO}"           with points, \
-	G1."pomelo-sse.dat"       using 3:5 title "{/arial=12 POMELO-SSE}"       with points, \
-	G1."pufferfish.dat"       using 3:5 title "{/arial=12 Pufferfish}"       with points, \
-	G1."yescrypt.dat"         using 3:5 title "{/arial=12 yescrypt}"         with points, \
-	G1."yescrypt-sse.dat"     using 3:5 title "{/arial=12 yescrypt SSE}"     with points
+	G1."argon.dat"            using 3:5 title "{/arial=16 Argon}"            with points, \
+	G1."argon-aesni.dat"      using 3:5 title "{/arial=16 Argon-AESNI}"      with points, \
+	G1."argon2d.dat"          using 3:5 title "{/arial=16 Argon2d}"          with points, \
+	G1."argon2i.dat"          using 3:5 title "{/arial=16 Argon2i}"          with points, \
+	G1."battcrypt.dat"        using 3:5 title "{/arial=16 battcrypt}"        with points, \
+	G1."catena-butterfly.dat" using 3:5 title "{/arial=16 Catena-Butterfly}" with points, \
+	G1."catena-dragonfly.dat" using 3:5 title "{/arial=16 Catena-Dragonfly}" with points, \
+	G1."lyra2.dat"            using 3:5 title "{/arial=16 Lyra2}"            with points, \
+	G1."lyra2-sse.dat"        using 3:5 title "{/arial=16 Lyra2-SSE}"        with points, \
+	G1."pomelo.dat"           using 3:5 title "{/arial=16 POMELO}"           with points, \
+	G1."pomelo-sse.dat"       using 3:5 title "{/arial=16 POMELO-SSE}"       with points, \
+	G1."pufferfish.dat"       using 3:5 title "{/arial=16 Pufferfish}"       with points, \
+	G1."yescrypt.dat"         using 3:5 title "{/arial=16 yescrypt}"         with points, \
+	G1."yescrypt-sse.dat"     using 3:5 title "{/arial=16 yescrypt SSE}"     with points
 
 # G2 tcost variable
 
@@ -64,23 +64,23 @@ set logscale x
 set logscale y
 set key outside
 set output G2.'tcost_memory.png'
-plot [1:1000000][1:10000]\
-	G2."argon.dat"            using 4:6 title "{/arial=12 Argon}"            with points, \
-	G2."argon-aesni.dat"      using 4:6 title "{/arial=12 Argon-AESNI}"      with points, \
-	G2."argon2d.dat"          using 4:6 title "{/arial=12 Argon2d}"          with points, \
-	G2."argon2i.dat"          using 4:6 title "{/arial=12 Argon2i}"          with points, \
-	G2."battcrypt.dat"        using 4:6 title "{/arial=12 battcrypt}"        with points, \
-	G2."catena-butterfly.dat" using 4:6 title "{/arial=12 Catena-Butterfly}" with points, \
-	G2."catena-dragonfly.dat" using 4:6 title "{/arial=12 Catena-Dragonfly}" with points, \
-	G2."lyra2.dat"            using 4:6 title "{/arial=12 Lyra2}"            with points, \
-	G2."lyra2-sse.dat"        using 4:6 title "{/arial=12 Lyra2-SSE}"        with points, \
-	G2."makwa.dat"            using 4:6 title "{/arial=12 Makwa}"            with points, \
-	G2."parallel.dat"         using 4:6 title "{/arial=12 Parallel}"         with points, \
-	G2."pomelo.dat"           using 4:6 title "{/arial=12 POMELO}"           with points, \
-	G2."pomelo-sse.dat"       using 4:6 title "{/arial=12 POMELO-SSE}"       with points, \
-	G2."pufferfish.dat"       using 4:6 title "{/arial=12 Pufferfish}"       with points, \
-	G2."yescrypt.dat"         using 4:6 title "{/arial=12 yescrypt}"         with points, \
-	G2."yescrypt-sse.dat"     using 4:6 title "{/arial=12 yescrypt SSE}"     with points
+plot [1:1000000][1:100000]\
+	G2."argon.dat"            using 4:6 title "{/arial=16 Argon}"            with points, \
+	G2."argon-aesni.dat"      using 4:6 title "{/arial=16 Argon-AESNI}"      with points, \
+	G2."argon2d.dat"          using 4:6 title "{/arial=16 Argon2d}"          with points, \
+	G2."argon2i.dat"          using 4:6 title "{/arial=16 Argon2i}"          with points, \
+	G2."battcrypt.dat"        using 4:6 title "{/arial=16 battcrypt}"        with points, \
+	G2."catena-butterfly.dat" using 4:6 title "{/arial=16 Catena-Butterfly}" with points, \
+	G2."catena-dragonfly.dat" using 4:6 title "{/arial=16 Catena-Dragonfly}" with points, \
+	G2."lyra2.dat"            using 4:6 title "{/arial=16 Lyra2}"            with points, \
+	G2."lyra2-sse.dat"        using 4:6 title "{/arial=16 Lyra2-SSE}"        with points, \
+	G2."makwa.dat"            using 4:6 title "{/arial=16 Makwa}"            with points, \
+	G2."parallel.dat"         using 4:6 title "{/arial=16 Parallel}"         with points, \
+	G2."pomelo.dat"           using 4:6 title "{/arial=16 POMELO}"           with points, \
+	G2."pomelo-sse.dat"       using 4:6 title "{/arial=16 POMELO-SSE}"       with points, \
+	G2."pufferfish.dat"       using 4:6 title "{/arial=16 Pufferfish}"       with points, \
+	G2."yescrypt.dat"         using 4:6 title "{/arial=16 yescrypt}"         with points, \
+	G2."yescrypt-sse.dat"     using 4:6 title "{/arial=16 yescrypt SSE}"     with points
 
 set title "PHC candidates, Real run time vs time cost\n{/arial=12[salt = 16, in,out = 32, mcost = MIN]}"
 set xlabel "Time cost"
@@ -90,22 +90,22 @@ set logscale y
 set key outside
 set output G2.'tcost_time.png'
 plot [1:1000000][1:10000]\
-	G2."argon.dat"            using 4:5 title "{/arial=12 Argon}"            with points, \
-	G2."argon-aesni.dat"      using 4:5 title "{/arial=12 Argon-AESNI}"      with points, \
-	G2."argon2d.dat"          using 4:5 title "{/arial=12 Argon2d}"          with points, \
-	G2."argon2i.dat"          using 4:5 title "{/arial=12 Argon2i}"          with points, \
-	G2."battcrypt.dat"        using 4:5 title "{/arial=12 battcrypt}"        with points, \
-	G2."catena-butterfly.dat" using 4:5 title "{/arial=12 Catena-Butterfly}" with points, \
-	G2."catena-dragonfly.dat" using 4:5 title "{/arial=12 Catena-Dragonfly}" with points, \
-	G2."lyra2.dat"            using 4:5 title "{/arial=12 Lyra2}"            with points, \
-	G2."lyra2-sse.dat"        using 4:5 title "{/arial=12 Lyra2-SSE}"        with points, \
-	G2."makwa.dat"            using 4:5 title "{/arial=12 Makwa}"            with points, \
-	G2."parallel.dat"         using 4:5 title "{/arial=12 Parallel}"         with points, \
-	G2."pomelo.dat"           using 4:5 title "{/arial=12 POMELO}"           with points, \
-	G2."pomelo-sse.dat"       using 4:5 title "{/arial=12 POMELO-SSE}"       with points, \
-	G2."pufferfish.dat"       using 4:5 title "{/arial=12 Pufferfish}"       with points, \
-	G2."yescrypt.dat"         using 4:5 title "{/arial=12 yescrypt}"         with points, \
-	G2."yescrypt-sse.dat"     using 4:5 title "{/arial=12 yescrypt SSE}"     with points
+	G2."argon.dat"            using 4:5 title "{/arial=16 Argon}"            with points, \
+	G2."argon-aesni.dat"      using 4:5 title "{/arial=16 Argon-AESNI}"      with points, \
+	G2."argon2d.dat"          using 4:5 title "{/arial=16 Argon2d}"          with points, \
+	G2."argon2i.dat"          using 4:5 title "{/arial=16 Argon2i}"          with points, \
+	G2."battcrypt.dat"        using 4:5 title "{/arial=16 battcrypt}"        with points, \
+	G2."catena-butterfly.dat" using 4:5 title "{/arial=16 Catena-Butterfly}" with points, \
+	G2."catena-dragonfly.dat" using 4:5 title "{/arial=16 Catena-Dragonfly}" with points, \
+	G2."lyra2.dat"            using 4:5 title "{/arial=16 Lyra2}"            with points, \
+	G2."lyra2-sse.dat"        using 4:5 title "{/arial=16 Lyra2-SSE}"        with points, \
+	G2."makwa.dat"            using 4:5 title "{/arial=16 Makwa}"            with points, \
+	G2."parallel.dat"         using 4:5 title "{/arial=16 Parallel}"         with points, \
+	G2."pomelo.dat"           using 4:5 title "{/arial=16 POMELO}"           with points, \
+	G2."pomelo-sse.dat"       using 4:5 title "{/arial=16 POMELO-SSE}"       with points, \
+	G2."pufferfish.dat"       using 4:5 title "{/arial=16 Pufferfish}"       with points, \
+	G2."yescrypt.dat"         using 4:5 title "{/arial=16 yescrypt}"         with points, \
+	G2."yescrypt-sse.dat"     using 4:5 title "{/arial=16 yescrypt SSE}"     with points
 
 # G3 run time, variable input
 set terminal png enhanced font "arial,10" fontscale 1.0 size 1024, 1536
@@ -124,7 +124,7 @@ set size 0.5,0.125
 set xtics 50
 
 set xr [1:300]
-set yr [30:110]
+set yr [0:110]
 
 set origin 0.000,0.875 ; set label 1 'Argon'            at 280,90 right ; plot G3."argon.dat"            using 1:5 with points
 set origin 0.500,0.875 ; set label 1 'Argon-AESNI'      at 280,90 right ; plot G3."argon-aesni.dat"      using 1:5 with points
@@ -162,7 +162,7 @@ set size 0.5,0.125
 set xtics 50
 
 set xr [1:300]
-set yr [30:110]
+set yr [0:110]
 
 set origin 0.000,0.875 ; set label 1 'Argon'            at 280,90 right ; plot G4."argon.dat"            using 2:5 with points
 set origin 0.500,0.875 ; set label 1 'Argon-AESNI'      at 280,90 right ; plot G4."argon-aesni.dat"      using 2:5 with points
