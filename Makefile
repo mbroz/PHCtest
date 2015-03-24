@@ -42,4 +42,7 @@ clean:
 	done
 	rm -f src/*.o *~ core tst-*
 
+# ignore build errors
+.IGNORE: hash_libs $(TARGETS)
+
 .PHONY: clean default hash_libs
