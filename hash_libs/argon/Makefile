@@ -3,7 +3,7 @@ CPPFLAGS_REF=-lpthread -std=c++11 -O2
 CPPFLAGS_AESNI=-m64 -maes -mavx -lpthread -std=c++11 -O3
 #LIBS=-pthread -lcrypto -lm
 
-TARGETS=argon.a argon-aesni.a
+TARGETS=argon.a
 
 SOURCES_ARGON=\
 	Argon-Reference/aes.cpp \
