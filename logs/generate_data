@@ -57,7 +57,7 @@ PAR="-h -s 16 -o 32 "
 MAX=300
 STEP=1
 run argon            i_len 1 $STEP $MAX "$PAR -m     0 -t  2000 -i "
-run argon-aesni      i_len 1 $STEP $MAX "$PAR -m     0 -t    50 -i "
+run argon-aesni      i_len 1 $STEP $MAX "$PAR -m     0 -t  1500 -i "
 run argon2d          i_len 1 $STEP $MAX "$PAR -m   100 -t   255 -i "
 run argon2i          i_len 1 $STEP $MAX "$PAR -m   100 -t  2000 -i "
 run battcrypt        i_len 1 $STEP $MAX "$PAR -m     0 -t    17 -i "
@@ -78,7 +78,7 @@ PAR="-h -s 16 -i 32 "
 MAX=300
 STEP=1
 run argon            o_len 1 $STEP $MAX "$PAR -m     0 -t   2000 -o "
-run argon-aesni      o_len 1 $STEP $MAX "$PAR -m     0 -t     50 -o "
+run argon-aesni      o_len 1 $STEP $MAX "$PAR -m     0 -t   1500 -o "
 run argon2d          o_len 1 $STEP $MAX "$PAR -m   100 -t    255 -o "
 run argon2i          o_len 1 $STEP $MAX "$PAR -m   100 -t   2000 -o "
 run battcrypt        o_len 1 $STEP $MAX "$PAR -m     0 -t     17 -o "
