@@ -1,6 +1,6 @@
 CC=gcc
-CPPFLAGS_REF=-std=c99 -Wall -pedantic -O2 -fopenmp
-CPPFLAGS_SSE=-std=c99 -Wall -pedantic -O3 -msse2 -ftree-vectorizer-verbose=1 -fopenmp -funroll-loops -march=native -Ofast -mprefer-avx128 -Wno-unused-variable
+CPPFLAGS_REF=-std=c99 -Wall -pedantic -O2 -fopenmp -DnPARALLEL=1
+CPPFLAGS_SSE=-std=c99 -Wall -pedantic -O3 -msse2 -ftree-vectorizer-verbose=1 -fopenmp -funroll-loops -march=native -Ofast -mprefer-avx128 -Wno-unused-variable -DnPARALLEL=1
 
 TARGETS=lyra2.a lyra2-sse.a
 
