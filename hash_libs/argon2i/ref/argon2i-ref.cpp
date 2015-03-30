@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <time.h> 
 
-#include <stdlib.h>
 #include <string.h>
 #include <vector>
 #include <thread>
@@ -104,7 +103,7 @@ void GenerateAddresses(const scheme_info_t* info, position_info_t* position, uin
 		if (position->slice == 0 && position->pass == 0 && position->index==0&& i <2)
 			continue;
 		uint32_t pseudo_rand = ((uint32_t*)address_block.v)[i];
-		uint32_t total_area = reference_area_size + i - 1;
+		uint32_t total_area = reference_area_size  +(position->index)*ADDRESSES_PER_BLOCK+ i - 1;
 		if (position->index == 0 && i == 0) //Special rule for the first block of the segment, except for the very beginning (i==0 is skipped in the first slice, first pass)
 		{
 			total_area -= lanes - 1; //Excluding last blocks of the other lanes
@@ -301,7 +300,7 @@ void FillMemory(scheme_info_t* info) //Main loop: filling memory <t_cost> times
 		fprintf(fp, "\n After pass %d:\n", r);
 		for (uint32_t i = 0; i < info->mem_size; ++i)
 		{
-			fprintf(fp, "Block %.4d [0]: %x\n", i, info->state[i][0]);
+			fprintf(fp, "Block %.4d [0]: %x\n", i, (uint32_t)info->state[i][0]);
 
 		}
 		fclose(fp);
@@ -349,10 +348,11 @@ int Argon2iRef(uint8_t *out, uint32_t outlen, const uint8_t *msg, uint32_t msgle
 	if (t_cost<MIN_TIME)
 		t_cost = MIN_TIME;
 
-	if (lanes<MIN_LANES)
-		lanes = MIN_LANES;
 	if (lanes>m_cost / BLOCK_SIZE_KILOBYTE)
 		lanes = m_cost / BLOCK_SIZE_KILOBYTE;
+	if (lanes<MIN_LANES)
+		lanes = MIN_LANES;
+	
 
 	//printf("Argon2d called, %d m_cost %d lanes\n", m_cost, lanes);
 
@@ -372,6 +372,6 @@ int Argon2iRef(uint8_t *out, uint32_t outlen, const uint8_t *msg, uint32_t msgle
 
 int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
 	 unsigned int t_cost, unsigned int m_cost)
-{
+ {
 	return Argon2iRef((uint8_t*)out, (uint32_t)outlen, (const uint8_t*)in, (uint32_t)inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, 1);
-}
+ }

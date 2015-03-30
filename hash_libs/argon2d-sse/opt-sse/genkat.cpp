@@ -3,15 +3,23 @@
 #include "stdint.h"
 #include <time.h>
 #include <vector>
+#include <thread>
 #include <random>
 #include <cstring>
 using namespace std;
 
+#if defined(_MSC_VER)
+#include "intrin.h"
+#else
+#include <x86intrin.h>
+#endif
+#include "emmintrin.h"
 
+#pragma intrinsic(_mm_set_epi64x)  
 
 #include "argon2d.h"
 #include "blake2.h"
-
+#define _MEASURE
 
 void GenKat()
 {
@@ -28,7 +36,7 @@ void GenKat()
 	for (unsigned m_cost = 1; m_cost <= 1000; m_cost *= 10)
 	{
 
-		for (unsigned p_len = 16; p_len <=16; p_len += 128)
+		for (unsigned p_len = 16; p_len <= 16; p_len += 128)
 		{
 			for (unsigned s_len = 8; s_len <= 8; s_len += 16)
 			{
@@ -46,7 +54,7 @@ void GenKat()
 						clock_t start = clock();
 						i2 = __rdtscp(&ui2);
 #endif
-						Argon2dRef(out, outlen, zero_array, p_len, one_array, s_len, NULL, 0, NULL, 0, t_cost, m_cost, thr);
+						Argon2dOpt(out, outlen, zero_array, p_len, one_array, s_len, NULL, 0, NULL, 0, t_cost, m_cost, thr);
 #ifdef _MEASURE
 						i3 = __rdtscp(&ui3);
 						clock_t finish = clock();
@@ -70,14 +78,14 @@ void GenKat()
 	}
 }
 
-void Benchmark()  //Benchmarks Argon with salt length 16, password length 128, tcost 3, and different threads and mcost
+void Benchmark()  //Benchmarks Argon with salt length 16, password length 128, tcost 1, and different threads and mcost
 {
 	unsigned char out[32];
 	int i = 0;
-	size_t outlen = 16;
-	uint32_t t_cost = 3;
-	size_t inlen = 128;
-	size_t saltlen = 16;
+	uint32_t outlen = 16;
+	uint32_t t_cost = 1;
+	uint32_t inlen = 128;
+	uint32_t saltlen = 16;
 
 	unsigned char zero_array[256];
 	memset(zero_array, 0, 256);
@@ -86,7 +94,7 @@ void Benchmark()  //Benchmarks Argon with salt length 16, password length 128, t
 
 	for (uint32_t m_cost = (uint32_t)1 << 1; m_cost <= (uint32_t)1 << 22; m_cost *= 2)
 	{
-		for (uint32_t thread_n = 1; thread_n <= 16; thread_n++)
+		for (uint32_t thread_n = 1; thread_n <= 8; thread_n++)
 		{
 
 #ifdef _MEASURE
@@ -96,22 +104,22 @@ void Benchmark()  //Benchmarks Argon with salt length 16, password length 128, t
 			i2 = __rdtscp(&ui2);
 #endif
 
-			Argon2dRef(out, outlen, zero_array, inlen, one_array, saltlen, NULL, 0, NULL, 0, t_cost, m_cost, thread_n);
+			Argon2dOpt(out, outlen, zero_array, inlen, one_array, saltlen, NULL, 0, NULL, 0, t_cost, m_cost, thread_n);
 
 #ifdef _MEASURE
 			i3 = __rdtscp(&ui3);
 			clock_t finish = clock();
 			d2 = (i3 - i2) / (m_cost);
 			float mcycles = (float)(i3 - i2) / (1 << 20);
-			printf("Argon2d %d pass(es)  %d Mbytes %d threads:  %2.2f cpb %2.2f Mcycles ", t_cost, m_cost >> 10, thread_n, (float)d2 / 1000, mcycles);
+			printf("Argon2d %d pass(es)  %d Mbytes %d threads:  %2.2f cpb %2.2f Mcycles\n ", t_cost, m_cost >> 10, thread_n, (float)d2 / 1000, mcycles);
 			float run_time = ((float)finish - start) / (CLOCKS_PER_SEC);
-			printf("%2.4f seconds\n\n", run_time);
+			//printf("%2.4f seconds\n\n", run_time);
 #endif
 		}
 	}
 }
 
-void Run(void *out, size_t outlen, size_t inlen, size_t saltlen,
+void Run(void *out, uint32_t outlen, uint32_t inlen, uint32_t saltlen,
 	uint32_t t_cost, size_t m_cost, uint32_t thread_n)
 {
 #ifdef _MEASURE

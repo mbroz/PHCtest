@@ -1,5 +1,5 @@
 /*
-   BLAKE2 reference source code package - reference C implementations
+   BLAKE2 reference source code package - optimized C implementations
 
    Written in 2012 by Samuel Neves <sneves@dei.uc.pt>
 

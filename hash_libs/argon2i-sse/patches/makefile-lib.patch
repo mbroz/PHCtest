@@ -1,0 +1,26 @@
+---
+ Makefile |   17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
+
+Index: argon2i-sse/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ argon2i-sse/Makefile	2015-03-30 14:39:13.959177399 +0200
+@@ -0,0 +1,17 @@
++CC=g++
++CPPFLAGS=-m64 -mavx -std=c++11 -pthread -O3
++#LIBS=-pthread -lcrypto -lm
++
++TARGETS=argon2i-sse.a
++
++SOURCES_ARGON2I=$(wildcard opt-sse/*.cpp)
++
++default: $(TARGETS)
++
++argon2i-sse.a: $(SOURCES_ARGON2I:.cpp=.o)
++	ar rcs $@ $^
++
++clean:
++	rm -f opt-sse/*.o $(TARGETS)
++
++.PHONY: clean

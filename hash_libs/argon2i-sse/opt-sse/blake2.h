@@ -1,5 +1,5 @@
 /*
-   BLAKE2 reference source code package - reference C implementations
+   BLAKE2 reference source code package - optimized C implementations
 
    Written in 2012 by Samuel Neves <sneves@dei.uc.pt>
 
@@ -20,7 +20,7 @@
 #if defined(_MSC_VER)
 #define ALIGN(x) __declspec(align(x))
 #else
-#define ALIGN(x) __attribute__((aligned(x)))
+#define ALIGN(x) __attribute__ ((__aligned__(x)))
 #endif
 
 #if defined(__cplusplus)
@@ -69,7 +69,7 @@ extern "C" {
     uint8_t  buf[2 * BLAKE2S_BLOCKBYTES];
     size_t   buflen;
     uint8_t  last_node;
-  } blake2s_state ;
+  } blake2s_state;
 
   typedef struct __blake2b_param
   {
@@ -96,7 +96,7 @@ extern "C" {
     uint8_t  last_node;
   } blake2b_state;
 
-  typedef struct __blake2sp_state
+  ALIGN( 64 ) typedef struct __blake2sp_state
   {
     blake2s_state S[8][1];
     blake2s_state R[1];
@@ -104,7 +104,7 @@ extern "C" {
     size_t  buflen;
   } blake2sp_state;
 
-  typedef struct __blake2bp_state
+  ALIGN( 64 ) typedef struct __blake2bp_state
   {
     blake2b_state S[4][1];
     blake2b_state R[1];
