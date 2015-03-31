@@ -6,6 +6,7 @@ function run() # $1 name $2 log $3 from $4 to
 
 	[ ! -d $2 ] && mkdir $2
 	OUT=$2/$1.dat
+	[ ! -f "$OUT" ] && echo "# in_len out_len m_cost t_cost time[ms] memory[kB]" > "$OUT"
 	for i in $(seq $3 $4 $5); do
 		../tst-$1 -f $OUT -w -r 3 $6 $i
 		echo -n "[$i]"
@@ -16,25 +17,61 @@ function run() # $1 name $2 log $3 from $4 to
 
 # G1 tcost MIN, mcost variable
 PAR="-s 16 -i 32 -o 32 "
-run argon            m_cost 0    100     8000 "$PAR -t 0 -m "
-run argon-aesni      m_cost 0    100     8000 "$PAR -t 0 -m "
-run argon2d          m_cost 0    100     8000 "$PAR -t 0 -m "
-run argon2d-sse      m_cost 0    100     8000 "$PAR -t 0 -m "
-run argon2i          m_cost 0    100     8000 "$PAR -t 0 -m "
-run argon2i-sse      m_cost 0    100     8000 "$PAR -t 0 -m "
+run argon            m_cost       0          1           9 "$PAR -t 0 -m "
+run argon            m_cost      10         10          99 "$PAR -t 0 -m "
+run argon            m_cost     100        100         999 "$PAR -t 0 -m "
+run argon            m_cost    1000        500        9999 "$PAR -t 0 -m "
+run argon            m_cost   10000       5000       99999 "$PAR -t 0 -m "
+run argon            m_cost  100000      50000     1000000 "$PAR -t 0 -m "
+
+run argon-aesni      m_cost       0          1           9 "$PAR -t 0 -m "
+run argon-aesni      m_cost      10         10          99 "$PAR -t 0 -m "
+run argon-aesni      m_cost     100        100         999 "$PAR -t 0 -m "
+run argon-aesni      m_cost    1000        500        9999 "$PAR -t 0 -m "
+run argon-aesni      m_cost   10000       5000      100000 "$PAR -t 0 -m "
+run argon-aesni      m_cost  100000      50000     1000000 "$PAR -t 0 -m "
+
+run argon2d          m_cost       0          1           9 "$PAR -t 0 -m "
+run argon2d          m_cost      10         10          99 "$PAR -t 0 -m "
+run argon2d          m_cost     100        100         999 "$PAR -t 0 -m "
+run argon2d          m_cost    1000        500        9999 "$PAR -t 0 -m "
+run argon2d          m_cost   10000       5000      100000 "$PAR -t 0 -m "
+run argon2d          m_cost  100000      50000     1000000 "$PAR -t 0 -m "
+
+run argon2d-sse      m_cost       0          1           9 "$PAR -t 0 -m "
+run argon2d-sse      m_cost      10         10          99 "$PAR -t 0 -m "
+run argon2d-sse      m_cost     100        100         999 "$PAR -t 0 -m "
+run argon2d-sse      m_cost    1000        500        9999 "$PAR -t 0 -m "
+run argon2d-sse      m_cost   10000       5000      100000 "$PAR -t 0 -m "
+run argon2d-sse      m_cost  100000      50000     1000000 "$PAR -t 0 -m "
+
+run argon2i          m_cost       0          1           9 "$PAR -t 0 -m "
+run argon2i          m_cost      10         10          99 "$PAR -t 0 -m "
+run argon2i          m_cost     100        100         999 "$PAR -t 0 -m "
+run argon2i          m_cost    1000        500        9999 "$PAR -t 0 -m "
+run argon2i          m_cost   10000       5000      100000 "$PAR -t 0 -m "
+run argon2i          m_cost  100000      50000     1000000 "$PAR -t 0 -m "
+
+run argon2i-sse      m_cost       0          1           9 "$PAR -t 0 -m "
+run argon2i-sse      m_cost      10         10          99 "$PAR -t 0 -m "
+run argon2i-sse      m_cost     100        100         999 "$PAR -t 0 -m "
+run argon2i-sse      m_cost    1000        500        9999 "$PAR -t 0 -m "
+run argon2i-sse      m_cost   10000       5000      100000 "$PAR -t 0 -m "
+run argon2i-sse      m_cost  100000      50000     1000000 "$PAR -t 0 -m "
+
 run battcrypt        m_cost 0      1       16 "$PAR -t 0 -m "
 run catena-butterfly m_cost 0      1       24 "$PAR -t 1 -m "
 run catena-dragonfly m_cost 0      1       24 "$PAR -t 1 -m "
-run lyra2            m_cost 0    200     9000 "$PAR -t 1 -m "
-run lyra2-sse        m_cost 0    200     9000 "$PAR -t 1 -m "
+run lyra2            m_cost 0    200    10000 "$PAR -t 1 -m "
+run lyra2-sse        m_cost 0    200    10000 "$PAR -t 1 -m "
 #run makwa           m_cost 0      1       20 "$PAR -t 0 -m " # no mcost
 #run parallel        m_cost 0      1     2000 "$PAR -t 0 -m " # no mcost
 run pomelo           m_cost 0      1       17 "$PAR -t 0 -m "
 run pomelo-sse       m_cost 0      1       17 "$PAR -t 0 -m "
-run pufferfish       m_cost 0      1       15 "$PAR -t 0 -m "
+run pufferfish       m_cost 0      1       16 "$PAR -t 0 -m "
 run yescrypt         m_cost 0      1       20 "$PAR -t 0 -m "
 run yescrypt-sse     m_cost 0      1       20 "$PAR -t 0 -m "
-
+exit
 # G2 mcost min, tcost variable
 PAR="-s 16 -i 32 -o 32 "
 run argon            t_cost 0     10      260 "$PAR -m    500 -t "
@@ -69,8 +106,8 @@ run argon2i-sse      i_len 1 $STEP $MAX "$PAR -m   100 -t  2000 -i "
 run battcrypt        i_len 1 $STEP $MAX "$PAR -m     0 -t    17 -i "
 run catena-dragonfly i_len 1 $STEP $MAX "$PAR -m    14 -t   100 -i "
 run catena-butterfly i_len 1 $STEP $MAX "$PAR -m    10 -t    60 -i "
-run lyra2            i_len 1 $STEP $MAX "$PAR -m     6 -t  2000 -i "
-run lyra2-sse        i_len 1 $STEP $MAX "$PAR -m     6 -t  3000 -i "
+run lyra2            i_len 1 $STEP $MAX "$PAR -m     6 -t   500 -i "
+run lyra2-sse        i_len 1 $STEP $MAX "$PAR -m     6 -t  1000 -i "
 run makwa            i_len 1 $STEP $MAX "$PAR -m     0 -t 30000 -i "
 run parallel         i_len 1 $STEP $MAX "$PAR -m     0 -t    11 -i "
 run pomelo           i_len 1 $STEP $MAX "$PAR -m     0 -t    13 -i "
@@ -92,8 +129,8 @@ run argon2i-sse      o_len 1 $STEP $MAX "$PAR -m   100 -t   2000 -o "
 run battcrypt        o_len 1 $STEP $MAX "$PAR -m     0 -t     17 -o "
 run catena-dragonfly o_len 1 $STEP $MAX "$PAR -m    14 -t    100 -o "
 run catena-butterfly o_len 1 $STEP $MAX "$PAR -m    10 -t     60 -o "
-run lyra2            o_len 1 $STEP $MAX "$PAR -m     6 -t   2000 -o "
-run lyra2-sse        o_len 1 $STEP $MAX "$PAR -m     6 -t   3000 -o "
+run lyra2            o_len 1 $STEP $MAX "$PAR -m     6 -t    500 -o "
+run lyra2-sse        o_len 1 $STEP $MAX "$PAR -m     6 -t   1000 -o "
 run makwa            o_len 1 $STEP $MAX "$PAR -m     0 -t  30000 -o "
 run parallel         o_len 1 $STEP $MAX "$PAR -m     0 -t     11 -o "
 run pomelo           o_len 1 $STEP $MAX "$PAR -m     0 -t     13 -o "
