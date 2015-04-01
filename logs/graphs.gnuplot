@@ -148,7 +148,7 @@ set logscale x
 set logscale y
 set key inside left
 #set label font "arial,16"
-set output 'mc_cost_2/memory_time.png'
+set output 'mc_cost_2/memory_time_round.png'
 
 set multiplot
 set size 0.5,0.5
