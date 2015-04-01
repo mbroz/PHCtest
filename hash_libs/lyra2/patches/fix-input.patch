@@ -1,61 +1,61 @@
 ---
- Lyra2.c     |    7 +++++--
- sse/Lyra2.c |    8 ++++++--
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ Lyra2.c     |   10 +++++++++-
+ sse/Lyra2.c |   12 ++++++++++--
+ 2 files changed, 19 insertions(+), 3 deletions(-)
 
 Index: lyra2/Lyra2.c
 ===================================================================
---- lyra2.orig/Lyra2.c	2015-02-11 10:51:35.683500791 +0100
-+++ lyra2/Lyra2.c	2015-02-11 10:56:44.048688240 +0100
-@@ -85,7 +85,8 @@ int LYRA2(void *K, unsigned int kLen, co
+--- lyra2.orig/Lyra2.c	2015-04-01 19:08:51.409808656 +0200
++++ lyra2/Lyra2.c	2015-04-01 19:08:51.405808640 +0200
+@@ -85,7 +85,10 @@ int LYRA2(void *K, unsigned int kLen, co
  
      uint64_t i;                 //auxiliary iteration counter
      //==========================================================================/
 -    
 +    if (nRows < 3)
 +      return -1;
++    if (timeCost < 1)
++      return -1;
      //========== Initializing the Memory Matrix and pointers to it =============//
      //Tries to allocate enough space for the whole memory matrix
      i = (uint64_t) ((uint64_t) nRows * (uint64_t) ROW_LEN_BYTES);
-@@ -291,6 +292,9 @@ int LYRA2(void *K, unsigned int kLen, co
+@@ -291,6 +294,11 @@ int LYRA2(void *K, unsigned int kLen, co
          return -1;
      }
  
 +    if (nRows < 3)
 +      return -1;
++    if (timeCost < 1)
++      return -1;
 +
  #if _OPENMP <= 201107  //OpenMP 3.X or less 
      #pragma omp parallel num_threads(nPARALLEL) default(none) /*private(pwd)*/ shared(memMatrix,  pKeys, pwd, pwdlen, salt, saltlen, nRows, nCols, kLen, timeCost)
  #endif // _OPENMP
-@@ -540,7 +544,6 @@ int LYRA2(void *K, unsigned int kLen, co
-     // Returns in the correct variable
-     memcpy(K, pKeys[0], kLen);
- 
--
-     //========================= Freeing the memory =============================//
-     free(memMatrix);
- 
 Index: lyra2/sse/Lyra2.c
 ===================================================================
---- lyra2.orig/sse/Lyra2.c	2015-02-11 10:51:35.683500791 +0100
-+++ lyra2/sse/Lyra2.c	2015-02-11 10:54:30.300121343 +0100
-@@ -83,7 +83,8 @@ int LYRA2(void *K, unsigned int kLen, co
+--- lyra2.orig/sse/Lyra2.c	2015-04-01 19:08:51.409808656 +0200
++++ lyra2/sse/Lyra2.c	2015-04-01 19:08:51.405808640 +0200
+@@ -83,7 +83,10 @@ int LYRA2(void *K, unsigned int kLen, co
  
      uint64_t i;                 //auxiliary iteration counter
      //==========================================================================/
 -
 +    if (nRows < 3)
 +      return -1;
++    if (timeCost < 1)
++      return -1;
      //========== Initializing the Memory Matrix and pointers to it =============//
      //Tries to allocate enough space for the whole memory matrix
      i = (uint64_t) ((uint64_t)nRows * (uint64_t)ROW_LEN_BYTES);
-@@ -288,7 +289,10 @@ int LYRA2(void *K, unsigned int kLen, co
+@@ -288,7 +291,12 @@ int LYRA2(void *K, unsigned int kLen, co
      if (pKeys == NULL) {
          return -1;
      }
 -    
 +
 +    if (nRows < 3)
++      return -1;
++    if (timeCost < 1)
 +      return -1;
 +
  #if _OPENMP <= 201107  //OpenMP 3.X or less 

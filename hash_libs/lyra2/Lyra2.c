@@ -87,6 +87,8 @@ int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, cons
     //==========================================================================/
     if (nRows < 3)
       return -1;
+    if (timeCost < 1)
+      return -1;
     //========== Initializing the Memory Matrix and pointers to it =============//
     //Tries to allocate enough space for the whole memory matrix
     i = (uint64_t) ((uint64_t) nRows * (uint64_t) ROW_LEN_BYTES);
@@ -293,6 +295,8 @@ int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, cons
     }
 
     if (nRows < 3)
+      return -1;
+    if (timeCost < 1)
       return -1;
 
 #if _OPENMP <= 201107  //OpenMP 3.X or less 
@@ -543,6 +547,7 @@ int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, cons
 
     // Returns in the correct variable
     memcpy(K, pKeys[0], kLen);
+
 
     //========================= Freeing the memory =============================//
     free(memMatrix);
