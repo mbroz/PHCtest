@@ -10,7 +10,7 @@ G4='o_len/'
 # G1, mcost variable
 
 set title "PHC candidates, Real used memory vs memory cost\n{/arial=12[salt = 16, in,out = 32, tcost = MIN]}"
-set xlabel "Memory cost"
+set xlabel "Memory cost parameter"
 set ylabel "Used memory (RUSAGE difference) [kB]"
 set logscale x
 set logscale y
@@ -35,7 +35,7 @@ plot [1:10000][100:1000000]\
 	G1."yescrypt-sse.dat"     using 3:6 title "{/arial=16 yescrypt-SSE}"     with points
 
 set title "PHC candidates, Real run time vs memory cost\n{/arial=12[salt = 16, in,out = 32, tcost = MIN]}"
-set xlabel "Memory cost"
+set xlabel "Memory cost parameter"
 set ylabel "Run time [ms]"
 set logscale x
 set logscale y
@@ -87,7 +87,7 @@ plot [1000:1000000][1:15000]\
 # G2 tcost variable
 
 set title "PHC candidates, Real used memory vs time cost\n{/arial=12[salt = 16, in,out = 32, mcost = MIN]}"
-set xlabel "Time cost"
+set xlabel "Time cost parameter"
 set ylabel "Used memory (RUSAGE difference) [kB]"
 set logscale x
 set logscale y
@@ -114,7 +114,7 @@ plot [1:1000000][1:100000]\
 	G2."yescrypt-sse.dat"     using 4:6 title "{/arial=16 yescrypt-SSE}"     with points
 
 set title "PHC candidates, Real run time vs time cost\n{/arial=12[salt = 16, in,out = 32, mcost = MIN]}"
-set xlabel "Time cost"
+set xlabel "Time cost parameter"
 set ylabel "Run time [ms]"
 set logscale x
 set logscale y
