@@ -2,10 +2,10 @@
  Makefile |   12 ++++++++++--
  1 file changed, 10 insertions(+), 2 deletions(-)
 
-Index: catena-dragonfly/Makefile
+Index: catena-butterfly/Makefile
 ===================================================================
---- catena-dragonfly.orig/Makefile	2015-02-11 10:04:27.000000000 +0100
-+++ catena-dragonfly/Makefile	2015-03-01 22:22:07.380069982 +0100
+--- catena-butterfly.orig/Makefile	2015-02-11 10:04:27.758776875 +0100
++++ catena-butterfly/Makefile	2015-03-01 22:21:52.932042908 +0100
 @@ -43,13 +43,21 @@ endif
  
  .PHONY: all blake2b Butterfly Dragonfly catena

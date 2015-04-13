@@ -6,30 +6,37 @@
 #define __STDC_CONSTANT_MACROS
 #include <stdint.h>
 
-#ifdef __SSE2__
-#include <emmintrin.h>
-#endif 
-
 #include "catena.h"
 #include "catena-helpers.h"
 #include "hash.h"
 
-#ifdef ARC_BIG_ENDIAN
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+  #define TO_LITTLE_ENDIAN_64(n) (n)
+  #define TO_LITTLE_ENDIAN_32(n) (n)
+#elif __BYTE_ORDER == __BIG_ENDIAN
   #define TO_LITTLE_ENDIAN_64(n) bswap_64(n)
   #define TO_LITTLE_ENDIAN_32(n) bswap_32(n)
 #else
+  #warning "byte order couldn't be detected. This affects key generation and keyed hashing"
   #define TO_LITTLE_ENDIAN_64(n) (n)
   #define TO_LITTLE_ENDIAN_32(n) (n)
 #endif
 
+/* Ensure that a pointer passed to the PHS interface stays const
+ */
+#ifdef OVERWRITE
+  #define MAYBECONST 
+#else
+  #define MAYBECONST const
+#endif
 
 /***************************************************/
 
-int __Catena(const uint8_t *pwd,   const uint32_t pwdlen,
+int __Catena(MAYBECONST uint8_t *pwd,   const uint32_t pwdlen,
 	     const uint8_t *salt,  const uint8_t  saltlen,
 	     const uint8_t *data,  const uint32_t datalen,
 	     const uint8_t lambda, const uint8_t  min_garlic,
-	     const uint8_t garlic, const size_t  hashlen,
+	     const uint8_t garlic, const uint8_t  hashlen,
 	     const uint8_t client, const uint8_t  tweak_id, uint8_t *hash)
 {
   uint8_t x[H_LEN];
@@ -38,7 +45,7 @@ int __Catena(const uint8_t *pwd,   const uint32_t pwdlen,
   uint8_t c;
 
   if((hashlen > H_LEN) || (garlic > 63) || (min_garlic > garlic) || 
-    (lambda == 0)){
+    (lambda == 0) || (garlic == 0)){
      return -1;
   }
 
@@ -56,6 +63,11 @@ int __Catena(const uint8_t *pwd,   const uint32_t pwdlen,
 
   /* Compute the initial value to hash  */
   __Hash5(hv, H_LEN, t, 4, x, H_LEN, pwd,  pwdlen, salt, saltlen, x);
+
+  /*Overwrite Password if enabled*/
+#ifdef OVERWRITE
+  erasepwd(pwd,pwdlen);
+#endif
 
   Flap(x, lambda, (min_garlic+1)/2, salt, saltlen, x);
 
@@ -78,7 +90,7 @@ int __Catena(const uint8_t *pwd,   const uint32_t pwdlen,
 
 /***************************************************/
 
-int Catena(const uint8_t *pwd,   const uint32_t pwdlen,
+int Catena(uint8_t *pwd,   const uint32_t pwdlen,
 	   const uint8_t *salt,  const uint8_t  saltlen,
 	   const uint8_t *data,  const uint32_t datalen,
 	   const uint8_t lambda, const uint8_t  min_garlic,
@@ -94,7 +106,7 @@ int Catena(const uint8_t *pwd,   const uint32_t pwdlen,
 /***************************************************/
 
 
-int Naive_Catena(const char *pwd,  const char *salt, const char *data,
+int Naive_Catena(char *pwd,  const char *salt, const char *data,
 		  uint8_t hash[H_LEN])
 {
   return __Catena( (uint8_t  *) pwd, strlen(pwd),
@@ -107,7 +119,7 @@ int Naive_Catena(const char *pwd,  const char *salt, const char *data,
 /***************************************************/
 
 
-int Simple_Catena(const uint8_t *pwd,   const uint32_t pwdlen,
+int Simple_Catena(uint8_t *pwd,   const uint32_t pwdlen,
 		  const uint8_t *salt,  const uint8_t  saltlen,
 		  const uint8_t *data,  const uint32_t datalen,
 		  uint8_t hash[H_LEN])
@@ -120,7 +132,7 @@ int Simple_Catena(const uint8_t *pwd,   const uint32_t pwdlen,
 
 /***************************************************/
 
-int Catena_Client(const uint8_t  *pwd,   const uint32_t pwdlen,
+int Catena_Client(uint8_t  *pwd,   const uint32_t pwdlen,
 		  const uint8_t  *salt,  const uint8_t  saltlen,
 		  const uint8_t  *data,  const uint32_t datalen,
 		  const uint8_t lambda, const uint8_t  min_garlic,
@@ -168,10 +180,48 @@ void CI_Update(const uint8_t *old_hash,  const uint8_t lambda,
   memcpy(new_hash,x,hashlen);
 }
 
+/***************************************************/
+
+void CI_Keyed_Update(const uint8_t *old_hash,  const uint8_t lambda,
+            const uint8_t *salt,      const uint8_t saltlen,
+            const uint8_t old_garlic, const uint8_t new_garlic,
+            const uint8_t hashlen,    const uint8_t *key,
+            const uint64_t uuid,      uint8_t *new_hash)
+{
+  uint8_t keystream[H_LEN];
+  uint64_t tmp = TO_LITTLE_ENDIAN_64(uuid);
+  uint8_t c;
+  uint8_t x[H_LEN];
+
+  memcpy(x, old_hash, hashlen);
+  memset(x+hashlen, 0, H_LEN-hashlen);
+
+  __Hash4(key, KEY_LEN,  (uint8_t*) &tmp, 8, &old_garlic, sizeof(uint8_t), key, 
+      KEY_LEN, keystream);
+
+  //decrypt the old hash
+  for(int i=0; i<hashlen; i++) x[i] ^= keystream[i];
+
+  for(c=old_garlic+1; c <= new_garlic; c++)
+  {
+      Flap(x, lambda, c, salt, saltlen, x);
+      __Hash2(&c,1,x, H_LEN, x);
+      memset(x+hashlen, 0, H_LEN-hashlen);
+  }
+
+  __Hash4(key, KEY_LEN,  (uint8_t*) &tmp, 8, &new_garlic, sizeof(uint8_t), key, 
+      KEY_LEN, keystream);
+
+  //encrypt the new hash
+  for(int i=0; i<hashlen; i++) x[i] ^= keystream[i];
+
+  memcpy(new_hash,x,hashlen);
+}
+
 
 /***************************************************/
 
-void Catena_KG(const uint8_t *pwd,   const uint32_t pwdlen,
+void Catena_KG(uint8_t *pwd,   const uint32_t pwdlen,
 	       const uint8_t *salt,  const uint8_t saltlen,
 	       const uint8_t *data,  const uint32_t datalen,
 	       const uint8_t lambda, const uint8_t  min_garlic,
@@ -207,7 +257,7 @@ void Catena_KG(const uint8_t *pwd,   const uint32_t pwdlen,
 
 /***************************************************/
 
-void Catena_Keyed_Hashing(const uint8_t *pwd,   const uint32_t pwdlen,
+void Catena_Keyed_Hashing(uint8_t *pwd,   const uint32_t pwdlen,
 			  const uint8_t *salt,  const uint8_t saltlen,
 			  const uint8_t *data,  const uint32_t datalen,
 			  const uint8_t lambda, const uint8_t  min_garlic,
@@ -223,17 +273,24 @@ void Catena_Keyed_Hashing(const uint8_t *pwd,   const uint32_t pwdlen,
 	    lambda, min_garlic, garlic, hashlen,
 	    REGULAR, PASSWORD_HASHING_MODE, chash);
 
-   __Hash3(key, KEY_LEN,  (uint8_t*) &tmp, 8, key, KEY_LEN, keystream);
+   __Hash4(key, KEY_LEN,  (uint8_t*) &tmp, 8, &garlic, sizeof(uint8_t), key, 
+      KEY_LEN, keystream);
 
    for(i=0; i<hashlen; i++) chash[i] ^= keystream[i];
 }
+
 
 /***************************************************/
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 int PHS(void *out, size_t outlen,  const void *in, size_t inlen,
 	   const void *salt, size_t saltlen, unsigned int t_cost,
 	   unsigned int m_cost) {
-  return __Catena((uint8_t * )in, inlen, salt, saltlen, (const uint8_t *)
+  //check range of parameters against the parameter types of __Catena
+  if((outlen > UINT8_MAX) || (inlen > UINT32_MAX) || (saltlen > UINT32_MAX) || 
+      (t_cost > UINT8_MAX) || (m_cost > UINT8_MAX)){
+    return 1;
+  }
+  return __Catena((const uint8_t * )in, inlen, salt, saltlen, (const uint8_t *)
 		  "", 0, t_cost, m_cost, m_cost, outlen, REGULAR,
 		  PASSWORD_HASHING_MODE, out);
 }

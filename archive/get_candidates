@@ -11,5 +11,5 @@ wget -r -l 1 -nd -nc -e robots=off -A '*.pdf,*.tar.gz' https://password-hashing.
 github Argon khovratovich/Argon.git
 github Argon2 khovratovich/Argon2.git
 github Lyra  leocalm/Lyra.git
-github Catena cforler/catena.git
+github Catena medsec/catena.git
 github Pufferfish epixoip/pufferfish.git

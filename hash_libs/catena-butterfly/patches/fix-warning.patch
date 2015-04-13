@@ -1,0 +1,15 @@
+---
+ catena-helpers.c |    1 +
+ 1 file changed, 1 insertion(+)
+
+Index: catena-butterfly/catena-helpers.c
+===================================================================
+--- catena-butterfly.orig/catena-helpers.c	2015-04-13 16:40:47.000000000 +0200
++++ catena-butterfly/catena-helpers.c	2015-04-13 16:52:56.357922445 +0200
+@@ -1,5 +1,6 @@
+ #include <fcntl.h>
+ #include <unistd.h>
++#include <stdlib.h>
+ 
+ #ifdef __SSE2__
+ #include <emmintrin.h>
