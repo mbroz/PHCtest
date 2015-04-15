@@ -3,7 +3,7 @@ CPPFLAGS=-Wall -O2 -fopenmp
 
 TARGETS=yescrypt.a
 
-SOURCES_YESCRYPT=phc.c yescrypt-common.c sha256.c yescrypt-ref.c
+SOURCES_YESCRYPT=phc.c yescrypt-common.c sha256.c yescrypt-opt.c
 SOURCES_YESCRYPT_SSE=phc.c yescrypt-common.c sha256.c yescrypt-simd.c
 
 default: $(TARGETS)

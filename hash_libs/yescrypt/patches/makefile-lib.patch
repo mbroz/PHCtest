@@ -8,14 +8,14 @@ Add library to Makefile.
 Index: yescrypt/Makefile
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ yescrypt/Makefile	2015-02-26 20:00:59.368135183 +0100
++++ yescrypt/Makefile	2015-04-15 19:42:01.606926520 +0200
 @@ -0,0 +1,20 @@
 +CC=gcc
 +CPPFLAGS=-Wall -O2 -fopenmp
 +
 +TARGETS=yescrypt.a
 +
-+SOURCES_YESCRYPT=phc.c yescrypt-common.c sha256.c yescrypt-ref.c
++SOURCES_YESCRYPT=phc.c yescrypt-common.c sha256.c yescrypt-opt.c
 +SOURCES_YESCRYPT_SSE=phc.c yescrypt-common.c sha256.c yescrypt-simd.c
 +
 +default: $(TARGETS)
