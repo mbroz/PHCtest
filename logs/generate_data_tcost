@@ -34,6 +34,8 @@ run pomelo-sse       mc_cost_2 1 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 #run pufferfish      mc_cost_2 0 '7 8 9 10 11 12 13 14 15 16 17 18 19 20 21'
 run yescrypt         mc_cost_2 3 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 run yescrypt-sse     mc_cost_2 3 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
+run yescrypt-2pw     mc_cost_2 3 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
+run yescrypt-2pw-sse mc_cost_2 3 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 
 # t_cost for 3x
 run argon            mc_cost_3 3 '128 256 512 1024 2048 4096 8192 16384 32768 65535 131072 262144 524288 1048576 2097152'
@@ -52,6 +54,8 @@ run lyra2-sse        mc_cost_3 3 '5 11 21 43 85 171 341 683 1365 2731 5461 10923
 run pufferfish       mc_cost_3 0 '7 8 9 10 11 12 13 14 15 16 17 18 19 20 21'
 run yescrypt         mc_cost_3 4 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 run yescrypt-sse     mc_cost_3 4 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
+run yescrypt-2pw     mc_cost_3 4 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
+run yescrypt-2pw-sse mc_cost_3 4 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 
 # t_cost for 4x
 run argon            mc_cost_4 4 '128 256 512 1024 2048 4096 8192 16384 32768 65535 131072 262144 524288 1048576 2097152'
@@ -70,6 +74,8 @@ run pomelo-sse       mc_cost_4 2 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 #run pufferfish      mc_cost_4 0 '7 8 9 10 11 12 13 14 15 16 17 18 19 20 21'
 run yescrypt         mc_cost_4 5 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 run yescrypt-sse     mc_cost_4 5 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
+run yescrypt-2pw     mc_cost_4 5 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
+run yescrypt-2pw-sse mc_cost_4 5 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 
 # t_cost for 5x
 run argon            mc_cost_5 5 '128 256 512 1024 2048 4096 8192 16384 32768 65535 131072 262144 524288 1048576 2097152'
@@ -88,3 +94,5 @@ run lyra2-sse        mc_cost_5 5 '5 11 21 43 85 171 341 683 1365 2731 5461 10923
 run pufferfish       mc_cost_5 1 '7 8 9 10 11 12 13 14 15 16 17 18 19 20 21'
 run yescrypt         mc_cost_5 6 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
 run yescrypt-sse     mc_cost_5 6 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
+run yescrypt-2pw     mc_cost_5 6 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'
+run yescrypt-2pw-sse mc_cost_5 6 '4 5 6 7 8 9 10 11 12 13 14 15 16 17 18'

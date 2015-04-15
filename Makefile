@@ -20,6 +20,8 @@ tortuga_FLAGS=-lm
 twocats_FLAGS=-lcrypto -lpthread
 yescrypt_FLAGS=-fopenmp
 yescrypt-sse_FLAGS=-fopenmp
+yescrypt-2pw_FLAGS=-fopenmp
+yescrypt-2pw-sse_FLAGS=-fopenmp
 
 #CFLAGS=-O2 -Wall
 CFLAGS=-g -Wall

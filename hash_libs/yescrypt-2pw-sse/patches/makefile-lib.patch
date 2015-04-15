@@ -1,0 +1,28 @@
+Add library to Makefile.
+---
+ Makefile |  106 ++++++++++-----------------------------------------------------
+---
+ Makefile |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+Index: yescrypt-2pw-sse/Makefile
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ yescrypt-2pw-sse/Makefile	2015-04-15 20:10:33.444843321 +0200
+@@ -0,0 +1,16 @@
++CC=gcc
++CPPFLAGS=-Wall -march=native -O2 -funroll-loops -fomit-frame-pointer -fopenmp
++
++TARGETS=yescrypt-2pw-sse.a
++
++SOURCES_YESCRYPT_SSE=phc.c yescrypt-common.c sha256.c yescrypt-simd.c
++
++default: $(TARGETS)
++
++yescrypt-2pw-sse.a: $(SOURCES_YESCRYPT_SSE:.c=.o)
++	ar rcs $@ $^
++
++clean:
++	rm -f *.o $(TARGETS)
++
++.PHONY: clean

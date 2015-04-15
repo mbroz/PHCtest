@@ -1,0 +1,31 @@
+---
+ yescrypt-opt.c  |    2 +-
+ yescrypt-simd.c |    2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
+
+Index: yescrypt-2pw/yescrypt-opt.c
+===================================================================
+--- yescrypt-2pw.orig/yescrypt-opt.c	2015-02-01 15:15:31.000000000 +0100
++++ yescrypt-2pw/yescrypt-opt.c	2015-04-15 20:03:55.844172774 +0200
+@@ -195,7 +195,7 @@ blockmix_salsa8(const uint64_t * Bin, ui
+ /* These are tunable */
+ #define PWXsimple 2
+ #define PWXgather 4
+-#define PWXrounds 6
++#define PWXrounds 2
+ #define Swidth 8
+ 
+ /* Derived values.  Not tunable on their own. */
+Index: yescrypt-2pw/yescrypt-simd.c
+===================================================================
+--- yescrypt-2pw.orig/yescrypt-simd.c	2015-02-01 15:10:41.000000000 +0100
++++ yescrypt-2pw/yescrypt-simd.c	2015-04-15 20:05:23.764334360 +0200
+@@ -296,8 +296,6 @@ blockmix_salsa8(const salsa20_blk_t *res
+ 		PWXFORM_X_T x0, x1, x2, x3; \
+ 		__m128i s00, s01, s10, s11, s20, s21, s30, s31; \
+ 		PWXFORM_ROUND PWXFORM_ROUND \
+-		PWXFORM_ROUND PWXFORM_ROUND \
+-		PWXFORM_ROUND PWXFORM_ROUND \
+ 	}
+ 
+ #define XOR4(in) \

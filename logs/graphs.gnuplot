@@ -6,11 +6,8 @@ G1='m_cost/'
 G2='t_cost/'
 G3='i_len/'
 G4='o_len/'
-G5='r_parallel_1/'
-G6='r_parallel_2/'
-G6='r_parallel_0/'
 
-# G5, parallel processing
+# parallel processing
 set terminal png enhanced font "arial,18" fontscale 1.0 size 1600, 1000
 set xlabel "Parallel processes"
 set ylabel "Hashes per second"
@@ -261,7 +258,9 @@ plot [100:10000000][1:1000000]\
 	"mc_cost_2/pomelo.dat"           using 6:5 title "{/arial=12 POMELO}"           with points pt 12 lt 12, \
 	"mc_cost_2/pomelo-sse.dat"       using 6:5 title "{/arial=12 POMELO-SSE}"       with points pt 13 lt 13, \
 	"mc_cost_2/yescrypt.dat"         using 6:5 title "{/arial=12 yescrypt}"         with points pt 15 lt 15, \
-	"mc_cost_2/yescrypt-sse.dat"     using 6:5 title "{/arial=12 yescrypt-SSE}"     with points pt 16 lt 16
+	"mc_cost_2/yescrypt-sse.dat"     using 6:5 title "{/arial=12 yescrypt-SSE}"     with points pt 16 lt 16, \
+	"mc_cost_2/yescrypt-2pw.dat"     using 6:5 title "{/arial=12 yescrypt-2pw}"     with points pt 17 lt 17, \
+	"mc_cost_2/yescrypt-2pw-sse.dat" using 6:5 title "{/arial=12 yescrypt-2pw-SSE}" with points pt 18 lt 18
 
 set title "{/arial=16 Run time vs real memory use}\n{/arial=12[salt = 16, in,out = 32, tcost = 3 x round]}"
 set origin 0.500,0.500
@@ -277,9 +276,11 @@ plot [100:10000000][1:1000000]\
 	"mc_cost_3/catena-dragonfly.dat" using 6:5 title "{/arial=12 Catena-Dragonfly}" with points pt  9 lt  9, \
 	"mc_cost_3/lyra2.dat"            using 6:5 title "{/arial=12 Lyra2}"            with points pt 10 lt 10, \
 	"mc_cost_3/lyra2-sse.dat"        using 6:5 title "{/arial=12 Lyra2-SSE}"        with points pt 11 lt 11, \
-	"mc_cost_3/pufferfish.dat"       using 6:5 title "{/arial=12 Pufferfish}"       with points pt 14 lt 12, \
-	"mc_cost_3/yescrypt.dat"         using 6:5 title "{/arial=12 yescrypt}"         with points pt 15 lt 13, \
-	"mc_cost_3/yescrypt-sse.dat"     using 6:5 title "{/arial=12 yescrypt-SSE}"     with points pt 16 lt 16
+	"mc_cost_3/pufferfish.dat"       using 6:5 title "{/arial=12 Pufferfish}"       with points pt 14 lt 14, \
+	"mc_cost_3/yescrypt.dat"         using 6:5 title "{/arial=12 yescrypt}"         with points pt 15 lt 15, \
+	"mc_cost_3/yescrypt-sse.dat"     using 6:5 title "{/arial=12 yescrypt-SSE}"     with points pt 16 lt 16, \
+	"mc_cost_3/yescrypt-2pw.dat"     using 6:5 title "{/arial=12 yescrypt-2pw}"     with points pt 17 lt 17, \
+	"mc_cost_3/yescrypt-2pw-sse.dat" using 6:5 title "{/arial=12 yescrypt-2pw-SSE}" with points pt 18 lt 18
 
 set title "{/arial=16 Run time vs real memory use}\n{/arial=12[salt = 16, in,out = 32, tcost = 5 x round]}"
 set origin 0.500,0.000
@@ -296,7 +297,9 @@ plot [100:10000000][1:1000000]\
 	"mc_cost_5/lyra2-sse.dat"        using 6:5 title "{/arial=12 Lyra2-SSE}"        with points pt 11 lt 11, \
 	"mc_cost_5/pufferfish.dat"       using 6:5 title "{/arial=12 Pufferfish}"       with points pt 14 lt 14, \
 	"mc_cost_5/yescrypt.dat"         using 6:5 title "{/arial=12 yescrypt}"         with points pt 15 lt 15, \
-	"mc_cost_5/yescrypt-sse.dat"     using 6:5 title "{/arial=12 yescrypt-SSE}"     with points pt 16 lt 16
+	"mc_cost_5/yescrypt-sse.dat"     using 6:5 title "{/arial=12 yescrypt-SSE}"     with points pt 16 lt 16, \
+	"mc_cost_5/yescrypt-2pw.dat"     using 6:5 title "{/arial=12 yescrypt-2pw}"     with points pt 17 lt 17, \
+	"mc_cost_5/yescrypt-2pw-sse.dat" using 6:5 title "{/arial=12 yescrypt-2pw-SSE}" with points pt 18 lt 18
 
 set title "{/arial=16 Run time vs real memory use}\n{/arial=12[salt = 16, in,out = 32, tcost = 4 x round]}"
 set origin 0.000,0.000
@@ -314,8 +317,10 @@ plot [100:10000000][1:1000000]\
 	"mc_cost_4/lyra2-sse.dat"        using 6:5 title "{/arial=12 Lyra2-SSE}"        with points pt 11 lt 11, \
 	"mc_cost_4/pomelo.dat"           using 6:5 title "{/arial=12 POMELO}"           with points pt 12 lt 12, \
 	"mc_cost_4/pomelo-sse.dat"       using 6:5 title "{/arial=12 POMELO-SSE}"       with points pt 13 lt 13, \
-	"mc_cost_4/yescrypt.dat"         using 6:5 title "{/arial=12 yescrypt}"         with points pt 15 lt 14, \
-	"mc_cost_4/yescrypt-sse.dat"     using 6:5 title "{/arial=12 yescrypt-SSE}"     with points pt 16 lt 15
+	"mc_cost_4/yescrypt.dat"         using 6:5 title "{/arial=12 yescrypt}"         with points pt 15 lt 15, \
+	"mc_cost_4/yescrypt-sse.dat"     using 6:5 title "{/arial=12 yescrypt-SSE}"     with points pt 16 lt 16, \
+	"mc_cost_4/yescrypt-2pw.dat"     using 6:5 title "{/arial=12 yescrypt-2pw}"     with points pt 17 lt 17, \
+	"mc_cost_4/yescrypt-2pw-sse.dat" using 6:5 title "{/arial=12 yescrypt-2pw-SSE}" with points pt 18 lt 18
 
 unset multiplot
 

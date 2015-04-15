@@ -34,6 +34,8 @@ run pomelo-sse       hash_vectors 0      1       17 "$PAR -t 0 -m "
 run pufferfish       hash_vectors 0      1       15 "$PAR -t 0 -m "
 run yescrypt         hash_vectors 0      1       20 "$PAR -t 0 -m "
 run yescrypt-sse     hash_vectors 0      1       20 "$PAR -t 0 -m "
+run yescrypt-2pw     hash_vectors 0      1       20 "$PAR -t 0 -m "
+run yescrypt-2pw-sse hash_vectors 0      1       20 "$PAR -t 0 -m "
 
 # G2 mcost min, tcost variable
 PAR="-s 16 -i 32 -o 32 "
@@ -55,6 +57,8 @@ run pomelo-sse       hash_vectors 0      1       15 "$PAR -m      5 -t "
 run pufferfish       hash_vectors 0      1        9 "$PAR -m     10 -t "
 run yescrypt         hash_vectors 0     10      300 "$PAR -m     10 -t "
 run yescrypt-sse     hash_vectors 0     10      300 "$PAR -m     10 -t "
+run yescrypt-2pw     hash_vectors 0     10      300 "$PAR -m     10 -t "
+run yescrypt-2pw-sse hash_vectors 0     10      300 "$PAR -m     10 -t "
 
 # G3 input len 1-MAX, mcost, tcost, output fixed
 PAR="-h -s 16 -o 32 "
@@ -78,6 +82,8 @@ run pomelo-sse       hash_vectors 1 $STEP $MAX "$PAR -m     0 -t    13 -i "
 run pufferfish       hash_vectors 1 $STEP $MAX "$PAR -m     0 -t    12 -i "
 run yescrypt         hash_vectors 1 $STEP $MAX "$PAR -m    10 -t     1 -i "
 run yescrypt-sse     hash_vectors 1 $STEP $MAX "$PAR -m    10 -t     1 -i "
+run yescrypt-2pw     hash_vectors 1 $STEP $MAX "$PAR -m    10 -t     1 -i "
+run yescrypt-2pw-sse hash_vectors 1 $STEP $MAX "$PAR -m    10 -t     1 -i "
 
 # G4 output len 1-MAX, mcost, tcost, input fixed
 PAR="-h -s 16 -i 32 "
@@ -101,3 +107,5 @@ run pomelo-sse       hash_vectors 1 $STEP $MAX "$PAR -m     0 -t     13 -o "
 run pufferfish       hash_vectors 1 $STEP $MAX "$PAR -m     0 -t     12 -o "
 run yescrypt         hash_vectors 1 $STEP $MAX "$PAR -m    10 -t      1 -o "
 run yescrypt-sse     hash_vectors 1 $STEP $MAX "$PAR -m    10 -t      1 -o "
+run yescrypt-2pw     hash_vectors 1 $STEP $MAX "$PAR -m    10 -t      1 -o "
+run yescrypt-2pw-sse hash_vectors 1 $STEP $MAX "$PAR -m    10 -t      1 -o "
