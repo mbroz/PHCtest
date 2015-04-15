@@ -1,0 +1,100 @@
+#!/bin/bash
+
+function run() # $1 name $2 log $3 from $4 to
+{
+	echo "[$(date --rfc-3339=seconds)] -- $2 / $1 --"
+
+	[ ! -d $2 ] && mkdir $2
+	OUT=$2/$1.dat
+	[ ! -f "$OUT" ] && echo "# in_len out_len mcost tcost threads hashes req_time[s] time[ms] hashes_second" > "$OUT"
+	for i in $(seq 1 1 8); do
+		../tst-$1 -f $OUT -P $i -T 60 $3
+		echo -n "[$i]"
+	done
+	echo
+	echo "[$(date --rfc-3339=seconds)] --"
+}
+
+# G1 tcost MIN, mcost ~128kB
+PAR="-s 16 -i 32 -o 32 "
+run argon            r_parallel_0 "$PAR -t 2 -m 128"
+run argon-aesni      r_parallel_0 "$PAR -t 2 -m 128"
+run argon2d          r_parallel_0 "$PAR -t 2 -m 128"
+run argon2d-sse      r_parallel_0 "$PAR -t 2 -m 128"
+run argon2i          r_parallel_0 "$PAR -t 2 -m 128"
+run argon2i-sse      r_parallel_0 "$PAR -t 2 -m 128"
+run battcrypt        r_parallel_0 "$PAR -t 0 -m 4"
+run catena-butterfly r_parallel_0 "$PAR -t 1 -m 11"
+run catena-dragonfly r_parallel_0 "$PAR -t 1 -m 11"
+run lyra2            r_parallel_0 "$PAR -t 1 -m 5"
+run lyra2-sse        r_parallel_0 "$PAR -t 1 -m 5"
+#run makwa            r_parallel_0 "$PAR -t 0 -m 0"
+#run parallel         r_parallel_0 "$PAR -t 0 -m 0"
+run pomelo           r_parallel_0 "$PAR -t 0 -m 5"
+run pomelo-sse       r_parallel_0 "$PAR -t 0 -m 5"
+run pufferfish       r_parallel_0 "$PAR -t 0 -m 8"
+run yescrypt         r_parallel_0 "$PAR -t 0 -m 5"
+run yescrypt-sse     r_parallel_0 "$PAR -t 0 -m 5"
+
+# G1 tcost MIN, mcost ~1MB
+PAR="-s 16 -i 32 -o 32 "
+run argon            r_parallel_1 "$PAR -t 2 -m 1024"
+run argon-aesni      r_parallel_1 "$PAR -t 2 -m 1024"
+run argon2d          r_parallel_1 "$PAR -t 2 -m 1024"
+run argon2d-sse      r_parallel_1 "$PAR -t 2 -m 1024"
+run argon2i          r_parallel_1 "$PAR -t 2 -m 1024"
+run argon2i-sse      r_parallel_1 "$PAR -t 2 -m 1024"
+run battcrypt        r_parallel_1 "$PAR -t 0 -m 7"
+run catena-butterfly r_parallel_1 "$PAR -t 1 -m 14"
+run catena-dragonfly r_parallel_1 "$PAR -t 1 -m 14"
+run lyra2            r_parallel_1 "$PAR -t 1 -m 43"
+run lyra2-sse        r_parallel_1 "$PAR -t 1 -m 43"
+#run makwa            r_parallel_1 "$PAR -t 0 -m 0"
+#run parallel         r_parallel_1 "$PAR -t 0 -m 0"
+run pomelo           r_parallel_1 "$PAR -t 0 -m 7"
+run pomelo-sse       r_parallel_1 "$PAR -t 0 -m 7"
+run pufferfish       r_parallel_1 "$PAR -t 0 -m 10"
+run yescrypt         r_parallel_1 "$PAR -t 0 -m 7"
+run yescrypt-sse     r_parallel_1 "$PAR -t 0 -m 7"
+
+# G1 tcost MIN, mcost ~16MB
+PAR="-s 16 -i 32 -o 32 "
+run argon            r_parallel_2 "$PAR -t 2 -m 16384"
+run argon-aesni      r_parallel_2 "$PAR -t 2 -m 16384"
+run argon2d          r_parallel_2 "$PAR -t 2 -m 16384"
+run argon2d-sse      r_parallel_2 "$PAR -t 2 -m 16384"
+run argon2i          r_parallel_2 "$PAR -t 2 -m 16384"
+run argon2i-sse      r_parallel_2 "$PAR -t 2 -m 16384"
+run battcrypt        r_parallel_2 "$PAR -t 0 -m 11"
+run catena-butterfly r_parallel_2 "$PAR -t 1 -m 18"
+run catena-dragonfly r_parallel_2 "$PAR -t 1 -m 18"
+run lyra2            r_parallel_2 "$PAR -t 1 -m 683"
+run lyra2-sse        r_parallel_2 "$PAR -t 1 -m 683"
+#run makwa            r_parallel_2 "$PAR -t 0 -m 0"
+#run parallel         r_parallel_2 "$PAR -t 0 -m 0"
+run pomelo           r_parallel_2 "$PAR -t 0 -m 11"
+run pomelo-sse       r_parallel_2 "$PAR -t 0 -m 11"
+run pufferfish       r_parallel_2 "$PAR -t 0 -m 14"
+run yescrypt         r_parallel_2 "$PAR -t 0 -m 11"
+run yescrypt-sse     r_parallel_2 "$PAR -t 0 -m 11"
+
+# G1 tcost MIN, mcost ~128MB
+PAR="-s 16 -i 32 -o 32 "
+run argon            r_parallel_3 "$PAR -t 2 -m 131072"
+run argon-aesni      r_parallel_3 "$PAR -t 2 -m 131072"
+run argon2d          r_parallel_3 "$PAR -t 2 -m 131072"
+run argon2d-sse      r_parallel_3 "$PAR -t 2 -m 131072"
+run argon2i          r_parallel_3 "$PAR -t 2 -m 131072"
+run argon2i-sse      r_parallel_3 "$PAR -t 2 -m 131072"
+run battcrypt        r_parallel_3 "$PAR -t 0 -m 14"
+run catena-butterfly r_parallel_3 "$PAR -t 1 -m 21"
+run catena-dragonfly r_parallel_3 "$PAR -t 1 -m 21"
+run lyra2            r_parallel_3 "$PAR -t 1 -m 5461"
+run lyra2-sse        r_parallel_3 "$PAR -t 1 -m 5461"
+#run makwa            r_parallel_3 "$PAR -t 0 -m 0"
+#run parallel         r_parallel_3 "$PAR -t 0 -m 0"
+run pomelo           r_parallel_3 "$PAR -t 0 -m 14"
+run pomelo-sse       r_parallel_3 "$PAR -t 0 -m 14"
+run pufferfish       r_parallel_3 "$PAR -t 0 -m 17"
+run yescrypt         r_parallel_3 "$PAR -t 0 -m 14"
+run yescrypt-sse     r_parallel_3 "$PAR -t 0 -m 14"

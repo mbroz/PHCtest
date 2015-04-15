@@ -33,6 +33,7 @@
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/shm.h>
 #include "bitops.h"
 
 int PHS(void *out, size_t outlen, const void *in, size_t inlen,
@@ -50,6 +51,8 @@ static int opt_verbose = 0;
 static int opt_fork = 0;
 static int opt_display_hash = 0;
 static int opt_gen_vectors = 0;
+static int opt_parallel = 0;
+static int opt_p_seconds = 60;
 static char *opt_out_file = NULL;
 static char *opt_vector_file = NULL;
 
@@ -266,6 +269,121 @@ static int test_phc_wrapper_fork(void)
 	return status ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
+struct phc_shm {
+	enum { WAIT, RUN, FINISH } state;
+	int hashes[1024];
+};
+
+static int test_phc_wrapper_x(struct phc_shm *shm, int id)
+{
+	while(shm->state == WAIT)
+		usleep(1);
+
+	while (shm->state == RUN) {
+		if (test_phc_wrapper())
+			return EXIT_FAILURE;
+		shm->hashes[id]++;
+	}
+
+	return EXIT_SUCCESS;
+}
+
+static int test_phc_wrapper_parallel()
+{
+	struct timespec start, end;
+	int i, r = EXIT_SUCCESS;
+	pid_t cpid[opt_parallel];
+	int status[opt_parallel];
+	int hashes = 0;
+	double ms;
+	key_t shmkey;
+	int shmid;
+	struct phc_shm *shm;
+	FILE *f = NULL;
+
+	if (opt_out_file) {
+		f = fopen(opt_out_file, "a+");
+		if (!f)
+			return EXIT_FAILURE;
+		setvbuf(f, NULL, _IONBF, 0);
+		//fprintf(f ?: stdout, "# in_len out_len mcost tcost threads hashes req_time[s] time[ms] hashes_second\n");
+	}
+
+	/* hack, no repeat, no output */
+	opt_repeat = 1;
+	opt_out_file = "/dev/null";
+
+	/* init sem & shm */
+	shmkey = ftok (opt_out_file, 42);
+	shmid = shmget (shmkey, sizeof (*shm), 0644 | IPC_CREAT);
+	if (shmid < 0) {
+		perror ("shmget\n");
+		exit(EXIT_FAILURE);
+	}
+	shm = (struct phc_shm *) shmat(shmid, NULL, 0);
+	memset(shm, 0, sizeof(*shm));
+	shm->state = WAIT;
+
+	/* Fork all children */
+	for (i = 0 ; i < opt_parallel; i++) {
+		cpid[i] = fork();
+		if (cpid[i] == -1) {
+			perror("fork");
+			return EXIT_FAILURE;
+		}
+
+		if (cpid[i] == 0)
+			_exit(test_phc_wrapper_x(shm, i) ? EXIT_FAILURE : EXIT_SUCCESS);
+	}
+
+	/* Run it */
+	if (clock_gettime(CLOCK_MONOTONIC, &start) < 0) {
+		printl("Cannot use CLOCK_MONOTONIC.");
+		return 1;
+	}
+
+	shm->state = RUN;
+	sleep(opt_p_seconds);
+
+	/* It will always finish the last hash after this ...*/
+	shm->state = FINISH;
+
+	for (i = 0 ; i < opt_parallel; i++) {
+		wait(&status[i]);
+		printl("Child %d: status %d", i, status[i]);
+		if (status[i] != EXIT_SUCCESS)
+			r = EXIT_FAILURE;
+	}
+
+	for (i = 0 ; i < opt_parallel; i++) {
+		hashes += shm->hashes[i];
+		printl("Child %d: hashes: %d", i, shm->hashes[i]);
+	}
+
+	if (clock_gettime(CLOCK_MONOTONIC, &end) < 0)
+		return 1;
+
+        if (time_ms(&start, &end, &ms) < 0)
+                return 1;
+
+	if (r == EXIT_SUCCESS)
+		fprintf(f ?: stdout, "%zu %zu %u %d %d %d %d %2.0f %2.2f\n",
+			opt_in_len, opt_out_len, opt_mcost, opt_tcost,
+			opt_parallel, hashes, opt_p_seconds, ms, hashes / (ms / 1000.0));
+	else
+		fprintf(f ?: stdout, "# ERROR\n");
+
+	shmdt(shm);
+	shmctl(shmid, IPC_RMID, 0);
+
+	if (f) {
+		fflush(f);
+		fclose(f);
+	}
+
+	return r;
+}
+
 static size_t from_hex(const char *hex, char *bin, size_t bin_size)
 {
 	char buf[3] = "xx\0", *endp;
@@ -405,6 +523,8 @@ static struct option long_options[] =
 	{"mcost",    required_argument, NULL, 'm'},
 	{"tcost",    required_argument, NULL, 't'},
 	{"out_file", required_argument, NULL, 'f'},
+	{"parallel", required_argument, NULL, 'P'},
+	{"p_seconds",required_argument, NULL, 'T'},
 	{"repeat",   required_argument, NULL, 'r'},
 	{"vector",   required_argument, NULL, 'V'},
 	{"gen-vector",required_argument,NULL, 'G'},
@@ -415,7 +535,7 @@ int main (int argc, char *argv[])
 {
 	int c, r, option_index = 0;
 
-	while ((c = getopt_long (argc, argv, "vwhs:i:o:m:t:f:G:r:V:x:X:", long_options, &option_index)) != -1) {
+	while ((c = getopt_long (argc, argv, "vwhs:i:o:m:t:f:G:r:V:x:X:P:T:", long_options, &option_index)) != -1) {
 		switch (c) {
 		case 'v': opt_verbose  = 1; break;
 		case 'w': opt_fork     = 1; break;
@@ -428,6 +548,8 @@ int main (int argc, char *argv[])
 		case 'r': opt_repeat   = atoi(optarg); break;
 		case 'x': opt_rndtest  = atoi(optarg); break;
 		case 'X': opt_rndsize  = atoi(optarg); break;
+		case 'P': opt_parallel = atoi(optarg); break;
+		case 'T': opt_p_seconds= atoi(optarg); break;
 		case 'f': opt_out_file = strdup(optarg); break;
 		case 'V': opt_vector_file = strdup(optarg); break;
 		case 'G': opt_vector_file = strdup(optarg); opt_gen_vectors = 1; break;
@@ -443,6 +565,8 @@ int main (int argc, char *argv[])
 
 	if (opt_gen_vectors)
 		r = test_phc_wrapper_vector();
+	else if (opt_parallel)
+		r = test_phc_wrapper_parallel();
 	else if (opt_fork)
 		r = test_phc_wrapper_fork();
 	else
