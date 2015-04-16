@@ -55,7 +55,7 @@ plot [0:9][1:10000]\
 	"r_parallel_1/yescrypt.dat"         using 5:9 title "{/arial=16 yescrypt}"         with linespoints, \
 	"r_parallel_1/yescrypt-sse.dat"     using 5:9 title "{/arial=16 yescrypt-SSE}"     with linespoints
 
-set title "PHC candidates, hashes/second in parallel run\n{/arial=12[salt = 16, in,out = 32, tcost = 10MiB]}"
+set title "PHC candidates, hashes/second in parallel run\n{/arial=12[salt = 16, in,out = 32, tcost = 16MiB]}"
 set output 'r_parallel_2/parallel_threads_2.png'
 plot [0:9][0.1:200]\
 	"r_parallel_2/argon.dat"            using 5:9 title "{/arial=16 Argon}"            with linespoints, \
@@ -75,7 +75,7 @@ plot [0:9][0.1:200]\
 	"r_parallel_2/yescrypt.dat"         using 5:9 title "{/arial=16 yescrypt}"         with linespoints, \
 	"r_parallel_2/yescrypt-sse.dat"     using 5:9 title "{/arial=16 yescrypt-SSE}"     with linespoints
 
-set title "PHC candidates, hashes/second in parallel run\n{/arial=12[salt = 16, in,out = 32, tcost = 100MiB]}"
+set title "PHC candidates, hashes/second in parallel run\n{/arial=12[salt = 16, in,out = 32, tcost = 128MiB]}"
 set output 'r_parallel_3/parallel_threads_3.png'
 plot [0:9][0.01:20]\
 	"r_parallel_3/argon.dat"            using 5:9 title "{/arial=16 Argon}"            with linespoints, \
