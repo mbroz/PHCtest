@@ -33,7 +33,9 @@ plot [0:9][10:100000]\
 	"r_parallel_0/pomelo-sse.dat"       using 5:9 title "{/arial=16 POMELO-SSE}"       with linespoints, \
 	"r_parallel_0/pufferfish.dat"       using 5:9 title "{/arial=16 Pufferfish}"       with linespoints, \
 	"r_parallel_0/yescrypt.dat"         using 5:9 title "{/arial=16 yescrypt}"         with linespoints, \
-	"r_parallel_0/yescrypt-sse.dat"     using 5:9 title "{/arial=16 yescrypt-SSE}"     with linespoints
+	"r_parallel_0/yescrypt-sse.dat"     using 5:9 title "{/arial=16 yescrypt-SSE}"     with linespoints, \
+	"r_parallel_0/makwa.dat"            using 5:9 title "{/arial=16 MAKWA (no mcost)}" with linespoints, \
+	"r_parallel_0/parallel.dat"         using 5:9 title "{/arial=16 Parallel (no mcost)}" with linespoints
 
 set title "PHC candidates, hashes/second in parallel run\n{/arial=12[salt = 16, in,out = 32, tcost = MIN, mcost = 1MiB]}"
 set output 'r_parallel_1/parallel_threads_1.png'
