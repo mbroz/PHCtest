@@ -69,8 +69,8 @@ run lyra2-sse        m_cost 0    200    10000 "$PAR -t 1 -m "
 run pomelo           m_cost 0      1       17 "$PAR -t 0 -m "
 run pomelo-sse       m_cost 0      1       17 "$PAR -t 0 -m "
 run pufferfish       m_cost 0      1       16 "$PAR -t 0 -m "
-run yescrypt         m_cost 0      1       20 "$PAR -t 0 -m "
-run yescrypt-sse     m_cost 0      1       20 "$PAR -t 0 -m "
+run yescrypt         m_cost 0      1       19 "$PAR -t 0 -m "
+run yescrypt-sse     m_cost 0      1       19 "$PAR -t 0 -m "
 
 # G2 mcost min, tcost variable
 PAR="-s 16 -i 32 -o 32 "
