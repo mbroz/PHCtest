@@ -30,9 +30,11 @@
 #include <time.h>
 #include <getopt.h>
 #include <stdarg.h>
+#include <fcntl.h>
 #include <sys/resource.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <sys/shm.h>
 #include "bitops.h"
 
@@ -55,6 +57,27 @@ static int opt_parallel = 0;
 static int opt_p_seconds = 60;
 static char *opt_out_file = NULL;
 static char *opt_vector_file = NULL;
+
+static void memset_random(void *buf, size_t len)
+{
+	static int urandom_fd = -1;
+	int r;
+
+	if (urandom_fd == -1)
+		urandom_fd = open("/dev/urandom", O_RDONLY);
+	if (urandom_fd == -1)
+		_exit(EXIT_FAILURE);
+
+	while (len) {
+		r = read(urandom_fd, buf, len);
+		if (r == -1 && errno != EINTR)
+			_exit(EXIT_FAILURE);
+		if (r > 0) {
+			len -= r;
+			buf += r;
+		}
+	}
+}
 
 static void print_hex(FILE *f, unsigned int buf_len, const char *buf)
 {
@@ -174,10 +197,9 @@ static int test_phc_wrapper_vector(void)
 	if (!f)
 		return EXIT_FAILURE;
 
-	// FIXME: should use something more sensible
-	memset(key, 0xab, opt_out_len);
-	memset(pwd, 0xcd, opt_in_len);
-	memset(salt,0xef, opt_salt_len);
+	memset_random(key, opt_out_len);
+	memset_random(pwd, opt_in_len);
+	memset_random(salt,opt_salt_len);
 
 	if (test_phc(opt_out_len, key, opt_salt_len, salt, opt_in_len, pwd, opt_tcost,
 		     opt_mcost, &ms, &muse)) {
@@ -215,9 +237,9 @@ static int test_phc_wrapper(void)
 	}
 
 	while (count < opt_repeat) {
-		memset(key, 0xab, opt_out_len);
-		memset(pwd, 0xcd, opt_in_len);
-		memset(salt,0xef, opt_salt_len);
+		memset_random(key, opt_out_len);
+		memset_random(pwd, opt_in_len);
+		memset_random(salt,opt_salt_len);
 
 		if (test_phc(opt_out_len, key, opt_salt_len, salt, opt_in_len, pwd, opt_tcost,
 			     opt_mcost, &ms[count], &muse[count])) {
