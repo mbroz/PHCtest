@@ -8,7 +8,7 @@ function run() # $1 name $2 log $3 from $4 to
 	OUT=$2/$1.dat
 	[ ! -f "$OUT" ] && echo "# in_len out_len mcost tcost threads hashes req_time[s] time[ms] hashes_second" > "$OUT"
 	for i in $(seq 1 1 8); do
-		../tst-$1 -f $OUT -P $i -T 60 $3
+		../tst-$1 -f $OUT -P $i -T 30 $3
 		echo -n "[$i]"
 	done
 	echo
