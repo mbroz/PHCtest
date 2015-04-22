@@ -1,38 +1,39 @@
-$ ./run_vectors
 argon
-ERROR: output differs: c2485b789e7de33e4a1fa2c8481a478be6aef005b77385eea3c5693917bc2711
-LINE[0]: password:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd salt:efefefefefefefefefefefefefefefef t_cost:0 m_cost:0 -> 429f60f81ef60724ed4801ad7987c4953575c458e5dc197e165deca2b420d840
+ERROR: output differs: 280254419d7c0fb8c4e0da7816541108c02ec9ae2efb58ad41b19d9f4239ae15
+LINE[0]: password:ef68fa347220b2dba634bdc2259460fc872e5dce75d6ff7f02299bdad28acae6 salt:eba4e6ba8e6861aa1ac7f0dea60aa3c9 t_cost:0 m_cost:0 -> 5ad6bd3072868099a10d1c872819e3f3a4cd4bfc0a55fd665576b432c94b4fea
 argon2d
-ERROR: output differs: 7d4d4b16d03bb18a6eca8fe5439f1ac111f33840cb1b4520e6c622764d07a694
-LINE[0]: password:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd salt:efefefefefefefefefefefefefefefef t_cost:0 m_cost:0 -> 3f4a70f895c501a0e971f51d5dbaeaea7d6cc8a50540e6aa3bf86986f62d0929
+ERROR: output differs: e3e08d81606be5d9c9be389e6da694277a2d700c9820868246ebba87cbd90098
+LINE[0]: password:7875ff5c11202f531f16679a1c1d2ca1dde1056e18d15a4374125d40a1aafe41 salt:1a23f3c42aecf1c53ccb057ec9dc1dbe t_cost:0 m_cost:0 -> 78369c87497de1cf05e8db533066f2c6c55ee703ead9d2dadc84d06615370351
+ERROR: no test for argon2d-sse
 argon2i
-ERROR: output differs: f186854bc57e15d5bd14eb31bdc6c2c5353e8526dbfdc559606761df325c787d
-LINE[0]: password:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd salt:efefefefefefefefefefefefefefefef t_cost:0 m_cost:0 -> 76d56eb6d7b665bd6964efa31c414cf41987134cc1ad4b752496074cc958b24d
+ERROR: output differs: e55e0c6f250b2f2acd20cbfb7e5718b29310b3020075c245cbe3660856271802
+LINE[0]: password:9ccf6e84f6a15315daecec3c74dd984285f973fcdbcd02d88e6d02673af3377c salt:18602313ace0868483b0033173ee2de4 t_cost:0 m_cost:0 -> c5555d16f713214dcdd8adae6572f98a4ae23133a9a0ee8b8af80bbdf28815ce
+ERROR: no test for argon2i-sse
 ERROR: no test for argon-aesni
 battcrypt
-Vectors: ../hash_vectors/battcrypt, lines 1300 OK
+Vectors: ../hash_vectors/battcrypt, lines 402 OK
 catena-butterfly
-ERROR: output differs: 51fe78a828d0d8fd624e696120276982b61180f03c60cab05c3a5b798284a71a
-LINE[0]: password:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd salt:efefefefefefefefefefefefefefefef t_cost:1 m_cost:1 -> cdf6d2a679211abee106ff061efaa347686c39b6367431db42c922295495ff98
+Vectors: ../hash_vectors/catena-butterfly, lines 409 OK
 catena-dragonfly
-ERROR: output differs: 34bf04634cb74a9faf29b7ae609831056bd1f88ed5d2783cfa9bf7da9c40dfaa
-LINE[0]: password:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd salt:efefefefefefefefefefefefefefefef t_cost:1 m_cost:1 -> dccdcfa6a187f1ef2064cbd02ee62b6ee06103ec8d0d05c415739e38fa74a31e
+Vectors: ../hash_vectors/catena-dragonfly, lines 409 OK
 lyra2
-ERROR: output differs: 0000000000000000000000000000000000000000000000000000000000000000
-LINE[0]: password:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd salt:efefefefefefefefefefefefefefefef t_cost:1 m_cost:200 -> 90a038da47b8d15fae727c6dc30fb6b24633597035206e4c287f2b2bce26b220
+ERROR: output differs: 0b76a8b10ed62210fa7898cb8a90dba2264972857c910fb879e0c2ec683392a2
+LINE[0]: password:b63748fdd8ffe016860a3e667850f5dce7c4f6c26c3b75690f8c0128f20ebd36 salt:5391b70095ef77339423b12e3ee92b85 t_cost:1 m_cost:200 -> 039db5c0aefa5c5c876bb1037a03fcf6101e5b7dce69fccf33267c8607dbb3aa
 ERROR: no test for lyra2-sse
 makwa
-Vectors: ../hash_vectors/makwa, lines 914 OK
+Vectors: ../hash_vectors/makwa, lines 631 OK
 parallel
 Vectors: ../hash_vectors/parallel, lines 391 OK
 pomelo
-ERROR: output differs: 6d135cbba62e6ca0f02515bd0717e2e43e45b942014070bfda97c7d30658e8ec
-LINE[0]: password:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd salt:efefefefefefefefefefefefefefefef t_cost:0 m_cost:0 -> c114d455f255f82d54d0d4654d786e3741455d1d0f65d4e49e0755c145f6c72b
+ERROR: output differs: f10e2ba2523f7661452543c3ccfd91b85a045d6d0cee1478f0984cdcffcfa93b
+LINE[0]: password:d0541bd9486a1b70fad1b8a74380316f75c7a8d2bb0bc941850b55d4df9fa50c salt:00886bb919ee5546fa44589c4cca1c12 t_cost:0 m_cost:0 -> 419a25189007540cd65c738549b7f67d1b1ecca255ee4051d73ffcbedb1147aa
 ERROR: no test for pomelo-sse
 pufferfish
-ERROR: output differs: 1549d545dfb124252895252ed602b4287c2608a8cb08ee0c692f7b9b24201309
-LINE[0]: password:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd salt:efefefefefefefefefefefefefefefef t_cost:0 m_cost:0 -> e055a22c014ab35d05f093dd7a46f51b4e40f85b94c56b3162a99c57c0db42e2
+ERROR: output differs: 60f65e03aa7d012a156fd693a31359b103039618205741b8c112b7848d6b30c2
+LINE[0]: password:2f93a44cfaed8e96c9b2bce2b0c06f239647df64e5c83579b531ed5824470313 salt:0bbc4072fb740bdf0ddb9d88e8e7b3f9 t_cost:0 m_cost:0 -> fd82f511692c2cc64b693eaceedaab62665ce1fce0b9c339ba772a0e43472215
 yescrypt
-Vectors: ../hash_vectors/yescrypt, lines 646 OK
+Vectors: ../hash_vectors/yescrypt, lines 652 OK
+yescrypt-2pw
+Vectors: ../hash_vectors/yescrypt-2pw, lines 652 OK
+ERROR: no test for yescrypt-2pw-sse
 ERROR: no test for yescrypt-sse
-
