@@ -52,7 +52,7 @@ plot [0:9][1:10000]\
 
 set title "PHC candidates, hashes/second in parallel run\n{/arial=12[salt = 16, in,out = 32, tcost = MIN, mcost = 16MiB]}"
 set output 'r_parallel_2/parallel_threads_2.png'
-plot [0:9][0.1:200]\
+plot [0:9][0.1:1000]\
 	"r_parallel_2/argon.dat"            using 5:9 title "{/arial=16 Argon}"            with linespoints, \
 	"r_parallel_2/argon-aesni.dat"      using 5:9 title "{/arial=16 Argon-AESNI}"      with linespoints, \
 	"r_parallel_2/argon2d.dat"          using 5:9 title "{/arial=16 Argon2d}"          with linespoints, \
@@ -72,7 +72,7 @@ plot [0:9][0.1:200]\
 
 set title "PHC candidates, hashes/second in parallel run\n{/arial=12[salt = 16, in,out = 32, tcost = MIN, mcost = 128MiB]}"
 set output 'r_parallel_3/parallel_threads_3.png'
-plot [0:9][0.01:20]\
+plot [0:9][0.01:100]\
 	"r_parallel_3/argon.dat"            using 5:9 title "{/arial=16 Argon}"            with linespoints, \
 	"r_parallel_3/argon-aesni.dat"      using 5:9 title "{/arial=16 Argon-AESNI}"      with linespoints, \
 	"r_parallel_3/argon2d.dat"          using 5:9 title "{/arial=16 Argon2d}"          with linespoints, \
