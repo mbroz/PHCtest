@@ -1,0 +1,4 @@
+# in_len out_len m_cost t_cost time[ms] memory[kB]
+256 64 4 17 773 1
+256 64 4 26 16458 1
+256 64 14 6 17736 131676
