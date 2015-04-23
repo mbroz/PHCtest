@@ -41,6 +41,10 @@
 #define MAGIC_DELEG_REQ    0x55414D33
 #define MAGIC_DELEG_ANS    0x55414D34
 
+#define MAGIC_DELEG_PARAM_GEN   0x55414D40
+#define MAGIC_PUBKEY_WITHGEN    0x55414D70
+#define MAGIC_PRIVKEY_WITHGEN   0x55414D71
+
 /* see makwa.h */
 int
 makwa_kdf(int hash_function,
@@ -55,6 +59,7 @@ makwa_kdf(int hash_function,
 
 	HMAC_CTX_init(&hc);
 	switch (hash_function) {
+	case 0:
 	case MAKWA_SHA256:
 		mdf = EVP_sha256();
 		r = 32;
@@ -149,7 +154,7 @@ makwa_make_new_salt(void *salt, size_t salt_len)
 	 * A cryptographically strong PRNG is kinda overkill for a salt,
 	 * but it does not hurt to use one.
 	 */
-	if (RAND_bytes(salt, salt_len) < 0) {
+	if (!RAND_bytes(salt, salt_len)) {
 		return MAKWA_RAND_ERROR;
 	}
 	return MAKWA_OK;
@@ -166,7 +171,7 @@ makwa_make_new_salt(void *salt, size_t salt_len)
  * CZ(expr) evaluates 'expr'; if it returns a zero value (or NULL
  * pointer), then the function will exit with a MAKWA_NOMEM error code.
  *
- * CZX(expr, errcode) evaluates 'expr'; if it returns a non-zero value,
+ * CZX(expr, errcode) evaluates 'expr'; if it returns a zero value,
  * then the function will exit with 'errcode' as error code.
  *
  * RETURN(errcode) exits the function with 'errcode' as error code.
@@ -383,79 +388,263 @@ mpi_length(BIGNUM *v)
 	return BN_num_bytes(v) + 2;
 }
 
-/*
- * This function generates a random prime integer of the specified size
- * (in bits, between 2 ans 16384 bits). The top two bits of the prime
- * are equal to 1 (this is meant so that the product of two such primes
- * reliably reaches a given target size); moreover, the prime is equal to
- * 3 modulo 4 (this last property is what makes this function differ
- * from OpenSSL's BN_generate_prime()).
- */
-static int
-rand_prime(int size, BIGNUM *p)
-{
-	int err;
-	BN_CTX *bnctx;
-
-	bnctx = NULL;
-	if (size < 2 || size > 16384) {
-		RETURN(MAKWA_TOOLARGE);
-	}
-	for (;;) {
-		int r;
-
-		CZ(BN_rand(p, size, 1, 1));
-		CZ(BN_set_bit(p, 1));
-		r = BN_is_prime_fasttest(p, BN_prime_checks, 0, bnctx, 0, 1);
-		if (r > 0) {
-			RETURN(MAKWA_OK);
-		} else if (r < 0) {
-			RETURN(MAKWA_RAND_ERROR);
-		}
-	}
-
-FUNCTION_EXIT:
-	FREE_BNCTX(bnctx);
-	return err;
-}
-
 /* see makwa.h */
 int
 makwa_generate_key(int size, void *key, size_t *key_len)
 {
-	BIGNUM *p, *q; 
-	int sp, sq;
-	size_t len, u, off;
-	unsigned char *buf;
+	/*
+	 * We generate small primes p_i of the same size, so that no two
+	 * p_i are identical. We then look for combinations 2*p_i*p_j+1
+	 * that are also prime; such a combination is a candidate for p
+	 * or q, subject to the condition that 4 is a multiplicative
+	 * generator of invertible integers modulo p and modulo q. We
+	 * produce p and q that way precisely so that we get a generator
+	 * of invertible quadratic residues.
+	 *
+	 * Since we want to minimize the number of primes p_i to
+	 * produce, we arrange it so that they all have the same size,
+	 * and choosing any combination of four of these primes yields a
+	 * modulus of the right size. This allows us to build p and q
+	 * over a single (growing) list of p_i. We get this property by
+	 * generating all candidate p_i as:
+	 *
+	 *   p_i = x*2^k + r_i
+	 *
+	 * where x is a fixed 4-bit pattern, k is fixed, and r_i is an odd
+	 * integer lower than 2^k. The following choices of x yield a
+	 * predictable size for the modulus n:
+	 *
+	 *   x   size of n (in bits)
+	 *   7   14+4*k
+	 *   8   15+4*k
+	 *  10   16+4*k
+	 *  12   17+4*k
+	 */
+	BN_CTX *bnctx;
+	BIGNUM **pp;
+	int *used;
+	size_t ptr, len, u, blen, off, sp, olen;
+	BIGNUM *pq[2];
+	size_t pqptr;
+	unsigned char *buf, *out;
+	int k, x;
+	unsigned mz16, mo16;
+	BIGNUM *zf, *zg;
 	int err;
 
-	p = NULL;
-	q = NULL;
+	bnctx = NULL;
+	ptr = 0;
+	len = 0;
+	pp = NULL;
+	used = NULL;
+	pq[0] = NULL;
+	pq[1] = NULL;
+	pqptr = 0;
+	buf = NULL;
+	zf = NULL;
+	zg = NULL;
+
 	if (size < 1273 || size > 32768) {
 		RETURN(MAKWA_TOOLARGE);
 	}
-	sp = (size + 1) >> 1;
-	sq = size - sp;
-	len = 8 + (((size_t)sp + 7) >> 3) + (((size_t)sq + 7) >> 3);
-	DO_BUFFER(key, key_len, len);
+	k = (size - 14) >> 2;
+	switch ((size - 14) & 3) {
+	case 0:
+		x = 7;
+		sp = ((size_t)k << 1) + 7;
+		break;
+	case 1:
+		x = 8;
+		sp = ((size_t)k << 1) + 8;
+		break;
+	case 2:
+		x = 10;
+		sp = ((size_t)k << 1) + 8;
+		break;
+	default:
+		x = 12;
+		sp = ((size_t)k << 1) + 9;
+		break;
+	}
+	olen = 11 + (((sp + 7) >> 3) << 1);
+	DO_BUFFER(key, key_len, olen);
 
-	CZ(p = BN_new());
-	CZ(q = BN_new());
-	CF(rand_prime(sp, p));
-	CF(rand_prime(sq, q));
+	blen = (size_t)((k + 12) >> 3);
+	CZ(buf = malloc(blen));
+	mz16 = 0xFFFF >> ((blen << 3) - k);
+	mo16 = (unsigned)x << (k + 16 - (blen << 3));
+	CZ(bnctx = BN_CTX_new());
+	CZ(pq[0] = BN_new());
+	CZ(pq[1] = BN_new());
+	CZ(zf = BN_new());
+	CZ(zg = BN_new());
+	CZ(BN_set_word(zf, 4));
 
-	buf = key;
-	encode_32(buf, MAGIC_PRIVKEY);
+	for (;;) {
+		BIGNUM *pj, *t;
+
+		/*
+		 * Get the allocated integer for the next prime candidate.
+		 */
+	loop:
+		if (ptr == len) {
+			size_t nlen;
+			BIGNUM **npp;
+			int *nused;
+
+			nlen = (len == 0) ? 16 : (len << 1);
+			CZ(npp = malloc(nlen * sizeof *npp));
+			memcpy(npp, pp, len * sizeof *pp);
+			for (u = len; u < nlen; u ++) {
+				npp[u] = NULL;
+			}
+			FREE(pp);
+			pp = npp;
+			CZ(nused = malloc(nlen * sizeof *nused));
+			memcpy(nused, used, len * sizeof *used);
+			for (u = len; u < nlen; u ++) {
+				nused[u] = 0;
+			}
+			FREE(used);
+			used = nused;
+
+			while (len < nlen) {
+				CZ(pp[len] = BN_new());
+				len ++;
+			}
+		}
+		pj = pp[ptr];
+
+		/*
+		 * Generate a random odd integer of the right size, with 'x'
+		 * as its top four bits, and check its primality.
+		 */
+		CZX(RAND_bytes(buf, blen), MAKWA_RAND_ERROR);
+		buf[0] &= mz16 >> 8;
+		buf[1] &= mz16;
+		buf[0] |= mo16 >> 8;
+		buf[1] |= mo16;
+		buf[blen - 1] |= 0x01;
+		CZ(BN_bin2bn(buf, blen, pj));
+		if (!BN_is_prime_fasttest(pj,
+			BN_prime_checks, 0, bnctx, 0, 1))
+		{
+			goto loop;
+		}
+
+		/*
+		 * Check whether we already have that prime (this is
+		 * very improbable).
+		 */
+		for (u = 0; u < ptr; u ++) {
+			if (BN_cmp(pj, pp[u]) == 0) {
+				goto loop;
+			}
+		}
+
+		/*
+		 * Try combinations. We compute t = 2*p_i*p_j+1 for all
+		 * existing p_i (skipping the already used ones, if any).
+		 * If t is prime and the multiplicativ order of 4 modulo
+		 * t is equal to p_i*p_j, then we accept it as one of
+		 * our factors.
+		 */
+		t = pq[pqptr];
+		for (u = 0; u < ptr; u ++) {
+			BIGNUM *pi;
+
+			if (used[u]) {
+				continue;
+			}
+			pi = pp[u];
+			CZ(BN_mul(t, pi, pj, bnctx));
+			CZ(BN_lshift1(t, t));
+			CZ(BN_set_bit(t, 0));
+			if (!BN_is_prime_fasttest(t,
+				BN_prime_checks, 0, bnctx, 0, 1))
+			{
+				continue;
+			}
+
+			CZ(BN_mod_exp(zg, zf, pi, t, bnctx));
+			if (BN_is_one(zg)) {
+				continue;
+			}
+			CZ(BN_mod_exp(zg, zf, pj, t, bnctx));
+			if (BN_is_one(zg)) {
+				continue;
+			}
+
+			/*
+			 * Found a big prime. We record that we used our
+			 * small primes, and restart (or exit) the outer
+			 * loop.
+			 */
+			if (++ pqptr == 2) {
+				goto encode;
+			}
+			used[u] = 1;
+			used[ptr] = 1;
+			ptr ++;
+			goto loop;
+		}
+
+		/*
+		 * No fruitful combination so far with this prime. We
+		 * loop.
+		 */
+		ptr ++;
+	}
+
+encode:
+	/*
+	 * We want p > q, because that's what the specification says.
+	 * Existing implementations swap p and q upon decoding if
+	 * necessary, but enforcing that property in the encoded keys
+	 * is cleaner.
+	 */
+	if (BN_cmp(pq[0], pq[1]) < 0) {
+		BIGNUM *tmp;
+
+		tmp = pq[0];
+		pq[0] = pq[1];
+		pq[1] = tmp;
+	}
+
+	out = key;
+	encode_32(out, MAGIC_PRIVKEY_WITHGEN);
 	off = 4;
-	u = len - off;
-	CF(encode_mpi(p, buf + off, &u));
+	u = olen - off;
+	CF(encode_mpi(pq[0], out + off, &u));
 	off += u;
-	CF(encode_mpi(q, buf + off, &u));
+	u = olen - off;
+	CF(encode_mpi(pq[1], out + off, &u));
 	off += u;
+	if ((off + 3) != olen) {
+		/*
+		 * This should never happen in practice; it would mean
+		 * that we produced integers with the wrong size.
+		 */
+		RETURN(MAKWA_BADPARAM);
+	}
+	out[off ++] = 0x00;
+	out[off ++] = 0x01;
+	out[off ++] = 0x04;
 
 FUNCTION_EXIT:
-	FREE_BN(p);
-	FREE_BN(q);
+	if (pp != NULL) {
+		for (u = 0; u < len; u ++) {
+			FREE_BN(pp[u]);
+		}
+		FREE(pp);
+		FREE(used);
+	}
+	FREE(buf);
+	FREE_BNCTX(bnctx);
+	FREE_BN(pq[0]);
+	FREE_BN(pq[1]);
+	FREE_BN(zf);
+	FREE_BN(zg);
 	return err;
 }
 
@@ -477,6 +666,9 @@ struct makwa_context_ {
 
 	/* The private key parameters; NULL if no private key is set. */
 	BIGNUM *p, *q, *iq;
+
+	/* The generator for invertible quadratic residue; NULL if not set. */
+	BIGNUM *qrgen;
 
 	/* The modulus length, in bytes. */
 	size_t mod_len;
@@ -512,6 +704,7 @@ makwa_new(void)
 	ctx->p = NULL;
 	ctx->q = NULL;
 	ctx->iq = NULL;
+	ctx->qrgen = NULL;
 	return ctx;
 }
 
@@ -533,6 +726,9 @@ makwa_free(makwa_context *ctx)
 	}
 	if (ctx->iq != NULL) {
 		BN_clear_free(ctx->iq);
+	}
+	if (ctx->qrgen != NULL) {
+		BN_clear_free(ctx->qrgen);
 	}
 	free(ctx);
 }
@@ -614,13 +810,25 @@ makwa_init_full(makwa_context *ctx,
 	deleg = 0;
 	switch (magic) {
 	case MAGIC_DELEG_PARAM:
+	case MAGIC_DELEG_PARAM_GEN:
 		deleg = 1;
 		/* fall through */
 	case MAGIC_PUBKEY:
+	case MAGIC_PUBKEY_WITHGEN:
 		/* Public modulus or delegation parameters. When decoding
 		   delegation parameters, we just extract the modulus,
 		   and ignore the rest. */
+		FREE_BN(ctx->qrgen);
+		ctx->qrgen = NULL;
 		CF(decode_mpi(buf, &off, param_len, ctx->modulus));
+		if (magic == MAGIC_PUBKEY_WITHGEN) {
+			CZ(ctx->qrgen = BN_new());
+			CF(decode_mpi(buf, &off, param_len, ctx->qrgen));
+		} else if (magic == MAGIC_DELEG_PARAM_GEN) {
+			off += 8;
+			CZ(ctx->qrgen = BN_new());
+			CF(decode_mpi(buf, &off, param_len, ctx->qrgen));
+		}
 		if (!deleg && off != param_len) {
 			RETURN(MAKWA_BADPARAM);
 		}
@@ -637,6 +845,7 @@ makwa_init_full(makwa_context *ctx,
 		ctx->iq = NULL;
 		break;
 	case MAGIC_PRIVKEY:
+	case MAGIC_PRIVKEY_WITHGEN:
 		/* Private key. */
 		if (ctx->p == NULL) {
 			CZ(ctx->p = BN_new());
@@ -647,8 +856,14 @@ makwa_init_full(makwa_context *ctx,
 		if (ctx->iq == NULL) {
 			CZ(ctx->iq = BN_new());
 		}
+		FREE_BN(ctx->qrgen);
+		ctx->qrgen = NULL;
 		CF(decode_mpi(buf, &off, param_len, ctx->p));
 		CF(decode_mpi(buf, &off, param_len, ctx->q));
+		if (magic == MAGIC_PRIVKEY_WITHGEN) {
+			CZ(ctx->qrgen = BN_new());
+			CF(decode_mpi(buf, &off, param_len, ctx->qrgen));
+		}
 		if (off != param_len) {
 			RETURN(MAKWA_BADPARAM);
 		}
@@ -735,11 +950,21 @@ FUNCTION_EXIT:
 int
 makwa_export_public(const makwa_context *ctx, void *out, size_t *out_len)
 {
+	size_t len;
 	int err;
 
-	DO_BUFFER(out, out_len, ctx->mod_len + 6);
-	encode_32(out, MAGIC_PUBKEY);
+	len = ctx->mod_len + 6;
+	if (ctx->qrgen != NULL) {
+		len += 2 + BN_num_bytes(ctx->qrgen);
+	}
+	DO_BUFFER(out, out_len, len);
+	encode_32(out, (ctx->qrgen == NULL)
+		? MAGIC_PUBKEY : MAGIC_PUBKEY_WITHGEN);
 	CF(encode_mpi(ctx->modulus, (unsigned char *)out + 4, NULL));
+	if (ctx->qrgen != NULL) {
+		CF(encode_mpi(ctx->qrgen,
+			(unsigned char *)out + 6 + ctx->mod_len, NULL));
+	}
 
 FUNCTION_EXIT:
 	return err;
@@ -2041,6 +2266,105 @@ FUNCTION_EXIT:
 }
 
 /* see makwa.h */
+int
+makwa_delegation_generate_gen(const void *param, size_t param_len,
+	long work_factor, int param_type, void *out, size_t *out_len)
+{
+	BN_CTX *bnctx;
+	makwa_context *mc;
+	unsigned char *buf;
+	size_t len, mlen, off, u, num;
+	BIGNUM *za, *zb;
+	int expand;
+	int err;
+
+	bnctx = NULL;
+	mc = NULL;
+	za = NULL;
+	zb = NULL;
+	if (work_factor < 0) {
+		RETURN(MAKWA_BADPARAM);
+	}
+	switch (param_type) {
+	case MAKWA_RANDOM_PAIRS:
+		return makwa_delegation_generate(
+			param, param_len, work_factor, out, out_len);
+	case MAKWA_GENERATOR_EXPAND:
+		expand = 1;
+		break;
+	case MAKWA_GENERATOR_ONLY:
+		expand = 0;
+		break;
+	default:
+		RETURN(MAKWA_BADPARAM);
+	}
+	CZ(mc = makwa_new());
+	CF(makwa_init(mc, param, param_len, 0));
+	mlen = mpi_length(mc->modulus);
+
+	/*
+	 * With no generator, we cannot continue.
+	 */
+	if (mc->qrgen == NULL) {
+		RETURN(MAKWA_NO_GENERATOR);
+	}
+	num = expand ? BN_num_bits(mc->modulus) + 64 : 1;
+	DO_BUFFER(out, out_len, 10 + (2 * num + 1) * mlen);
+
+	CZ(bnctx = BN_CTX_new());
+	CZ(za = BN_new());
+	CZ(zb = BN_new());
+
+	buf = out;
+	encode_32(buf, MAGIC_DELEG_PARAM_GEN);
+	off = 4;
+	len = mlen;
+	CF(encode_mpi(mc->modulus, buf + off, &len));
+	off += len;
+	encode_32(buf + off, work_factor);
+	off += 4;
+	encode_16(buf + off, num);
+	off += 2;
+
+	/*
+	 * First alpha/beta pair uses the generator itself.
+	 */
+	CZ(BN_copy(za, mc->qrgen));
+	len = mlen;
+	CF(encode_mpi(za, buf + off, &len));
+	off += len;
+	CZ(BN_copy(zb, za));
+	CF(multi_square(mc, zb, work_factor));
+	CZ(BN_mod_inverse(zb, zb, mc->modulus, bnctx));
+	len = mlen;
+	CF(encode_mpi(zb, buf + off, &len));
+	off += len;
+	for (u = 1; u < num; u ++) {
+		/*
+		 * Each subsequent pair is the square of the previous one.
+		 */
+		CZ(BN_mod_mul(za, za, za, mc->modulus, bnctx));
+		len = mlen;
+		CF(encode_mpi(za, buf + off, &len));
+		off += len;
+		CZ(BN_mod_mul(zb, zb, zb, mc->modulus, bnctx));
+		len = mlen;
+		CF(encode_mpi(zb, buf + off, &len));
+		off += len;
+	}
+	if (out_len != NULL) {
+		*out_len = off;
+	}
+
+FUNCTION_EXIT:
+	FREE_BNCTX(bnctx);
+	FREE_BN(za);
+	FREE_BN(zb);
+	makwa_free(mc);
+	return err;
+}
+
+/* see makwa.h */
 makwa_delegation_parameters *
 makwa_delegation_new(void)
 {
@@ -2105,7 +2429,7 @@ makwa_delegation_init(makwa_delegation_parameters *mdp,
 	BN_MONT_CTX *mctx;
 	size_t off;
 	int err;
-	unsigned long wf;
+	unsigned long magic, wf;
 	size_t u;
 
 	bnctx = NULL;
@@ -2113,7 +2437,11 @@ makwa_delegation_init(makwa_delegation_parameters *mdp,
 	CZ(bnctx = BN_CTX_new());
 	CZ(mctx = BN_MONT_CTX_new());
 	mdp_clear(mdp);
-	if (param_len < 4 || decode_32(param, 0) != MAGIC_DELEG_PARAM) {
+	if (param_len < 4) {
+		RETURN(MAKWA_BADPARAM);
+	}
+	magic = decode_32(param, 0);
+	if (magic != MAGIC_DELEG_PARAM && magic != MAGIC_DELEG_PARAM_GEN) {
 		RETURN(MAKWA_BADPARAM);
 	}
 	off = 4;
@@ -2137,9 +2465,18 @@ makwa_delegation_init(makwa_delegation_parameters *mdp,
 	mdp->work_factor = (long)wf;
 	mdp->num = decode_16(param, off);
 	off += 2;
-	if (mdp->num == 0) {
-		RETURN(MAKWA_BADPARAM);
+
+	/*
+	 * Number of mask pairs is normally 300. We tolerate down to 80.
+	 * We also accept a single mask pair, but only if it uses a
+	 * generator, as indicated in the file header.
+	 */
+	if (mdp->num < 80) {
+		if (mdp->num != 1 || magic != MAGIC_DELEG_PARAM_GEN) {
+			RETURN(MAKWA_BADPARAM);
+		}
 	}
+
 	CZ(mdp->alpha = malloc(mdp->num * sizeof *(mdp->alpha)));
 	for (u = 0; u < mdp->num; u ++) {
 		mdp->alpha[u] = NULL;
@@ -2160,10 +2497,17 @@ makwa_delegation_init(makwa_delegation_parameters *mdp,
 		{
 			RETURN(MAKWA_BADPARAM);
 		}
-		/* We convert all pair elements to Montgomery
-		   representation. */
-		CZ(BN_to_montgomery(mdp->alpha[u], mdp->alpha[u], mctx, bnctx));
-		CZ(BN_to_montgomery(mdp->beta[u], mdp->beta[u], mctx, bnctx));
+		/*
+		 * If there is only one mask pair, then it is a generator,
+		 * and we keep it as is; otherwise, we convert all pairs
+		 * to Montgomery representation.
+		 */
+		if (mdp->num != 1) {
+			CZ(BN_to_montgomery(mdp->alpha[u],
+				mdp->alpha[u], mctx, bnctx));
+			CZ(BN_to_montgomery(mdp->beta[u],
+				mdp->beta[u], mctx, bnctx));
+		}
 	}
 
 FUNCTION_EXIT:
@@ -2185,6 +2529,39 @@ makwa_delegation_get_work_factor(const makwa_delegation_parameters *mdp)
 /*
  * Using the delegation parameters, create a "mask pair". The caller must
  * put the value to mask in z. This function replaces z with the value to
+ * send, and stores the "unmask" integer in 'unmask'. This function is
+ * used when the delegation parameters use a single generator pair.
+ */
+static int
+create_mask_pair_qrgen(const makwa_delegation_parameters *mdp,
+	BIGNUM *z, BIGNUM *unmask)
+{
+	BN_CTX *bnctx;
+	BIGNUM *e, *za;
+	int err;
+
+	bnctx = NULL;
+	e = NULL;
+	za = NULL;
+
+	CZ(e = BN_new());
+	CZ(za = BN_new());
+	CZ(BN_rand(e, BN_num_bits(mdp->modulus) + 64, -1, 0));
+	CZ(bnctx = BN_CTX_new());
+	CZ(BN_mod_exp(za, mdp->alpha[0], e, mdp->modulus, bnctx));
+	CZ(BN_mod_exp(unmask, mdp->beta[0], e, mdp->modulus, bnctx));
+	CZ(BN_mod_mul(z, z, za, mdp->modulus, bnctx));
+
+FUNCTION_EXIT:
+	FREE_BN(e);
+	FREE_BN(za);
+	FREE_BNCTX(bnctx);
+	return err;
+}
+
+/*
+ * Using the delegation parameters, create a "mask pair". The caller must
+ * put the value to mask in z. This function replaces z with the value to
  * send, and stores the "unmask" integer in 'unmask'.
  */
 static int
@@ -2193,13 +2570,25 @@ create_mask_pair(const makwa_delegation_parameters *mdp,
 {
 	BN_CTX *bnctx;
 	BN_MONT_CTX *mctx;
-	unsigned char rnd[38];
+	unsigned char *rnd;
 	int err;
-	size_t u, n;
+	size_t u, n, rnd_len;
 
 	bnctx = NULL;
 	mctx = NULL;
-	if (!RAND_bytes(rnd, sizeof rnd)) {
+	rnd = NULL;
+	n = mdp->num;
+	if (n == 1) {
+		/*
+		 * Only one mask pair in the parameters: this happens
+		 * only when the pair uses a generator.
+		 */
+		return create_mask_pair_qrgen(mdp, z, unmask);
+	}
+
+	rnd_len = (n + 7) >> 3;
+	CZ(rnd = malloc(rnd_len));
+	if (!RAND_bytes(rnd, rnd_len)) {
 		RETURN(MAKWA_RAND_ERROR);
 	}
 	CZ(bnctx = BN_CTX_new());
@@ -2208,10 +2597,6 @@ create_mask_pair(const makwa_delegation_parameters *mdp,
 	CZ(BN_to_montgomery(z, z, mctx, bnctx));
 	CZ(BN_set_word(unmask, 1));
 	CZ(BN_to_montgomery(unmask, unmask, mctx, bnctx));
-	n = mdp->num;
-	if (n > 300) {
-		n = 300;
-	}
 	for (u = 0; u < n; u ++) {
 		if (!((rnd[u >> 3] >> (u & 7)) & 1)) {
 			continue;
@@ -2225,6 +2610,7 @@ create_mask_pair(const makwa_delegation_parameters *mdp,
 	CZ(BN_from_montgomery(unmask, unmask, mctx, bnctx));
 
 FUNCTION_EXIT:
+	FREE(rnd);
 	FREE_BNCTX(bnctx);
 	FREE_MCTX(mctx);
 	return err;

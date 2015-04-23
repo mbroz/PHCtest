@@ -155,11 +155,12 @@ main(int argc, char *argv[])
 		pub = xmalloc(pub_len);
 		CF(makwa_compute_modulus(priv, priv_len, pub, &pub_len));
 		if (text) {
-			size_t u;
+			size_t u, mlen;
 
 			printf("modulus = 0x");
-			for (u = 6; u < pub_len; u ++) {
-				printf("%02X", pub[u]);
+			mlen = (pub[4] << 8) + pub[5];
+			for (u = 0; u < mlen; u ++) {
+				printf("%02X", pub[u + 6]);
 			}
 			printf("\n");
 		}

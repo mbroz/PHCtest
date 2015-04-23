@@ -152,6 +152,7 @@
 #define MAKWA_PRE_HASH          -10  /* cannot operate: pre-hashing applied */
 #define MAKWA_POST_HASH         -11  /* cannot operate: post-hashing applied */
 #define MAKWA_EMBEDDED_ZERO     -12  /* escrowed password contains a zero */
+#define MAKWA_NO_GENERATOR      -13  /* no generator in provided parameters */
 
 /*
  * Run the Makwa internal KDF over the provided source and data bytes.
@@ -402,6 +403,9 @@ typedef struct makwa_delegation_parameters_ makwa_delegation_parameters;
  * private key is recommended, because it allows much faster
  * computations.
  *
+ * This function implements the "classic" delegation parameters: 300
+ * random mask pairs are produced.
+ *
  * WARNING: the predicted length (as returned in *out_len when out is
  * NULL or undersized) may turn out to be slightly larger than the
  * actual length. Therefore, when using the "output buffer semantics"
@@ -412,6 +416,44 @@ typedef struct makwa_delegation_parameters_ makwa_delegation_parameters;
  */
 int makwa_delegation_generate(const void *param, size_t param_len,
 	long work_factor, void *out, size_t *out_len);
+
+/*
+ * Generate a new set of delegation parameters, for a given modulus and
+ * work factor. The "modulus" is provided as an encoded modulus, private
+ * key, or other set of delegation parameters. The new set of delegation
+ * parameters is written in out/out_len (with the "output buffer
+ * semantics"); it follows the format specified in section A.5. Using a
+ * private key is recommended, because it allows much faster
+ * computations.
+ *
+ * This function may produce three kinds of delegation parameters,
+ * depending on the value of 'param_type':
+ * -- With MAKWA_RANDOM_PAIRS, 300 random mask pairs are generated. This
+ * is equivalent to calling makwa_delegation_generate().
+ * -- With MAKWA_GENERATOR_EXPAND, n+64 mask pairs (where n is the
+ * modulus bit length) are generated, starting with the generator of
+ * invertible quadratic residues.
+ * -- With MAKWA_GENERATOR_ONLY, a single mask pair is generated,
+ * based on the generator of invertible quadratic residues.
+ *
+ * If the provided parameters (public or private key) do not contain
+ * a generator of invertible quadratic residues, then only
+ * MAKWA_RANDOM_PAIRS is possible.
+ *
+ * WARNING: the predicted length (as returned in *out_len when out is
+ * NULL or undersized) may turn out to be slightly larger than the
+ * actual length. Therefore, when using the "output buffer semantics"
+ * with the two-calls user pattern, be sure to always obtain the output
+ * length from the second call as the final value.
+ *
+ * Returned value is 0 (MAKWA_OK) on success, or a negative error code.
+ */
+int makwa_delegation_generate_gen(const void *param, size_t param_len,
+	long work_factor, int param_type, void *out, size_t *out_len);
+
+#define MAKWA_RANDOM_PAIRS       1
+#define MAKWA_GENERATOR_EXPAND   2
+#define MAKWA_GENERATOR_ONLY     3
 
 /*
  * Allocate a new makwa_delegation_parameters instance. On memory allocation

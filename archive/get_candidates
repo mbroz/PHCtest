@@ -13,3 +13,6 @@ github Argon2 khovratovich/Argon2.git
 github Lyra  leocalm/Lyra.git
 github Catena medsec/catena.git
 github Pufferfish epixoip/pufferfish.git
+
+wget http://www.bolet.org/makwa/makwa-spec-20150422.pdf
+wget http://www.bolet.org/makwa/Makwa-PHC-20150422.zip

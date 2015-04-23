@@ -76,7 +76,7 @@ static void
 usage(void)
 {
 	fprintf(stderr,
-"usage: deleggen infile workfactor outfile\n");
+"usage: deleggen [ -genX | -gen1 ] infile workfactor outfile\n");
 	exit(EXIT_FAILURE);
 }
 
@@ -140,31 +140,70 @@ write_file(char *name, const void *data, size_t data_len)
 	fclose(f);
 }
 
+static int
+eq_nocase(const char *s1, const char *s2)
+{
+	for (;;) {
+		int c1 = *s1 ++;
+		int c2 = *s2 ++;
+
+		if (c1 == 0 || c2 == 0) {
+			return c1 == c2;
+		}
+		if (c1 >= 'A' && c1 <= 'Z') {
+			c1 += 'a' - 'A';
+		}
+		if (c2 >= 'A' && c2 <= 'Z') {
+			c2 += 'a' - 'A';
+		}
+		if (c1 != c2) {
+			return 0;
+		}
+	}
+}
+
 int
 main(int argc, char *argv[])
 {
+	char *nargv[3];
+	int i, nargc;
 	char *infile, *swf, *outfile;
 	long work_factor;
 	char *cptr;
 	unsigned char *param, *dp;
 	size_t param_len, dp_len;
+	int param_type;
 
-	if (argc != 4) {
+	nargc = 0;
+	param_type = MAKWA_RANDOM_PAIRS;
+	for (i = 1; i < argc; i ++) {
+		if (eq_nocase(argv[i], "-genX")) {
+			param_type = MAKWA_GENERATOR_EXPAND;
+		} else if (eq_nocase(argv[i], "-gen1")) {
+			param_type = MAKWA_GENERATOR_ONLY;
+		} else {
+			if (nargc >= 3) {
+				usage();
+			}
+			nargv[nargc ++] = argv[i];
+		}
+	}
+	if (nargc != 3) {
 		usage();
 	}
-	infile = argv[1];
-	swf = argv[2];
-	outfile = argv[3];
+	infile = nargv[0];
+	swf = nargv[1];
+	outfile = nargv[2];
 	work_factor = strtol(swf, &cptr, 0);
 	if (*swf == 0 || *cptr != 0 || work_factor < 0) {
 		usage();
 	}
 	param = read_file(infile, &param_len);
-	CF(makwa_delegation_generate(param, param_len,
-		work_factor, NULL, &dp_len));
+	CF(makwa_delegation_generate_gen(param, param_len,
+		work_factor, param_type, NULL, &dp_len));
 	dp = xmalloc(dp_len);
-	CF(makwa_delegation_generate(param, param_len,
-		work_factor, dp, &dp_len));
+	CF(makwa_delegation_generate_gen(param, param_len,
+		work_factor, param_type, dp, &dp_len));
 	write_file(outfile, dp, dp_len);
 	xfree(param);
 	xfree(dp);
