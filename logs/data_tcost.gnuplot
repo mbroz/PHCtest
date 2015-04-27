@@ -1,3 +1,5 @@
+load 'linetypes.gnuplot'
+
 # tcost round test
 
 set terminal png enhanced font "arial,10" fontscale 1.0 size 1600, 1200
@@ -9,6 +11,10 @@ set logscale y
 set key inside left
 #set label font "arial,16"
 set output 'mc_cost_2/memory_time_round.png'
+set grid xtics
+#set grid mxtics
+set grid ytics
+set grid mytics
 
 set multiplot
 set size 0.5,0.5

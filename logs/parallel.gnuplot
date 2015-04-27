@@ -1,4 +1,5 @@
 # parallel processing
+load 'linetypes.gnuplot'
 
 set terminal png enhanced font "arial,18" fontscale 1.0 size 1600, 1000
 set pointsize 1.2
@@ -7,6 +8,8 @@ set ylabel "Hashes per second"
 set nologscale x
 set logscale y
 set key outside
+set grid ytics
+set grid mytics
 
 set title "PHC candidates, hashes/second in parallel run\n{/arial=12[salt = 16, in,out = 32, tcost = MIN, mcost = 128kiB]}"
 set output 'r_parallel_0/parallel_threads_0.png'

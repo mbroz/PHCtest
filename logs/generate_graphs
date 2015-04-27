@@ -1,3 +1,4 @@
 gnuplot parallel.gnuplot
 gnuplot data.gnuplot
 gnuplot data_tcost.gnuplot
+gnuplot iolen.gnuplot
