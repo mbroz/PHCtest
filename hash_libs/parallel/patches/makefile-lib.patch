@@ -1,28 +1,25 @@
 ---
- Makefile |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ Makefile |   16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
 Index: parallel/Makefile
 ===================================================================
---- parallel.orig/Makefile	2014-09-20 11:27:09.861267605 +0200
-+++ parallel/Makefile	2014-10-19 14:08:36.830683719 +0200
-@@ -4,9 +4,12 @@ CFLAGS32 = -c -Wall -m32 -O2
- LFLAGS64 = -m64
- LFLAGS32 = -m32
-  
--all: parallel-64 parallel-32
-+#all: parallel-64 parallel-32
-+all: parallel.a
- 	
- 
-+parallel.a: parallel64.o sha51264.o
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ parallel/Makefile	2015-04-28 12:43:26.857780816 +0200
+@@ -0,0 +1,16 @@
++CC       = g++
++CPPFLAGS   = -c -Wall -O2
++
++TARGETS=parallel.a
++
++SOURCES=parallel.cpp sha512.cpp
++
++default: $(TARGETS)
++
++parallel.a: $(SOURCES:.cpp=.o)
 +	ar rcs $@ $^
- # 64 bit
- parallel-64: main64.o parallel64.o sha51264.o
- 	$(CC) $(LFLAGS64) -o parallel-64 main64.o parallel64.o sha51264.o
-@@ -34,4 +37,4 @@ sha51232.o: sha512.cpp sha512.h common.h
- 	$(CC) $(CFLAGS32) -o sha51232.o sha512.cpp
- 
- clean:
--	-rm *.o parallel-64 parallel-32
-+	-rm -f *.o *.a parallel-64 parallel-32
++
++clean:
++	rm -f *.o $(TARGETS)
++
++.PHONY: clean
