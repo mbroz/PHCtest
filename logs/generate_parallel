@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CPUS=$(nproc)
+
 function run() # $1 name $2 log $3 from $4 to
 {
 	echo "[$(date --rfc-3339=seconds)] -- $2 / $1 --"
@@ -7,7 +9,7 @@ function run() # $1 name $2 log $3 from $4 to
 	[ ! -d $2 ] && mkdir $2
 	OUT=$2/$1.dat
 	[ ! -f "$OUT" ] && echo "# in_len out_len mcost tcost threads hashes req_time[s] time[ms] hashes_second" > "$OUT"
-	for i in $(seq 1 1 8); do
+	for i in $(seq 1 1 $CPUS); do
 		../tst-$1 -f $OUT -P $i -T 30 $3
 		echo -n "[$i]"
 	done
