@@ -38,9 +38,6 @@
 #include <sys/shm.h>
 #include "bitops.h"
 
-int PHS(void *out, size_t outlen, const void *in, size_t inlen,
-    const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
-
 static size_t opt_salt_len = 16;
 static size_t opt_in_len = 8;
 static size_t opt_out_len = 32;
@@ -54,9 +51,28 @@ static int opt_fork = 0;
 static int opt_display_hash = 0;
 static int opt_gen_vectors = 0;
 static int opt_parallel = 0;
+static int opt_threads = 1;
 static int opt_p_seconds = 60;
 static char *opt_out_file = NULL;
 static char *opt_vector_file = NULL;
+
+#ifdef USE_PHSX
+int PHSx(void *out, size_t outlen, const void *in, size_t inlen,
+    const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost, unsigned int m_thread);
+
+static int runPHS(void *out, size_t outlen, const void *in, size_t inlen,
+    const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost) {
+    return PHSx(out, outlen, in, inlen, salt, saltlen, t_cost, m_cost, opt_threads);
+}
+#else
+int PHS(void *out, size_t outlen, const void *in, size_t inlen,
+    const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
+
+static int runPHS(void *out, size_t outlen, const void *in, size_t inlen,
+    const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost) {
+    return PHS(out, outlen, in, inlen, salt, saltlen, t_cost, m_cost);
+}
+#endif
 
 static void memset_random(void *buf, size_t len)
 {
@@ -134,7 +150,7 @@ static int test_phc(size_t key_len, char *key, size_t salt_len, char *salt,
 		return 1;
 	}
 
-	if ((r = PHS(key, key_len, pwd, pwd_len, salt, salt_len, t_cost, m_cost)) != 0) {
+	if ((r = runPHS(key, key_len, pwd, pwd_len, salt, salt_len, t_cost, m_cost)) != 0) {
 		printl("Error running PHS, %i.\n", r);
 		return 1;
 	}
@@ -437,7 +453,7 @@ static int test_vector(const char *password_hex, const char *salt_hex,
 	if (password_len < 0 || salt_len < 0 || out_len < 0)
 		return 1;
 
-	r = PHS(real_out, out_len, password, password_len, salt, salt_len, t_cost, m_cost);
+	r = runPHS(real_out, out_len, password, password_len, salt, salt_len, t_cost, m_cost);
 	if (r) {
 		printf("ERROR: %d\n", r);
 		return r;
@@ -518,7 +534,7 @@ static int test_randomness(void)
 	for (i = 0; i < (opt_rndsize * 1024 *1024 / opt_out_len); i++) {
 		i_le = cpu_to_le32(i);
 
-		if ((r = PHS(out, opt_out_len, pwd, sizeof(uint32_t),
+		if ((r = runPHS(out, opt_out_len, pwd, sizeof(uint32_t),
 			salt, opt_salt_len, opt_tcost, opt_mcost)) != 0) {
 			fprintf(stderr, "Error running PHS, %i.\n", r);
 			return 1;
@@ -546,6 +562,7 @@ static struct option long_options[] =
 	{"tcost",    required_argument, NULL, 't'},
 	{"out_file", required_argument, NULL, 'f'},
 	{"parallel", required_argument, NULL, 'P'},
+	{"threads",  required_argument, NULL, 'p'},
 	{"p_seconds",required_argument, NULL, 'T'},
 	{"repeat",   required_argument, NULL, 'r'},
 	{"vector",   required_argument, NULL, 'V'},
@@ -557,7 +574,7 @@ int main (int argc, char *argv[])
 {
 	int c, r, option_index = 0;
 
-	while ((c = getopt_long (argc, argv, "vwhs:i:o:m:t:f:G:r:V:x:X:P:T:", long_options, &option_index)) != -1) {
+	while ((c = getopt_long (argc, argv, "vwhs:i:o:m:t:f:G:r:V:x:X:p:P:T:", long_options, &option_index)) != -1) {
 		switch (c) {
 		case 'v': opt_verbose  = 1; break;
 		case 'w': opt_fork     = 1; break;
@@ -571,6 +588,7 @@ int main (int argc, char *argv[])
 		case 'x': opt_rndtest  = atoi(optarg); break;
 		case 'X': opt_rndsize  = atoi(optarg); break;
 		case 'P': opt_parallel = atoi(optarg); break;
+		case 'p': opt_threads  = atoi(optarg); break;
 		case 'T': opt_p_seconds= atoi(optarg); break;
 		case 'f': opt_out_file = strdup(optarg); break;
 		case 'V': opt_vector_file = strdup(optarg); break;

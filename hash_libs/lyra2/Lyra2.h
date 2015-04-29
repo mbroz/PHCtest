@@ -26,15 +26,15 @@ typedef unsigned char byte ;
         #define N_COLS 256                                      //Number of columns in the memory matrix: fixed to 256 by default
 #endif
 
-#ifndef nPARALLEL
-        #define nPARALLEL 2                                     //Number of parallel threads
-#endif
+extern uint32_t nPARALLEL;
 
 #define ROW_LEN_INT64 (BLOCK_LEN_INT64 * N_COLS)                //Total length of a row: N_COLS blocks
 #define ROW_LEN_BYTES (ROW_LEN_INT64 * 8)                       //Number of bytes per row
 
-int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, const void *salt, unsigned int saltlen, unsigned int timeCost, unsigned int nRows, unsigned int nCols);
+int LYRA2_singleThread(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, const void *salt, unsigned int saltlen, unsigned int timeCost, unsigned int nRows, unsigned int nCols);
+int LYRA2_multiThread(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, const void *salt, unsigned int saltlen, unsigned int timeCost, unsigned int nRows, unsigned int nCols);
 
 int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost);
+int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost, unsigned int m_thread);
 
 #endif /* LYRA2_H_ */
