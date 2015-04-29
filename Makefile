@@ -3,7 +3,7 @@ TARGETS=$(shell ls $(HASH_DIR))
 
 antcrypt_FLAGS=-lcrypto -lm
 argon_FLAGS=-lstdc++
-argon-aesni_FLAGS=-lstdc++ -lpthread
+argon-aesni_FLAGS=-DUSE_PHSX -lstdc++ -lpthread
 argon2d_FLAGS=-lstdc++
 argon2d-sse_FLAGS=-DUSE_PHSX -lstdc++ -lpthread
 argon2i_FLAGS=-lstdc++
