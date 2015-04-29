@@ -376,6 +376,19 @@ int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt
         salt, saltlen, m_cost, t_cost, TWOCATS_PARALLELISM, false);
 }
 
+// This is the prototype required for the password hashing competition.
+// t_cost is a multiplier on CPU work.  m_cost is garlic.
+// If possible, call TwoCats_SimpleHashPassword instead so that the password can be cleared.
+int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
+        unsigned int t_cost, unsigned int m_cost, unsigned int m_thread) {
+    if(outlen != 32) {
+        fprintf(stderr, "Expected outlen == 32\n");
+        return 1;
+    }
+    return !TwoCats_HashPasswordFull(TWOCATS_HASHTYPE, out, (uint8_t *)in, inlen,
+        salt, saltlen, m_cost, t_cost, m_thread, false);
+}
+
 // Just measure the time for a given memCost and timeCost.  Return -1 if memory allocation fails.
 static clock_t findRuntime(TwoCats_HashType hashType, uint8_t memCost, uint8_t timeCost,
         uint8_t multiplies, uint8_t lanes) {
