@@ -26,6 +26,8 @@
 #include "Lyra2.h"
 #include "Sponge.h"
 
+unsigned int nPARALLEL = 1;
+
 /**
  * Executes Lyra2 based on the G function from Blake2b or BlaMka. The number of columns of the memory matrix is set to nCols = N_COLS.
  * This version supports salts and passwords whose combined length is smaller than the size of the memory matrix,
@@ -45,10 +47,17 @@
  * @return 0 if the key is generated correctly; -1 if there is an error (usually due to lack of memory for allocation)
  */
 int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost){
-    return LYRA2(out, outlen, in, inlen, salt, saltlen, t_cost, m_cost, N_COLS);
+    nPARALLEL = 1;
+    return LYRA2_singleThread(out, outlen, in, inlen, salt, saltlen, t_cost, m_cost, N_COLS);
+}
+int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost, unsigned int m_thread){
+    nPARALLEL = m_thread;
+    if(m_thread == 1) {
+        return LYRA2_singleThread(out, outlen, in, inlen, salt, saltlen, t_cost, m_cost, N_COLS);
+    }
+    return LYRA2_multiThread(out, outlen, in, inlen, salt, saltlen, t_cost, m_cost, N_COLS);
 }
 
-#if (nPARALLEL == 1)
 /**
  * Executes Lyra2 based on the G function from Blake2b or BlaMka. This version supports salts and passwords
  * whose combined length is smaller than the size of the memory matrix, (i.e., (nRows x nCols x b) bits,
@@ -68,7 +77,7 @@ int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt
  *
  * @return 0 if the key is generated correctly; -1 if there is an error (usually due to lack of memory for allocation)
  */
-int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, const void *salt, unsigned int saltlen, unsigned int timeCost, unsigned int nRows, unsigned int nCols){
+int LYRA2_singleThread(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, const void *salt, unsigned int saltlen, unsigned int timeCost, unsigned int nRows, unsigned int nCols){
     //============================= Basic variables ============================//
     int64_t gap = 1;            //Modifier to the step, assuming the values 1 or -1
     uint64_t step = 1;          //Visitation step (used during Setup to dictate the sequence in which rows are read)
@@ -252,9 +261,7 @@ int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, cons
 
     return 0;
 }
-#endif
 
-#if (nPARALLEL > 1)
 /**
  * Executes Lyra2 based on the G function from Blake2b or BlaMka. This version supports salts and passwords
  * whose combined length is smaller than the size of the memory matrix, (i.e., (nRows x nCols x b) bits,
@@ -274,7 +281,7 @@ int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, cons
  *
  * @return 0 if the key is generated correctly; -1 if there is an error (usually due to lack of memory for allocation)
  */
-int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, const void *salt, unsigned int saltlen, unsigned int timeCost, unsigned int nRows, unsigned int nCols){
+int LYRA2_multiThread(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, const void *salt, unsigned int saltlen, unsigned int timeCost, unsigned int nRows, unsigned int nCols){
 
     //============================= Basic variables ============================//
     uint64_t i,j;        //auxiliary iteration counter
@@ -298,11 +305,11 @@ int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, cons
       return -1;
 
 #if _OPENMP <= 201107  //OpenMP 3.X or less 
-    #pragma omp parallel num_threads(nPARALLEL) default(none) /*private(pwd)*/ shared(memMatrix,  pKeys, pwd, pwdlen, salt, saltlen, nRows, nCols, kLen, timeCost)
+    #pragma omp parallel num_threads(nPARALLEL) default(none) /*private(pwd)*/ shared(memMatrix,  pKeys, pwd, pwdlen, salt, saltlen, nRows, nCols, kLen, timeCost, nPARALLEL)
 #endif // _OPENMP
 
 #if _OPENMP > 201107  //OpenMP 4.0
-    #pragma omp parallel proc_bind(spread) num_threads(nPARALLEL) default(none) /*private(pwd)*/ shared(memMatrix,  pKeys, pwd, pwdlen, salt, saltlen, nRows, nCols, kLen, timeCost)
+    #pragma omp parallel proc_bind(spread) num_threads(nPARALLEL) default(none) /*private(pwd)*/ shared(memMatrix,  pKeys, pwd, pwdlen, salt, saltlen, nRows, nCols, kLen, timeCost, nPARALLEL)
 #endif // _OPENMP
     {
         //============================= Basic threads variables ============================//
@@ -559,4 +566,3 @@ int LYRA2(void *K, unsigned int kLen, const void *pwd, unsigned int pwdlen, cons
 
     return 0;
 }
-#endif

@@ -44,6 +44,22 @@ int PHS(void *out, size_t outlen, const void *in, size_t inlen,
 	return retval;
 }
 
+int PHSx(void *out, size_t outlen, const void *in, size_t inlen,
+    const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost, unsigned int m_thread)
+{
+	yescrypt_local_t local;
+	int retval;
+
+	if (yescrypt_init_local(&local))
+		return -1;
+	retval = yescrypt_kdf(NULL, &local, in, inlen, salt, saltlen,
+	    (uint64_t)YESCRYPT_BASE_N << m_cost, YESCRYPT_R, m_thread,
+	    t_cost, 0, YESCRYPT_FLAGS, out, outlen);
+	if (yescrypt_free_local(&local))
+		return -1;
+	return retval;
+}
+
 #ifdef TEST
 #include <stdio.h>
 #include <unistd.h> /* for sysconf() */

@@ -189,5 +189,7 @@ void TwoCats_FindCostParameters(TwoCats_HashType hashType, uint32_t milliSeconds
 // This is the prototype required for the password hashing competition.  It uses Blake2s.
 int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
     unsigned int t_cost, unsigned int m_cost);
+int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
+        unsigned int t_cost, unsigned int m_cost, unsigned int m_thread);
 
 void TwoCats_PrintHex(char *message, uint8_t *x, int len);
