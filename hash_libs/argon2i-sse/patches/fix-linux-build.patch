@@ -1,0 +1,32 @@
+---
+ opt-sse/argon2i-opt-sse.cpp |    6 ++++++
+ opt-sse/argon2i.h           |    2 ++
+ 2 files changed, 8 insertions(+)
+
+Index: argon2i-sse/opt-sse/argon2i-opt-sse.cpp
+===================================================================
+--- argon2i-sse.orig/opt-sse/argon2i-opt-sse.cpp	2015-04-30 17:29:58.864009675 +0200
++++ argon2i-sse/opt-sse/argon2i-opt-sse.cpp	2015-04-30 17:30:26.936061046 +0200
+@@ -535,3 +535,9 @@ int PHS(void *out, size_t outlen, const
+  {
+ 	return Argon2iOpt((uint8_t*)out, (uint32_t)outlen, (const uint8_t*)in, (uint32_t)inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, 1);
+  }
++
++int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
++	 unsigned int t_cost, unsigned int m_cost, unsigned int m_thread)
++ {
++	return Argon2iOpt((uint8_t*)out, (uint32_t)outlen, (const uint8_t*)in, (uint32_t)inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, (uint8_t)m_thread);
++ }
+Index: argon2i-sse/opt-sse/argon2i.h
+===================================================================
+--- argon2i-sse.orig/opt-sse/argon2i.h	2015-04-30 17:29:58.864009675 +0200
++++ argon2i-sse/opt-sse/argon2i.h	2015-04-30 17:30:26.936061046 +0200
+@@ -53,6 +53,8 @@ struct position_info_t {
+ 
+ extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
+ 	unsigned int t_cost, unsigned int m_cost);
++extern "C" int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
++	 unsigned int t_cost, unsigned int m_cost, unsigned int m_thread);
+ 
+ 
+ extern int Argon2iOpt(uint8_t *out, uint32_t outlen, const uint8_t *msg, uint32_t msglen, const uint8_t *nonce, uint32_t noncelen, const uint8_t *secret,

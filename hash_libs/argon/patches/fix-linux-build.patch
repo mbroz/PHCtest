@@ -1,17 +1,17 @@
 Fix build on Linux.
 ---
- Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp |   12 +++++++++---
- Argon-Optimized/Linux-AES-NI/aes.cpp             |    2 +-
- Argon-Optimized/Linux-AES-NI/data.h              |    8 +++++---
- Argon-Optimized/Linux-AES-NI/genkat.cpp          |    2 +-
- Argon-Reference/Argon-Reference.cpp              |   21 +++++++++++----------
- Argon-Reference/blake2.h                         |    2 +-
- 6 files changed, 28 insertions(+), 19 deletions(-)
+ Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp |   12 +++++++---
+ Argon-Optimized/Linux-AES-NI/aes.cpp             |    2 -
+ Argon-Optimized/Linux-AES-NI/data.h              |    8 ++++--
+ Argon-Optimized/Linux-AES-NI/genkat.cpp          |    2 -
+ Argon-Reference/Argon-Reference.cpp              |   27 ++++++++++++++---------
+ Argon-Reference/blake2.h                         |    2 -
+ 6 files changed, 34 insertions(+), 19 deletions(-)
 
 Index: argon/Argon-Reference/Argon-Reference.cpp
 ===================================================================
---- argon.orig/Argon-Reference/Argon-Reference.cpp	2015-02-26 17:19:51.864630302 +0100
-+++ argon/Argon-Reference/Argon-Reference.cpp	2015-03-15 08:55:05.519664412 +0100
+--- argon.orig/Argon-Reference/Argon-Reference.cpp	2015-03-24 08:53:11.921354271 +0100
++++ argon/Argon-Reference/Argon-Reference.cpp	2015-04-30 17:17:17.038660997 +0200
 @@ -1,12 +1,13 @@
  #include "stdio.h"
  
@@ -57,7 +57,7 @@ Index: argon/Argon-Reference/Argon-Reference.cpp
  	
  
  	delete state;
-@@ -289,8 +290,8 @@ int ArgonRef(uint8_t *out, uint32_t outl
+@@ -289,8 +290,14 @@ int ArgonRef(uint8_t *out, uint32_t outl
  
  
  
@@ -65,14 +65,20 @@ Index: argon/Argon-Reference/Argon-Reference.cpp
 -	uint32_t t_cost, uint32_t m_cost)
 +extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
 +	unsigned int t_cost, unsigned int m_cost)
++{
++	return ArgonRef((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, 1);
++}
++
++extern "C" int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, 
++	unsigned int t_cost, unsigned int m_cost, unsigned int m_thread)
  {
 -	return ArgonRef((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, saltlen, NULL, 0, NULL,0, t_cost, m_cost,1);
-+	return ArgonRef((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, 1);
++	return ArgonRef((uint8_t*)out, outlen, (const uint8_t*)in, inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, (uint32_t)m_thread);
  }
 Index: argon/Argon-Reference/blake2.h
 ===================================================================
---- argon.orig/Argon-Reference/blake2.h	2015-02-26 17:19:51.864630302 +0100
-+++ argon/Argon-Reference/blake2.h	2015-02-26 17:19:51.860630274 +0100
+--- argon.orig/Argon-Reference/blake2.h	2015-03-24 08:53:11.921354271 +0100
++++ argon/Argon-Reference/blake2.h	2015-03-24 08:53:11.917354245 +0100
 @@ -143,7 +143,7 @@ extern "C" {
    int blake2sp( uint8_t *out, const void *in, const void *key, const uint8_t outlen, const uint64_t inlen, uint8_t keylen );
    int blake2bp( uint8_t *out, const void *in, const void *key, const uint8_t outlen, const uint64_t inlen, uint8_t keylen );
@@ -84,8 +90,8 @@ Index: argon/Argon-Reference/blake2.h
    }
 Index: argon/Argon-Optimized/Linux-AES-NI/data.h
 ===================================================================
---- argon.orig/Argon-Optimized/Linux-AES-NI/data.h	2015-02-26 17:19:51.864630302 +0100
-+++ argon/Argon-Optimized/Linux-AES-NI/data.h	2015-03-15 09:03:17.650517075 +0100
+--- argon.orig/Argon-Optimized/Linux-AES-NI/data.h	2015-03-24 08:53:11.921354271 +0100
++++ argon/Argon-Optimized/Linux-AES-NI/data.h	2015-03-24 08:53:11.917354245 +0100
 @@ -1,7 +1,7 @@
  
  //#define KAT
@@ -109,8 +115,8 @@ Index: argon/Argon-Optimized/Linux-AES-NI/data.h
 \ No newline at end of file
 Index: argon/Argon-Optimized/Linux-AES-NI/aes.cpp
 ===================================================================
---- argon.orig/Argon-Optimized/Linux-AES-NI/aes.cpp	2015-01-31 10:49:55.000000000 +0100
-+++ argon/Argon-Optimized/Linux-AES-NI/aes.cpp	2015-02-26 17:24:25.486562691 +0100
+--- argon.orig/Argon-Optimized/Linux-AES-NI/aes.cpp	2015-03-24 08:53:11.921354271 +0100
++++ argon/Argon-Optimized/Linux-AES-NI/aes.cpp	2015-03-24 08:53:11.917354245 +0100
 @@ -93,7 +93,7 @@ const static unsigned char sbox[256] = {
  
  
@@ -122,8 +128,8 @@ Index: argon/Argon-Optimized/Linux-AES-NI/aes.cpp
  	__m128i roundkey[AES_ROUNDS + 1];
 Index: argon/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp
 ===================================================================
---- argon.orig/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp	2015-02-28 19:47:28.903109976 +0100
-+++ argon/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp	2015-03-15 09:03:53.350723669 +0100
+--- argon.orig/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp	2015-03-24 08:53:11.921354271 +0100
++++ argon/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp	2015-03-24 08:53:11.917354245 +0100
 @@ -6,7 +6,7 @@
  //To enable measurement of SubGroups and ShuffleSlices, uncomment #define _MEASUREINT
  //Threading is always enabled
@@ -151,8 +157,8 @@ Index: argon/Argon-Optimized/Linux-AES-NI/Argon-Optimized.cpp
  }
 Index: argon/Argon-Optimized/Linux-AES-NI/genkat.cpp
 ===================================================================
---- argon.orig/Argon-Optimized/Linux-AES-NI/genkat.cpp	2015-03-15 09:04:31.602944982 +0100
-+++ argon/Argon-Optimized/Linux-AES-NI/genkat.cpp	2015-03-15 09:04:40.010993621 +0100
+--- argon.orig/Argon-Optimized/Linux-AES-NI/genkat.cpp	2015-03-24 08:53:11.921354271 +0100
++++ argon/Argon-Optimized/Linux-AES-NI/genkat.cpp	2015-03-24 08:53:11.000000000 +0100
 @@ -135,7 +135,7 @@ void Run(void *out, size_t outlen, size_
  	unsigned char one_array[256];
  	memset(one_array, 1, 256);

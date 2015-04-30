@@ -1,0 +1,30 @@
+---
+ opt-sse/argon2d-opt-sse.cpp |    5 +++++
+ opt-sse/argon2d.h           |    1 +
+ 2 files changed, 6 insertions(+)
+
+Index: argon2d-sse/opt-sse/argon2d-opt-sse.cpp
+===================================================================
+--- argon2d-sse.orig/opt-sse/argon2d-opt-sse.cpp	2015-04-30 17:21:57.815119419 +0200
++++ argon2d-sse/opt-sse/argon2d-opt-sse.cpp	2015-04-30 17:22:23.923164520 +0200
+@@ -510,3 +510,8 @@ int PHS(void *out, size_t outlen, const
+ {
+ 	return Argon2dOpt((uint8_t*)out, (uint32_t)outlen, (const uint8_t*)in, (uint32_t)inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, 1);
+ }
++
++int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost, unsigned int m_thread)
++{
++	return Argon2dOpt((uint8_t*)out, (uint32_t)outlen, (const uint8_t*)in, (uint32_t)inlen, (const uint8_t*)salt, (uint32_t)saltlen, NULL, 0, NULL, 0, (uint32_t)t_cost, (uint32_t)m_cost, (uint8_t)m_thread);
++}
+Index: argon2d-sse/opt-sse/argon2d.h
+===================================================================
+--- argon2d-sse.orig/opt-sse/argon2d.h	2015-04-30 17:21:57.815119419 +0200
++++ argon2d-sse/opt-sse/argon2d.h	2015-04-30 17:22:23.927164528 +0200
+@@ -51,6 +51,7 @@ struct position_info_t {
+ 
+ extern "C" int PHS(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen,
+ 	unsigned int t_cost, unsigned int m_cost);
++extern "C" int PHSx(void *out, size_t outlen, const void *in, size_t inlen, const void *salt, size_t saltlen, unsigned int t_cost, unsigned int m_cost, unsigned int m_thread);
+ 
+ extern int Argon2dOpt(uint8_t *out, uint32_t outlen, const uint8_t *msg, uint32_t msglen, const uint8_t *nonce, uint32_t noncelen, const uint8_t *secret,
+ 	uint8_t secretlen, const uint8_t *ad, uint32_t adlen, uint32_t t_cost, uint32_t m_cost, uint8_t lanes);
